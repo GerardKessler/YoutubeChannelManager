@@ -1,4 +1,4 @@
-import subprocess
+﻿import subprocess
 import core
 import gui
 from re import search
@@ -263,14 +263,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def script_viewData(self, gesture):
 		self.desactivar(False)
+		ui.message("Obteniendo los datos del video...")
 		with youtube_dl.YoutubeDL(self.options) as ydl:
 			p = ydl.extract_info(self.channels[self.y][self.z]["link"], download=False)
+		upload_date = f'{p["upload_date"][6:][:2]}.{p["upload_date"][4:][:2]}.{p["upload_date"][:4]}'
 		time = self.timeFormat(p["duration"])
 		data = f'''Duración: {time}
-			Reproducciones: {p["view_count"]}
-			Me gusta: {p["like_count"]}
-			Descripción: {p["description"]}'''
-		ui.browseableMessage(data, "datos del video")
+Fecha de subida: {upload_date}
+Reproducciones: {p["view_count"]}
+Me gusta: {p["like_count"]}
+Descripción: {p["description"]}'''
+		ui.browseableMessage(data, p["title"])
 
 	def timeFormat(self, seconds):
 		hs = int(seconds/3600)
@@ -514,6 +517,9 @@ class NewChannel(wx.Dialog):
 	def addChannel(self, event):
 		name = self.channelName.GetValue()
 		link = self.channelLink.GetValue()
+		if not search(r"https\:\/\/www\.youtube\.com\/channel\/[\w\-]+", link):
+			ui.message("La url ingresada no es válida")
+			return
 		fileName = [chard for chard in name if search(r"[a-zA-Z0-9\-\_]", chard)]
 		fileName = "".join(fileName)
 		if link[-7:] != "/videos":
