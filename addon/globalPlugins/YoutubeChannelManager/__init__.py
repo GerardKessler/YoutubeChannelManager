@@ -520,6 +520,7 @@ class NewChannel(wx.Dialog):
 		link = self.channelLink.GetValue()
 		if not search(r"https\:\/\/www\.youtube\.com\/channel\/[\w\-]+", link):
 			ui.message("La url ingresada no es válida")
+			self.channelLink.SetFocus()
 			return
 		fileName = [chard for chard in name if search(r"[a-zA-Z0-9\-\_]", chard)]
 		fileName = "".join(fileName)
