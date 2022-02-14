@@ -5,7 +5,7 @@ Este complemento permite gestionar de forma sencilla los canales favoritos de la
 
 ## Atajos del complemento
 
-* Sin asignar; Activa y desactiva la interfaz invisible
+* NVDA + y; Activa y desactiva la interfaz invisible
 
 ## Atajos disponibles en la interfaz invisible
 

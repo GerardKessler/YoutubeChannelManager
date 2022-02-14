@@ -44,7 +44,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.channels = []
 		self.index = []
 		self.y = 0
-		self.z = 0
+		self.z = 1
 		core.postNvdaStartup.register(self.firstRun)
 
 	def firstRun(self):
@@ -96,7 +96,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			modal.Destroy()
 
 	# Función que verifica si ya cargaron los canales y activa o desactiva los atajos a través de un operador ternario
-	@script(gesture=None, description="Activa y desactiva la interfaz invisible", category= "YoutubeChannelManager")
+	@script(gesture="kb:NVDA+y", description="Activa y desactiva la interfaz invisible", category= "YoutubeChannelManager")
 	def script_toggle(self, gesture):
 		if self.channels == None:
 			ui.message("Cargando los canales, por favor espere...")
@@ -130,6 +130,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.switch = False
 			if speak: ui.message("Atajos desactivados")
 			self.clearGestureBindings()
+			self.bindGestures(self.__gestures)
 
 	# función que avanza entre los valores de los diccionarios de la lista a través de la variable y
 	def script_nextItem(self, gesture):
