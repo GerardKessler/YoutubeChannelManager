@@ -39,6 +39,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def __init__(self):
 		super(GlobalPlugin, self).__init__()
 		if globalVars.appArgs.secure: return
+		self.options = {'ignoreerrors': True, 'quiet': True, 'extract_flat': 'in_playlist', 'dump_single_json': True}
 		self.switch = False
 		self.channels = []
 		self.index = []
@@ -63,10 +64,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if speak:
 			ui.message(speak)
 
-	def getVideos(channelName, channelID):
-		opciones = {'ignoreerrors': True, 'quiet': True, 'extract_flat': 'in_playlist', 'dump_single_json': True}
-		list = [channelName]
-		with youtube_dl.YoutubeDL(opciones) as ydl:
+	def getVideos(channelName, channelID, fileName):
+		list = [{"name": channelName, "link": channelID, "file": fileName}]
+		with youtube_dl.YoutubeDL(self.options) as ydl:
 			p = ydl.extract_info(channelID, download=False)
 		titles = [p["entries"][i]["title"] for i in range(len(p["entries"]))]
 		links = [f"https://www.youtube.com/watch?v={p['entries'][i]['url']}" for i in range(len(p["entries"]))]
@@ -117,6 +117,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:end":"positionAnnounce",
 				"kb:n":"newChannel",
 				"kb:c":"copyLink",
+				"kb:d":"viewData",
 				"kb:v":"playVLC",
 				"kb:delete":"removeChannel",
 				"kb:f5":"reloadChannels",
@@ -232,9 +233,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ui.message("Proceso finalizado")
 
 	def getVideos(self, channelName, channelID, fileName):
-		opciones = {'ignoreerrors': True, 'quiet': True, 'extract_flat': 'in_playlist', 'dump_single_json': True}
 		list = [{"name": channelName, "link": channelID, "file": fileName}]
-		with youtube_dl.YoutubeDL(opciones) as ydl:
+		with youtube_dl.YoutubeDL(self.options) as ydl:
 			p = ydl.extract_info(channelID, download=False)
 		titles = [p["entries"][i]["title"] for i in range(len(p["entries"]))]
 		links = [f"https://www.youtube.com/watch?v={p['entries'][i]['url']}" for i in range(len(p["entries"]))]
@@ -260,6 +260,33 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def terminate(self):
 		pass
+
+	def script_viewData(self, gesture):
+		self.desactivar(False)
+		with youtube_dl.YoutubeDL(self.options) as ydl:
+			p = ydl.extract_info(self.channels[self.y][self.z]["link"], download=False)
+		time = self.timeFormat(p["duration"])
+		data = f'''Duración: {time}
+			Reproducciones: {p["view_count"]}
+			Me gusta: {p["like_count"]}
+			Descripción: {p["description"]}'''
+		ui.browseableMessage(data, "datos del video")
+
+	def timeFormat(self, seconds):
+		hs = int(seconds/3600)
+		ms = int(seconds/60)
+		ss = seconds%60
+		if ss < 10:
+			ss = f"0{ss}"
+		if ms < 10:
+			ms = f"0{ms}"
+		if hs > 0:
+			ms = ms%60
+			if ms < 10:
+				ms = f"0{ms}"
+			return f"{hs}:{ms}:{ss}"
+		else:
+			return f"{ms}:{ss}"
 
 	def checkUpdate(self):
 		self.mainThread = HiloComplemento()
@@ -466,6 +493,7 @@ Cierre la ventana para terminar de instalar la librería y reiniciar NVDA.""")
 class NewChannel(wx.Dialog):
 	def __init__(self, parent, titulo, frame):
 		super(NewChannel, self).__init__(parent, -1, title=titulo)
+		self.options = {'ignoreerrors': True, 'quiet': True, 'extract_flat': 'in_playlist', 'dump_single_json': True}
 		self.frame = frame
 		self.Panel = wx.Panel(self)
 		wx.StaticText(self.Panel, wx.ID_ANY, "Ingresa el nombre del canal")
@@ -495,9 +523,8 @@ class NewChannel(wx.Dialog):
 
 	def getVideos(self, channelName, channelID, fileName):
 		winsound.PlaySound("C:\\Windows\\Media\\Alarm08.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
-		opciones = {'ignoreerrors': True, 'quiet': True, 'extract_flat': 'in_playlist', 'dump_single_json': True}
 		list = [{"name": channelName, "link": channelID, "file": fileName}]
-		with youtube_dl.YoutubeDL(opciones) as ydl:
+		with youtube_dl.YoutubeDL(self.options) as ydl:
 			p = ydl.extract_info(channelID, download=False)
 		titles = [p["entries"][i]["title"] for i in range(len(p["entries"]))]
 		links = [f"https://www.youtube.com/watch?v={p['entries'][i]['url']}" for i in range(len(p["entries"]))]
