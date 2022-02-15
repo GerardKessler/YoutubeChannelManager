@@ -1,4 +1,8 @@
-﻿import subprocess
+﻿# -*- coding: utf-8 -*-
+# Copyright (C) 2021 Gerardo Kessler <ReaperYOtrasYerbas@gmail.com>
+# This file is covered by the GNU General Public License.
+
+import subprocess
 import core
 import gui
 from re import search
@@ -20,19 +24,14 @@ import shutil
 import wx
 import sys
 import os
-# Pillamos ruta de nuestro addon.
 dirAddon=os.path.dirname(__file__)
-# Agregamos a la variante path nuestro directorio del addon.
 sys.path.append(dirAddon)
-# Añadimos el directorio lib a la variable path.
 sys.path.append(os.path.join(dirAddon, "lib"))
-# importamos libreria y agregamos al path para que pueda ser usada desde cualquier sitio.
 import xml
 xml.__path__.append(os.path.join(dirAddon, "lib", "xml"))
 import html
 html.__path__.append(os.path.join(dirAddon, "lib", "html"))
 import youtube_dl
-# borramos del path ya que no lo necesitamos.
 del sys.path[-2:]
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
@@ -85,17 +84,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.desactivar(False)
 
 	def startRemoveChannel(self):
-		modal = wx.MessageDialog(None, f'¿Quieres eliminar el canal {self.channels[self.y][0]["name"]}?', _("Pregunta"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+		modal = wx.MessageDialog(None, f'¿Quieres eliminar el canal {self.channels[self.y][0]["name"]}?', _("📋"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 		if modal.ShowModal() == wx.ID_YES:
 			os.remove(os.path.join(dirAddon, "channels", self.channels[self.y][0]["file"]))
-			winsound.PlaySound("C:\\Windows\\Media\\Windows Recycle.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
 			self.channels.pop(self.y)
 			self.index.pop(self.y)
 			self.y = 0
+			winsound.PlaySound("C:\\Windows\\Media\\Windows Recycle.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
 		else:
 			modal.Destroy()
 
-	# Función que verifica si ya cargaron los canales y activa o desactiva los atajos a través de un operador ternario
 	@script(gesture="kb:NVDA+y", description="Activa y desactiva la interfaz invisible", category= "YoutubeChannelManager")
 	def script_toggle(self, gesture):
 		if self.channels == None:
@@ -103,7 +101,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			return
 		self.desactivar() if self.switch else self.activar()
 
-	# función que crea todos los gestos de la ventana invisible
 	def activar(self):
 			self.switch = True
 			ui.message("Atajos activados")
@@ -125,14 +122,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:escape":"toggle"}
 			)
 
-	# función que elimina los gestos
 	def desactivar(self, speak=True):
 			self.switch = False
 			if speak: ui.message("Atajos desactivados")
 			self.clearGestureBindings()
 			self.bindGestures(self.__gestures)
 
-	# función que avanza entre los valores de los diccionarios de la lista a través de la variable y
 	def script_nextItem(self, gesture):
 		try:
 			self.z += 1
@@ -144,7 +139,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		except IndexError:
 			pass
 
-	# lo mismo que la anterior, pero alrevés
 	def script_previousItem(self, gesture):
 		try:
 			self.z -= 1
@@ -156,40 +150,36 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		except IndexError:
 			pass
 
-	# Esta función recorre la lista canales, y va guardando y recuperando los valores de la lista index para conservar la posición al cambiar de lista
 	def script_nextSection(self, gesture):
 		try:
 			self.index[self.y] = self.z
-			self.z = -1
 			self.y += 1
 			if self.y < len(self.index):
-				ui.message(self.channels[self.y][0]["name"])
 				self.z = self.index[self.y]
+				ui.message(f'{self.channels[self.y][0]["name"]}, {self.channels[self.y][self.z]["title"]}')
 			else:
 				self.y = 0
-				ui.message(self.channels[self.y][0]["name"])
 				self.z = self.index[self.y]
+				ui.message(f'{self.channels[self.y][0]["name"]}, {self.channels[self.y][self.z]["title"]}')
 		except IndexError:
 			pass
 
-	# Igual que la anterior pero alverre
 	def script_previousSection(self, gesture):
 		try:
 			self.index[self.y] = self.z
-			self.z = -1
 			self.y -= 1
 			if self.y >= 0:
-				ui.message(self.channels[self.y][0]["name"])
 				self.z = self.index[self.y]
+				ui.message(f'{self.channels[self.y][0]["name"]}, {self.channels[self.y][self.z]["title"]}')
 			else:
 				self.y = len(self.index) - 1
-				ui.message(self.channels[self.y][0]["name"])
 				self.z = self.index[self.y]
+				ui.message(f'{self.channels[self.y][0]["name"]}, {self.channels[self.y][self.z]["title"]}')
 		except IndexError:
 			pass
 
-	# función que abre el valor del link en el elemento seleccionado en las listas y desactiva los atajos
 	def script_open(self, gesture):
+		ui.message("Abriendo el link en el navegador...")
 		webbrowser.open(self.channels[self.y][self.z]["link"], new=0, autoraise=True)
 		self.desactivar(False)
 
@@ -274,7 +264,7 @@ Fecha de subida: {upload_date}
 Reproducciones: {p["view_count"]}
 Me gusta: {p["like_count"]}
 Descripción: {p["description"]}'''
-		ui.browseableMessage(data, p["title"])
+		ui.browseableMessage(data, "Datos del video")
 
 	def timeFormat(self, seconds):
 		hs = int(seconds/3600)
@@ -303,13 +293,10 @@ class HiloComplemento(Thread):
 
 	def run(self):
 		def chkActualizacion():
-			# Url para obtener el json y obtener el archivo de descarga de la ultima versión desde el repo oficial de YouTube-Dl
 			url = "https://api.github.com/repos/ytdl-org/youtube-dl/releases"
 			req = urllib.request.Request(url)
-			# Vamos a obtener el json y a leerlo.
 			r = urllib.request.urlopen(req).read()
 			gitJson = json.loads(r.decode('utf-8'))
-			# Vamos a comprobar si la versión de Github es mayor que la que tenemos instalada si lo es descargamos
 			if gitJson[0]["tag_name"] > youtube_dl.version.__version__:
 				urlDescarga = gitJson[0]['zipball_url']
 				xguiMsg = "Existe una nueva versión de la librería youtube_dl. ¿Quieres actualizarla?"
@@ -321,24 +308,16 @@ class HiloComplemento(Thread):
 					result = dlg.ShowModal()
 					if result == 1:
 						dlg.Destroy()
-						# Ahora leemos el archivo zip descargado que hemos llamado temp.zip
 						archive = zipfile.ZipFile(os.path.join(dirAddon, "temp.zip"))
-						# Obtenemos el nombre del directorio raiz del zip, necesario por que cada nueva versión tendra un nombre.
 						root = archive.namelist()[0]
-						# Esto siguiente buscara el directorio que nos interesa para extraer que es el Youtube_dl. No es necesario por que podemos construirlo con el root pero prefiero por si algun día cambiase.
 						filtro = [item for item in archive.namelist() if "youtube_dl".lower() in item.lower()]
-						# Ahora vamos a extraer solo el directorio de YouTube-Dl.
 						for file in archive.namelist():
 							if file.startswith(filtro[0]):
 								archive.extract(file, dirAddon)
 						archive.close()
-						# Borramos el archivo descargado
 						os.remove(os.path.join(dirAddon, "temp.zip"))
-								# Ahora vamos a borrar el directorio de la libreria de youtube_dl del complemento
 						shutil.rmtree(os.path.join(dirAddon, "lib", "youtube_dl"))
-						# Ahora vamos a copiar el directorio extraido de youtube_dl a la raiz de nuestro proyecto.
 						shutil.move(os.path.join(dirAddon, root, "youtube_dl"), os.path.join(dirAddon, "lib", "youtube_dl"))
-						# Ahora vamos a borrar el directorio que extraimos.
 						shutil.rmtree(os.path.join(dirAddon, root))
 						core.restart()
 					else:
@@ -520,6 +499,7 @@ class NewChannel(wx.Dialog):
 		link = self.channelLink.GetValue()
 		if not search(r"https\:\/\/www\.youtube\.com\/channel\/[\w\-]+", link):
 			ui.message("La url ingresada no es válida")
+			self.channelLink.SetValue("")
 			self.channelLink.SetFocus()
 			return
 		fileName = [chard for chard in name if search(r"[a-zA-Z0-9\-\_]", chard)]
