@@ -31,6 +31,8 @@ import xml
 xml.__path__.append(os.path.join(dirAddon, "lib", "xml"))
 import html
 html.__path__.append(os.path.join(dirAddon, "lib", "html"))
+import sqlite3 as sql
+sql.__path__.append(os.path.join(dirAddon, "lib", "sqlite3"))
 import youtube_dl
 del sys.path[-2:]
 
@@ -38,44 +40,38 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def __init__(self):
 		super(GlobalPlugin, self).__init__()
 		if globalVars.appArgs.secure: return
+		self.connect = None
+		self.cursor = None
 		self.options = {'ignoreerrors': True, 'quiet': True, 'extract_flat': 'in_playlist', 'dump_single_json': True}
 		self.switch = False
 		self.channels = []
 		self.index = []
 		self.y = 0
 		self.z = 1
-		core.postNvdaStartup.register(self.firstRun)
+		core.postNvdaStartup.register(self.startDB)
 
-	def firstRun(self):
+	def startDB(self):
 		self.checkUpdate()
+		self.connect = sql.connect(os.path.join(dirAddon, "channels.db"), check_same_thread= False)
+		self.cursor = self.connect.cursor()
 		self.start()
 
 	def start(self, speak= False):
 		self.channels = []
 		self.index = []
-		channelsPath = f"{dirAddon}\\channels"
-		files = os.listdir(channelsPath)
-		for file in files:
-			with open(f"{channelsPath}\\{file}", "r") as archivo:
-				lista = json.load(archivo)
-			self.channels.append(lista)
+		self.cursor.execute('select * from sqlite_master where type="table"')
+		tables = self.cursor.fetchall()
+		for table in tables:
+			self.cursor.execute(f'select * from {table[1]}')
+			rows = self.cursor.fetchall()
+			self.channels.append(rows)
 			self.index.append(1)
 		if speak:
 			ui.message(speak)
 
-	def getVideos(channelName, channelID, fileName):
-		list = [{"name": channelName, "link": channelID, "file": fileName}]
-		with youtube_dl.YoutubeDL(self.options) as ydl:
-			p = ydl.extract_info(channelID, download=False)
-		titles = [p["entries"][i]["title"] for i in range(len(p["entries"]))]
-		links = [f"https://www.youtube.com/watch?v={p['entries'][i]['url']}" for i in range(len(p["entries"]))]
-		for i in range(len(titles)):
-			list.append({'title': titles[i], 'link': links[i]})
-		return list
-
 	def script_newChannel(self, gesture):
 		self.desactivar(False)
-		self.dlg = NewChannel(gui.mainFrame, "Añadir canal", self)
+		self.dlg = NewChannel(gui.mainFrame, "Añadir canal", self, self.connect, self.cursor)
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
 
@@ -84,9 +80,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.desactivar(False)
 
 	def startRemoveChannel(self):
-		modal = wx.MessageDialog(None, f'¿Quieres eliminar el canal {self.channels[self.y][0]["name"]}?', _("📋"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+		modal = wx.MessageDialog(None, f'¿Quieres eliminar el canal {self.channels[self.y][0][0]}?', _("📋"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 		if modal.ShowModal() == wx.ID_YES:
-			os.remove(os.path.join(dirAddon, "channels", self.channels[self.y][0]["file"]))
+			tableName = "".join([chard for chard in self.channels[self.y][0][0] if search(r"[a-zA-Z0-9]", chard)])
+			self.cursor.execute(f'drop table {tableName}')
+			self.connect.commit()
 			self.channels.pop(self.y)
 			self.index.pop(self.y)
 			self.y = 0
@@ -96,9 +94,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	@script(gesture="kb:NVDA+y", description="Activa y desactiva la interfaz invisible", category= "YoutubeChannelManager")
 	def script_toggle(self, gesture):
-		if self.channels == None:
-			ui.message("Cargando los canales, por favor espere...")
-			return
 		self.desactivar() if self.switch else self.activar()
 
 	def activar(self):
@@ -118,24 +113,23 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:v":"playVLC",
 				"kb:delete":"removeChannel",
 				"kb:f5":"reloadChannels",
-				"kb:control+f5":"reloadAllChannels",
 				"kb:escape":"toggle"}
 			)
 
 	def desactivar(self, speak=True):
-			self.switch = False
-			if speak: ui.message("Atajos desactivados")
-			self.clearGestureBindings()
-			self.bindGestures(self.__gestures)
+		self.switch = False
+		if speak: ui.message("Atajos desactivados")
+		self.clearGestureBindings()
+		self.bindGestures(self.__gestures)
 
 	def script_nextItem(self, gesture):
 		try:
 			self.z += 1
 			if self.z < len(self.channels[self.y]):
-				ui.message(self.channels[self.y][self.z]["title"])
+				ui.message(self.channels[self.y][self.z][0])
 			else:
 				self.z = 1
-				ui.message(self.channels[self.y][self.z]["title"])
+				ui.message(self.channels[self.y][self.z][0])
 		except IndexError:
 			pass
 
@@ -143,10 +137,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		try:
 			self.z -= 1
 			if self.z > 0:
-				ui.message(self.channels[self.y][self.z]["title"])
+				ui.message(self.channels[self.y][self.z][0])
 			else:
 				self.z = len(self.channels[self.y]) - 1
-				ui.message(self.channels[self.y][self.z]["title"])
+				ui.message(self.channels[self.y][self.z][0])
 		except IndexError:
 			pass
 
@@ -156,11 +150,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.y += 1
 			if self.y < len(self.index):
 				self.z = self.index[self.y]
-				ui.message(f'{self.channels[self.y][0]["name"]}, {self.channels[self.y][self.z]["title"]}')
+				ui.message(f'{self.channels[self.y][0][0]}, {self.channels[self.y][self.z][0]}')
 			else:
 				self.y = 0
 				self.z = self.index[self.y]
-				ui.message(f'{self.channels[self.y][0]["name"]}, {self.channels[self.y][self.z]["title"]}')
+				ui.message(f'{self.channels[self.y][0][0]}, {self.channels[self.y][self.z][0]}')
 		except IndexError:
 			pass
 
@@ -170,72 +164,51 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.y -= 1
 			if self.y >= 0:
 				self.z = self.index[self.y]
-				ui.message(f'{self.channels[self.y][0]["name"]}, {self.channels[self.y][self.z]["title"]}')
+				ui.message(f'{self.channels[self.y][0][0]}, {self.channels[self.y][self.z][0]}')
 			else:
 				self.y = len(self.index) - 1
 				self.z = self.index[self.y]
-				ui.message(f'{self.channels[self.y][0]["name"]}, {self.channels[self.y][self.z]["title"]}')
+				ui.message(f'{self.channels[self.y][0][0]}, {self.channels[self.y][self.z][0]}')
 		except IndexError:
 			pass
 
 	def script_open(self, gesture):
 		ui.message("Abriendo el link en el navegador...")
-		webbrowser.open(self.channels[self.y][self.z]["link"], new=0, autoraise=True)
+		webbrowser.open(self.channels[self.y][self.z][1], new=0, autoraise=True)
 		self.desactivar(False)
 
 	def script_firstItem(self, gesture):
 		self.z = 1
-		ui.message(self.channels[self.y][self.z]["title"])
+		ui.message(self.channels[self.y][self.z][0])
 
 	def script_positionAnnounce(self, gesture):
-		ui.message(f'{self.z} de {len(self.channels[self.y]) - 1}, {self.channels[self.y][0]["name"]}')
+		ui.message(f'{self.z} de {len(self.channels[self.y]) - 1}, {self.channels[self.y][0][0]}')
 
 	def script_reloadChannels(self, gesture):
 		Thread(target=self.startReload, daemon= True).start()
-		ui.message(f'Recargando los videos de {self.channels[self.y][0]["name"]}...')
+		ui.message(f'Recargando los videos de {self.channels[self.y][0][0]}...')
+
+	def sql_insert(self, tableName, entities):
+		self.cursor.execute(f'insert into {tableName}(title, link) values(?, ?)', entities)
+		self.connect.commit()
 
 	def startReload(self):
-		content = self.getVideos(self.channels[self.y][0]["name"], self.channels[self.y][0]["link"], self.channels[self.y][0]["file"])
-		self.channels[self.y] = content
-		with open(f'{dirAddon}\\channels\\{self.channels[self.y][0]["file"]}', 'w') as archivo:
-			json.dump(content, archivo, indent=2)
+		tableName = "".join([chard for chard in self.channels[self.y][0][0] if search(r"[a-zA-Z0-9]", chard)])
+		self.cursor.execute(f'drop table {tableName}')
+		self.cursor.execute(f'create table {tableName}(title text, link text)')
+		self.connect.commit()
+		self.sql_insert(tableName, (self.channels[self.y][0][0], self.channels[self.y][0][1]))
+		data_dict = self.getData(self.channels[self.y][0][1])
+		data = data_dict['entries']
+		for i in range(len(data)):
+			self.sql_insert(tableName, (data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["url"]))
+		self.connect.close()
+		self.startDB()
 		ui.message("proceso finalizado")
-
-	def script_reloadAllChannels(self, gesture):
-		Thread(target=self.startReloadAll, daemon= True).start()
-
-	def startReloadAll(self):
-		modal = wx.MessageDialog(None, "¿Quieres refrescar todas las listas? Puede demorarse un poco...", "Atención", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
-		if modal.ShowModal() == wx.ID_NO:
-			modal.Destroy()
-			return
-		self.desactivar(False)
-		ui.message("Recargando datos...")
-		self.channels = []
-		self.index = []
-		channelsPath = f"{dirAddon}\\channels"
-		files = os.listdir(channelsPath)
-		for file in files:
-			with open(f"{channelsPath}\\{file}", "r") as archivo:
-				lista = json.load(archivo)
-				content = self.getVideos(lista[0]["name"], lista[0]["link"], lista[0]["file"])
-				self.channels.append(content)
-				self.index.append(1)
-		ui.message("Proceso finalizado")
-
-	def getVideos(self, channelName, channelID, fileName):
-		list = [{"name": channelName, "link": channelID, "file": fileName}]
-		with youtube_dl.YoutubeDL(self.options) as ydl:
-			p = ydl.extract_info(channelID, download=False)
-		titles = [p["entries"][i]["title"] for i in range(len(p["entries"]))]
-		links = [f"https://www.youtube.com/watch?v={p['entries'][i]['url']}" for i in range(len(p["entries"]))]
-		for i in range(len(titles)):
-			list.append({'title': titles[i], 'link': links[i]})
-		return list
 
 	def script_copyLink(self, gesture):
 		self.desactivar(False)
-		api.copyToClip(self.channels[self.y][self.z]["link"])
+		api.copyToClip(self.channels[self.y][self.z][1])
 		winsound.PlaySound("C:\\Windows\\Media\\Windows Recycle.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
 
 	def script_playVLC(self, gesture):
@@ -247,16 +220,23 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def startPlayVLC(self):
 		ui.message("Reproduciendo en vlc...")
-		subprocess.call(['C:\\Program Files\\VideoLAN\\VLC\\vlc.exe', self.channels[self.y][self.z]["link"]])
+		subprocess.call(['C:\\Program Files\\VideoLAN\\VLC\\vlc.exe', self.channels[self.y][self.z][1]])
 
 	def terminate(self):
-		pass
+		connect.close()
 
 	def script_viewData(self, gesture):
 		self.desactivar(False)
 		ui.message("Obteniendo los datos del video...")
+		Thread(target=self.startViewData, daemon= True).start()
+
+	def getData(self, url):
 		with youtube_dl.YoutubeDL(self.options) as ydl:
-			p = ydl.extract_info(self.channels[self.y][self.z]["link"], download=False)
+			data_dict = ydl.extract_info(url, download= False)
+		return data_dict
+
+	def startViewData(self):
+		p = self.getData(self.channels[self.y][self.z][1])
 		upload_date = f'{p["upload_date"][6:][:2]}.{p["upload_date"][4:][:2]}.{p["upload_date"][:4]}'
 		time = self.timeFormat(p["duration"])
 		data = f'''Duración: {time}
@@ -417,10 +397,8 @@ class DescargaDialogo(wx.Dialog):
 class HiloDescarga(Thread):
 	def __init__(self, frame, url):
 		super(HiloDescarga, self).__init__()
-
 		self.frame = frame
 		self.url = url
-
 		self.daemon = True
 		self.start()
 
@@ -474,10 +452,12 @@ Cierre la ventana para terminar de instalar la librería y reiniciar NVDA.""")
 			wx.CallAfter(self.frame.error, _("Algo salió mal.\n") + _("Compruebe que tiene conexión a internet y vuelva a intentarlo.\n") + _("Ya puede cerrar esta ventana."))
 
 class NewChannel(wx.Dialog):
-	def __init__(self, parent, titulo, frame):
+	def __init__(self, parent, titulo, frame, connect, cursor):
 		super(NewChannel, self).__init__(parent, -1, title=titulo)
 		self.options = {'ignoreerrors': True, 'quiet': True, 'extract_flat': 'in_playlist', 'dump_single_json': True}
 		self.frame = frame
+		self.connect = connect
+		self.cursor = cursor
 		self.Panel = wx.Panel(self)
 		wx.StaticText(self.Panel, wx.ID_ANY, "Ingresa el nombre del canal")
 		self.channelName = wx.TextCtrl(self.Panel,wx.ID_ANY)
@@ -502,26 +482,30 @@ class NewChannel(wx.Dialog):
 			self.channelLink.SetValue("")
 			self.channelLink.SetFocus()
 			return
-		fileName = [chard for chard in name if search(r"[a-zA-Z0-9\-\_]", chard)]
-		fileName = "".join(fileName)
+		tableName = "".join([chard for chard in name if search(r"[a-zA-Z0-9]", chard)])
 		if link[-7:] != "/videos":
 			link = f"{link}/videos"
+		Thread(target=self.getVideos, args=(name, link, tableName), daemon= True).start()
 		self.Close()
-		Thread(target=self.getVideos, args=(name, link, fileName), daemon= True).start()
 
-	def getVideos(self, channelName, channelID, fileName):
+	def getVideos(self, channelName, channelID, tableName):
 		winsound.PlaySound("C:\\Windows\\Media\\Alarm08.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
-		list = [{"name": channelName, "link": channelID, "file": fileName}]
+		self.cursor.execute(f'create table {tableName}(title text, link text)')
+		self.connect.commit()
+		self.sql_insert(tableName, (channelName, channelID))
 		with youtube_dl.YoutubeDL(self.options) as ydl:
-			p = ydl.extract_info(channelID, download=False)
-		titles = [p["entries"][i]["title"] for i in range(len(p["entries"]))]
-		links = [f"https://www.youtube.com/watch?v={p['entries'][i]['url']}" for i in range(len(p["entries"]))]
-		for i in range(len(titles)):
-			list.append({'title': titles[i], 'link': links[i]})
-		with open(f"{dirAddon}\\channels\\{fileName}", "w") as f:
-			json.dump(list, f, indent=2)
+			data_dict = ydl.extract_info(channelID, download= False)
+		data = data_dict['entries']
+		for i in range(len(data)):
+			self.sql_insert(tableName, (data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["url"]))
+		self.connect.close()
+		self.frame.startDB()
 		winsound.PlaySound(None, winsound.SND_PURGE)
-		self.frame.start(f"{channelName} añadido correctamente")
+		ui.message("Proceso Finalizado")
+
+	def sql_insert(self, tableName, entities):
+		self.cursor.execute(f'insert into {tableName}(title, link) values(?, ?)', entities)
+		self.connect.commit()
 
 	def onSalir(self, event):
 		if event.GetEventType() == 10012:
