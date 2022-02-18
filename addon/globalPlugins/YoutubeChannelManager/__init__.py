@@ -116,6 +116,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:d":"viewData",
 				"kb:delete":"removeChannel",
 				"kb:f5":"reloadChannel",
+				"kb:f1":"helpCommands",
 				"kb:escape":"toggle"}
 			)
 
@@ -125,14 +126,27 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.clearGestureBindings()
 		self.bindGestures(self.__gestures)
 
+	def script_helpCommands(self, gesture):
+		self.desactivar(False)
+		help_text="""
+Escape; desactiva la interfaz virtual.
+n; Activa el diálogo para añadir un nuevo canal.
+o; abre el link del video actual en el navegador por defecto.
+d; abre una ventana con datos del video actual.
+suprimir; Activa el diálogo para eliminar el canal actual.
+f5; Busca videos nuevos en el canal actual.
+		"""
+		ui.browseableMessage(help_text, "Ayuda de comandos")
+
+
 	def script_nextItem(self, gesture):
 		try:
 			self.z += 1
 			if self.z < len(self.videos[self.y]):
-				ui.message(self.videos[self.y][self.z][0])
+				ui.message(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}')
 			else:
 				self.z = 0
-				ui.message(self.videos[self.y][self.z][0])
+				ui.message(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}')
 		except IndexError:
 			pass
 
@@ -140,10 +154,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		try:
 			self.z -= 1
 			if self.z >= 0:
-				ui.message(self.videos[self.y][self.z][0])
+				ui.message(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}')
 			else:
 				self.z = len(self.videos[self.y]) - 1
-				ui.message(self.videos[self.y][self.z][0])
+				ui.message(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}')
 		except IndexError:
 			pass
 
@@ -185,7 +199,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ui.message(self.videos[self.y][self.z][0])
 
 	def script_positionAnnounce(self, gesture):
-		ui.message(f'{self.z+1} de {len(self.videos[self.y])}, {self.channels[self.y][0]}')
+		ui.message(f'{self.z+1} de {len(self.videos[self.y])}, {self.channels[self.y][0]}. Pulsa f1 para ver la ayuda de comandos')
 
 	def script_reloadChannel(self, gesture):
 		Thread(target=self.startReload, daemon= True).start()
