@@ -2,10 +2,10 @@
 # Copyright (C) 2021 Gerardo Kessler <ReaperYOtrasYerbas@gmail.com>
 # This file is covered by the GNU General Public License.
 
-import subprocess
+from collections import OrderedDict
 import core
 import gui
-from re import search
+from re import search, findall
 import api
 import webbrowser
 import globalPluginHandler
@@ -66,7 +66,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		for channel in self.channels:
 			self.cursor.execute(f'select * from videos where channel_id = "{channel[2]}"')
 			videos = self.cursor.fetchall()
-			self.videos.append(videos)
+			videos_r = tuple(reversed(videos))
+			self.videos.append(videos_r)
 			self.index.append(0)
 		if speak:
 			ui.message(speak)
@@ -184,18 +185,51 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ui.message(self.videos[self.y][self.z][0])
 
 	def script_positionAnnounce(self, gesture):
-		ui.message(f'{self.z+1} de {len(self.videos[self.y])}, {self.channels[self.y][0][0]}')
+		ui.message(f'{self.z+1} de {len(self.videos[self.y])}, {self.channels[self.y][0]}')
 
 	def script_reloadChannel(self, gesture):
 		Thread(target=self.startReload, daemon= True).start()
-		ui.message(f'Recargando los videos de {self.channels[self.y][0]}...')
-
-	def sql_insert(self, tableName, entities):
-		self.cursor.execute(f'insert into {tableName}(title, link, video_id) values(?, ?, ?)', entities)
-		self.connect.commit()
 
 	def startReload(self):
-		ui.message("proceso finalizado")
+		new_videos = []
+		videos_list = self.getVideosList(self.channels[self.y][1])
+		for video in videos_list:
+			if self.videos[self.y][0][2] != video:
+				new_videos.append(video)
+			else:
+				break
+		if len(new_videos) == 0:
+			ui.message("No se han encontrado videos nuevos para este canal")
+		elif len(new_videos) == 1:
+			Thread(target=self.downloadNewVideos, args=(new_videos, "Se ha encontrado un video nuevo. ¿Quieres actualizar la base de datos?"), daemon= True).start()
+		elif len(new_videos) > 1:
+			Thread(target=self.downloadNewVideos, args=(new_videos, f"Se han encontrado {len(new_videos)} videos nuevos. ¿Quieres actualizar la base de datos?"), daemon= True).start()
+
+	def getVideosList(self, channel_url):
+		content = urllib.request.urlopen(channel_url).read().decode('utf-8')
+		ids_list = findall(r'(?<="videoId":")[\w\d\-\.\,]+(?=")', content)
+		# Método que elimina las duplicaciones de una lista manteniendo el órden de los elementos
+		final_list = list(OrderedDict.fromkeys(ids_list))
+		return final_list
+
+	def downloadNewVideos(self, new_videos, message_text):
+		modal = wx.MessageDialog(None, message_text, "⬆", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+		if modal.ShowModal() == wx.ID_YES:
+			winsound.PlaySound("C:\\Windows\\Media\\Alarm05.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
+			list_videos = list(reversed(new_videos))
+			for video in list_videos:
+				data = self.getData(f'https://www.youtube.com/watch?v={video}')
+				self.insert_videos((data["title"], f'https://www.youtube.com/watch?v={video}', video, self.channels[self.y][2]))
+			winsound.PlaySound(None, winsound.SND_PURGE)
+			ui.message("Proceso finalizado")
+			self.connect.close()
+			self.startDB()
+		else:
+			modal.Destroy()
+
+	def insert_videos(self, entities):
+		self.cursor.execute(f'insert into videos(title, url, video_id, channel_id) values(?, ?, ?, ?)', entities)
+		self.connect.commit()
 
 	def script_copyLink(self, gesture):
 		self.desactivar(False)

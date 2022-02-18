@@ -20,4 +20,4 @@ Este complemento permite gestionar de forma sencilla los canales favoritos de la
 * c; copia el link del video al portapapeles.
 * escape; cierra la interfaz virtual y devuelve los atajos de teclado a su función por defecto.
 * d; obtiene algunos datos del video y lo muestra en una ventana de NVDA
-* f5; Busca si existen videos nuevos en el canal con el foco. (En proceso)
+* f5; Busca si existen videos nuevos en el canal con el foco.
