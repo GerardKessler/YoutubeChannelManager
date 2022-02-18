@@ -45,6 +45,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.options = {'ignoreerrors': True, 'quiet': True, 'extract_flat': 'in_playlist', 'dump_single_json': True}
 		self.switch = False
 		self.channels = []
+		self.videos = []
 		self.index = []
 		self.y = 0
 		self.z = 1
@@ -52,20 +53,21 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def startDB(self):
 		self.checkUpdate()
-		self.connect = sql.connect(os.path.join(dirAddon, "channels.db"), check_same_thread= False)
+		self.connect = sql.connect(os.path.join(dirAddon, "channels"), check_same_thread= False)
 		self.cursor = self.connect.cursor()
 		self.start()
 
 	def start(self, speak= False):
 		self.channels = []
+		self.videos = []
 		self.index = []
-		self.cursor.execute('select * from sqlite_master where type="table"')
-		tables = self.cursor.fetchall()
-		for table in tables:
-			self.cursor.execute(f'select * from {table[1]}')
-			rows = self.cursor.fetchall()
-			self.channels.append(rows)
-			self.index.append(1)
+		self.cursor.execute('select * from channels')
+		self.channels = self.cursor.fetchall()
+		for channel in self.channels:
+			self.cursor.execute(f'select * from videos where channel_id = "{channel[2]}"')
+			videos = self.cursor.fetchall()
+			self.videos.append(videos)
+			self.index.append(0)
 		if speak:
 			ui.message(speak)
 
@@ -80,12 +82,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.desactivar(False)
 
 	def startRemoveChannel(self):
-		modal = wx.MessageDialog(None, f'¿Quieres eliminar el canal {self.channels[self.y][0][0]}?', _("📋"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+		modal = wx.MessageDialog(None, f'¿Quieres eliminar el canal {self.channels[self.y][0]}?', _("📋"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 		if modal.ShowModal() == wx.ID_YES:
-			tableName = "".join([chard for chard in self.channels[self.y][0][0] if search(r"[a-zA-Z0-9]", chard)])
-			self.cursor.execute(f'drop table {tableName}')
+			self.cursor.execute(f'delete from videos where channel_id = "{self.channels[self.y][2]}"')
+			self.cursor.execute(f'delete from channels where channel_id = "{self.channels[self.y][2]}"')
 			self.connect.commit()
 			self.channels.pop(self.y)
+			self.videos.pop(self.y)
 			self.index.pop(self.y)
 			self.y = 0
 			winsound.PlaySound("C:\\Windows\\Media\\Windows Recycle.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
@@ -110,9 +113,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:n":"newChannel",
 				"kb:c":"copyLink",
 				"kb:d":"viewData",
-				"kb:v":"playVLC",
 				"kb:delete":"removeChannel",
-				"kb:f5":"reloadChannels",
+				"kb:f5":"reloadChannel",
 				"kb:escape":"toggle"}
 			)
 
@@ -125,22 +127,22 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def script_nextItem(self, gesture):
 		try:
 			self.z += 1
-			if self.z < len(self.channels[self.y]):
-				ui.message(self.channels[self.y][self.z][0])
+			if self.z < len(self.videos[self.y]):
+				ui.message(self.videos[self.y][self.z][0])
 			else:
-				self.z = 1
-				ui.message(self.channels[self.y][self.z][0])
+				self.z = 0
+				ui.message(self.videos[self.y][self.z][0])
 		except IndexError:
 			pass
 
 	def script_previousItem(self, gesture):
 		try:
 			self.z -= 1
-			if self.z > 0:
-				ui.message(self.channels[self.y][self.z][0])
+			if self.z >= 0:
+				ui.message(self.videos[self.y][self.z][0])
 			else:
-				self.z = len(self.channels[self.y]) - 1
-				ui.message(self.channels[self.y][self.z][0])
+				self.z = len(self.videos[self.y]) - 1
+				ui.message(self.videos[self.y][self.z][0])
 		except IndexError:
 			pass
 
@@ -150,11 +152,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.y += 1
 			if self.y < len(self.index):
 				self.z = self.index[self.y]
-				ui.message(f'{self.channels[self.y][0][0]}, {self.channels[self.y][self.z][0]}')
+				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
 			else:
 				self.y = 0
 				self.z = self.index[self.y]
-				ui.message(f'{self.channels[self.y][0][0]}, {self.channels[self.y][self.z][0]}')
+				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
 		except IndexError:
 			pass
 
@@ -164,66 +166,44 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.y -= 1
 			if self.y >= 0:
 				self.z = self.index[self.y]
-				ui.message(f'{self.channels[self.y][0][0]}, {self.channels[self.y][self.z][0]}')
+				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
 			else:
 				self.y = len(self.index) - 1
 				self.z = self.index[self.y]
-				ui.message(f'{self.channels[self.y][0][0]}, {self.channels[self.y][self.z][0]}')
+				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
 		except IndexError:
 			pass
 
 	def script_open(self, gesture):
 		ui.message("Abriendo el link en el navegador...")
-		webbrowser.open(self.channels[self.y][self.z][1], new=0, autoraise=True)
+		webbrowser.open(self.videos[self.y][self.z][1], new=0, autoraise=True)
 		self.desactivar(False)
 
 	def script_firstItem(self, gesture):
-		self.z = 1
-		ui.message(self.channels[self.y][self.z][0])
+		self.z = 0
+		ui.message(self.videos[self.y][self.z][0])
 
 	def script_positionAnnounce(self, gesture):
-		ui.message(f'{self.z} de {len(self.channels[self.y]) - 1}, {self.channels[self.y][0][0]}')
+		ui.message(f'{self.z+1} de {len(self.videos[self.y])}, {self.channels[self.y][0][0]}')
 
-	def script_reloadChannels(self, gesture):
+	def script_reloadChannel(self, gesture):
 		Thread(target=self.startReload, daemon= True).start()
-		ui.message(f'Recargando los videos de {self.channels[self.y][0][0]}...')
+		ui.message(f'Recargando los videos de {self.channels[self.y][0]}...')
 
 	def sql_insert(self, tableName, entities):
-		self.cursor.execute(f'insert into {tableName}(title, link) values(?, ?)', entities)
+		self.cursor.execute(f'insert into {tableName}(title, link, video_id) values(?, ?, ?)', entities)
 		self.connect.commit()
 
 	def startReload(self):
-		tableName = "".join([chard for chard in self.channels[self.y][0][0] if search(r"[a-zA-Z0-9]", chard)])
-		self.cursor.execute(f'drop table {tableName}')
-		self.cursor.execute(f'create table {tableName}(title text, link text)')
-		self.connect.commit()
-		self.sql_insert(tableName, (self.channels[self.y][0][0], self.channels[self.y][0][1]))
-		data_dict = self.getData(self.channels[self.y][0][1])
-		data = data_dict['entries']
-		for i in range(len(data)):
-			self.sql_insert(tableName, (data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["url"]))
-		self.connect.close()
-		self.startDB()
 		ui.message("proceso finalizado")
 
 	def script_copyLink(self, gesture):
 		self.desactivar(False)
-		api.copyToClip(self.channels[self.y][self.z][1])
+		api.copyToClip(self.videos[self.y][self.z][1])
 		winsound.PlaySound("C:\\Windows\\Media\\Windows Recycle.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
 
-	def script_playVLC(self, gesture):
-		if os.path.isfile("C:\\Program Files\\VideoLAN\\VLC\\vlc.exe"):
-			self.desactivar(False)
-			Thread(target=self.startPlayVLC, daemon= True).start()
-		else:
-			ui.message("No se encuentra el programa VLC")
-
-	def startPlayVLC(self):
-		ui.message("Reproduciendo en vlc...")
-		subprocess.call(['C:\\Program Files\\VideoLAN\\VLC\\vlc.exe', self.channels[self.y][self.z][1]])
-
 	def terminate(self):
-		connect.close()
+		pass
 
 	def script_viewData(self, gesture):
 		self.desactivar(False)
@@ -236,7 +216,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		return data_dict
 
 	def startViewData(self):
-		p = self.getData(self.channels[self.y][self.z][1])
+		p = self.getData(self.videos[self.y][self.z][1])
 		upload_date = f'{p["upload_date"][6:][:2]}.{p["upload_date"][4:][:2]}.{p["upload_date"][:4]}'
 		time = self.timeFormat(p["duration"])
 		data = f'''Duración: {time}
@@ -475,36 +455,38 @@ class NewChannel(wx.Dialog):
 		pass
 
 	def addChannel(self, event):
-		name = self.channelName.GetValue()
-		link = self.channelLink.GetValue()
-		if not search(r"https\:\/\/www\.youtube\.com\/channel\/[\w\-]+", link):
+		channel_name = self.channelName.GetValue()
+		channel_url = self.channelLink.GetValue()
+		if not search(r"https\:\/\/www\.youtube\.com\/channel\/[\w\-]+", channel_url):
 			ui.message("La url ingresada no es válida")
 			self.channelLink.SetValue("")
 			self.channelLink.SetFocus()
 			return
-		tableName = "".join([chard for chard in name if search(r"[a-zA-Z0-9]", chard)])
-		if link[-7:] != "/videos":
-			link = f"{link}/videos"
-		Thread(target=self.getVideos, args=(name, link, tableName), daemon= True).start()
+		channel_id = "".join([chard for chard in channel_name if search(r"[a-zA-Z0-9]", chard)])
+		if channel_url[-7:] != "/videos":
+			channel_url = f"{channel_url}/videos"
+		Thread(target=self.getVideos, args=(channel_name, channel_url, channel_id), daemon= True).start()
 		self.Close()
 
-	def getVideos(self, channelName, channelID, tableName):
-		winsound.PlaySound("C:\\Windows\\Media\\Alarm08.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
-		self.cursor.execute(f'create table {tableName}(title text, link text)')
-		self.connect.commit()
-		self.sql_insert(tableName, (channelName, channelID))
+	def getVideos(self, channelName, channelUrl, channelID):
+		winsound.PlaySound("C:\\Windows\\Media\\Alarm05.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
+		self.insert_channel((channelName, channelUrl, channelID))
 		with youtube_dl.YoutubeDL(self.options) as ydl:
-			data_dict = ydl.extract_info(channelID, download= False)
+			data_dict = ydl.extract_info(channelUrl, download= False)
 		data = data_dict['entries']
-		for i in range(len(data)):
-			self.sql_insert(tableName, (data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["url"]))
+		for i in reversed(range(len(data))):
+			self.insert_videos((data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["id"], data[i]["id"], channelID))
 		self.connect.close()
 		self.frame.startDB()
 		winsound.PlaySound(None, winsound.SND_PURGE)
 		ui.message("Proceso Finalizado")
 
-	def sql_insert(self, tableName, entities):
-		self.cursor.execute(f'insert into {tableName}(title, link) values(?, ?)', entities)
+	def insert_channel(self, entities):
+		self.cursor.execute(f'insert into channels(name, url, channel_id) values(?, ?, ?)', entities)
+		self.connect.commit()
+
+	def insert_videos(self, entities):
+		self.cursor.execute(f'insert into videos(title, url, video_id, channel_id) values(?, ?, ?, ?)', entities)
 		self.connect.commit()
 
 	def onSalir(self, event):

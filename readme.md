@@ -18,6 +18,6 @@ Este complemento permite gestionar de forma sencilla los canales favoritos de la
 * Suprimir; elimina el canal con el foco.
 * o; abre el link del video en el navegador por defecto.
 * c; copia el link del video al portapapeles.
-* v; abre el link del video en VLC.
 * escape; cierra la interfaz virtual y devuelve los atajos de teclado a su función por defecto.
 * d; obtiene algunos datos del video y lo muestra en una ventana de NVDA
+* f5; Busca si existen videos nuevos en el canal con el foco. (En proceso)
