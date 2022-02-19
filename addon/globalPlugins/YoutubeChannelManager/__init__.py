@@ -53,7 +53,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		core.postNvdaStartup.register(self.startDB)
 
 	def startDB(self):
-		self.checkUpdate()
+		self.mainThread = HiloComplemento()
+		self.mainThread.start()
 		if not os.path.exists(os.path.join(globalVars.appArgs.configPath, "channels")):
 			self.connect = sql.connect(os.path.join(globalVars.appArgs.configPath, "channels"), check_same_thread= False)
 			self.cursor = self.connect.cursor()
@@ -66,7 +67,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		else:
 			self.connect = sql.connect(os.path.join(globalVars.appArgs.configPath, "channels"), check_same_thread= False)
 			self.cursor = self.connect.cursor()
-		self.start()
+		Thread(target=self.start, daemon= True).start()
 
 	def start(self, speak= False):
 		self.channels = []
@@ -366,10 +367,6 @@ Descripción: {p["description"]}'''
 		tiempoTotal = str(timedelta(seconds=int(str(video['duration']).split(".")[0])))
 		return [audioUrl, tiempoTotal] if tiempo else audioUrl
 
-	def checkUpdate(self):
-		self.mainThread = HiloComplemento()
-		self.mainThread.start()
-
 class HiloComplemento(Thread):
 	def __init__(self):
 		super(HiloComplemento, self).__init__()
@@ -547,10 +544,7 @@ class HiloDescarga(Thread):
 			except Exception as e:
 				urllib.request.urlretrieve(self.url, os.path.join(dirAddon, "temp.zip"), reporthook=self.__call__)
 
-			msg = \
-_("""La descarga termino.
-
-Cierre la ventana para terminar de instalar la librería y reiniciar NVDA.""")
+			msg = _("Descarga finalizada. Cierre la ventana para terminar de instalar la librería y reiniciar NVDA.")
 			wx.CallAfter(self.frame.done, msg)
 		except Exception as e:
 			wx.CallAfter(self.frame.error, _("Algo salió mal.\n") + _("Compruebe que tiene conexión a internet y vuelva a intentarlo.\n") + _("Ya puede cerrar esta ventana."))
