@@ -98,7 +98,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.desactivar(False)
 
 	def startRemoveChannel(self):
-		modal = wx.MessageDialog(None, f'¿Quieres eliminar el canal {self.channels[self.y][0]}?', _("📋"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+		modal = wx.MessageDialog(None, f'¿Quieres eliminar el canal {self.channels[self.y][0]}?', _("Atención"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 		if modal.ShowModal() == wx.ID_YES:
 			self.cursor.execute(f'delete from videos where channel_id = "{self.channels[self.y][2]}"')
 			self.cursor.execute(f'delete from channels where channel_id = "{self.channels[self.y][2]}"')
@@ -347,7 +347,7 @@ Descripción: {p["description"]}'''
 <script src="reproductor.js"></script>
 </head>
 <body>
-<audio src="{url}" id="reproductor" preload="auto">
+<audio src="{url}" id="reproductor" preload="metadata">
 </audio>
 </body>
 </html>
