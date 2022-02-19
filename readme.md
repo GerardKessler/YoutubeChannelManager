@@ -17,6 +17,7 @@ Este complemento permite gestionar de forma sencilla los canales favoritos de la
 * n; abre el diálogo para añadir un nuevo canal.
 * Suprimir; elimina el canal con el foco.
 * o; abre el link del video en el navegador por defecto.
+*r; Abre el link de audio en un reproductor web personalizado.
 * c; copia el link del video al portapapeles.
 * escape; cierra la interfaz virtual y devuelve los atajos de teclado a su función por defecto.
 * d; obtiene algunos datos del video y lo muestra en una ventana de NVDA

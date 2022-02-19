@@ -61,6 +61,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.connect.commit()
 			self.cursor.execute('create table videos(title text, url text, video_id text, channel_id text, view_count integer, id integer primary key autoincrement)')
 			self.connect.commit()
+			self.cursor.execute('VACUUM')
+			self.connect.commit()
 		else:
 			self.connect = sql.connect(os.path.join(globalVars.appArgs.configPath, "channels"), check_same_thread= False)
 			self.cursor = self.connect.cursor()
