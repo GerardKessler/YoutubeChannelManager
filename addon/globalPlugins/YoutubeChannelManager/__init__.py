@@ -2,6 +2,7 @@
 # Copyright (C) 2021 Gerardo Kessler <ReaperYOtrasYerbas@gmail.com>
 # This file is covered by the GNU General Public License.
 
+from datetime import timedelta
 from collections import OrderedDict
 import core
 import gui
@@ -53,8 +54,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def startDB(self):
 		self.checkUpdate()
-		self.connect = sql.connect(os.path.join(dirAddon, "channels"), check_same_thread= False)
-		self.cursor = self.connect.cursor()
+		if not os.path.exists(os.path.join(globalVars.appArgs.configPath, "channels")):
+			self.connect = sql.connect(os.path.join(globalVars.appArgs.configPath, "channels"), check_same_thread= False)
+			self.cursor = self.connect.cursor()
+			self.cursor.execute('create table channels(name text, url text, channel_id text, id integer primary key autoincrement)')
+			self.connect.commit()
+			self.cursor.execute('create table videos(title text, url text, video_id text, channel_id text, view_count integer, id integer primary key autoincrement)')
+			self.connect.commit()
+		else:
+			self.connect = sql.connect(os.path.join(globalVars.appArgs.configPath, "channels"), check_same_thread= False)
+			self.cursor = self.connect.cursor()
 		self.start()
 
 	def start(self, speak= False):
@@ -79,6 +88,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.dlg.Show()
 
 	def script_removeChannel(self, gesture):
+		if len(self.channels) == 0:
+			ui.message("Ningún canal seleccionado")
+			return
 		Thread(target=self.startRemoveChannel, daemon= True).start()
 		self.desactivar(False)
 
@@ -109,6 +121,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:rightArrow":"nextSection",
 				"kb:leftArrow":"previousSection",
 				"kb:o":"open",
+				"kb:r":"openAudio",
 				"kb:home":"firstItem",
 				"kb:end":"positionAnnounce",
 				"kb:n":"newChannel",
@@ -132,6 +145,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 Escape; desactiva la interfaz virtual.
 n; Activa el diálogo para añadir un nuevo canal.
 o; abre el link del video actual en el navegador por defecto.
+r; Carga el audio en un reproductor web personalizado.
 d; abre una ventana con datos del video actual.
 suprimir; Activa el diálogo para eliminar el canal actual.
 f5; Busca videos nuevos en el canal actual.
@@ -173,7 +187,7 @@ f5; Busca videos nuevos en el canal actual.
 				self.z = self.index[self.y]
 				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
 		except IndexError:
-			pass
+			ui.message("No hay canales en la base de datos")
 
 	def script_previousSection(self, gesture):
 		try:
@@ -187,21 +201,33 @@ f5; Busca videos nuevos en el canal actual.
 				self.z = self.index[self.y]
 				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
 		except IndexError:
-			pass
+			ui.message("No hay canales en la base de datos")
 
 	def script_open(self, gesture):
+		if len(self.channels) == 0:
+			ui.message("Ningún canal seleccionado")
+			return
 		ui.message("Abriendo el link en el navegador...")
 		webbrowser.open(self.videos[self.y][self.z][1], new=0, autoraise=True)
 		self.desactivar(False)
 
 	def script_firstItem(self, gesture):
+		if len(self.channels) == 0:
+			ui.message("Ningún canal seleccionado")
+			return
 		self.z = 0
 		ui.message(self.videos[self.y][self.z][0])
 
 	def script_positionAnnounce(self, gesture):
-		ui.message(f'{self.z+1} de {len(self.videos[self.y])}, {self.channels[self.y][0]}. Pulsa f1 para ver la ayuda de comandos')
+		if len(self.channels) == 0:
+			ui.message("Ningún canal seleccionado")
+			return
+		ui.message(f'{self.z+1} de {len(self.videos[self.y])}, {self.videos[self.y][self.z][4]} reproducciones. {self.channels[self.y][0]}. Pulsa f1 para ver la ayuda de comandos')
 
 	def script_reloadChannel(self, gesture):
+		if len(self.channels) == 0:
+			ui.message("Ningún canal seleccionado")
+			return
 		Thread(target=self.startReload, daemon= True).start()
 
 	def startReload(self):
@@ -233,7 +259,7 @@ f5; Busca videos nuevos en el canal actual.
 			list_videos = list(reversed(new_videos))
 			for video in list_videos:
 				data = self.getData(f'https://www.youtube.com/watch?v={video}')
-				self.insert_videos((data["title"], f'https://www.youtube.com/watch?v={video}', video, self.channels[self.y][2]))
+				self.insert_videos((data["title"], f'https://www.youtube.com/watch?v={video}', video, self.channels[self.y][2], data["view_count"]))
 			winsound.PlaySound(None, winsound.SND_PURGE)
 			ui.message("Proceso finalizado")
 			self.connect.close()
@@ -242,10 +268,13 @@ f5; Busca videos nuevos en el canal actual.
 			modal.Destroy()
 
 	def insert_videos(self, entities):
-		self.cursor.execute(f'insert into videos(title, url, video_id, channel_id) values(?, ?, ?, ?)', entities)
+		self.cursor.execute(f'insert into videos(title, url, video_id, channel_id, view_count) values(?, ?, ?, ?, ?)', entities)
 		self.connect.commit()
 
 	def script_copyLink(self, gesture):
+		if len(self.channels) == 0:
+			ui.message("Ningún canal seleccionado")
+			return
 		self.desactivar(False)
 		api.copyToClip(self.videos[self.y][self.z][1])
 		winsound.PlaySound("C:\\Windows\\Media\\Windows Recycle.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
@@ -254,6 +283,9 @@ f5; Busca videos nuevos en el canal actual.
 		pass
 
 	def script_viewData(self, gesture):
+		if len(self.channels) == 0:
+			ui.message("Ningún canal seleccionado")
+			return
 		self.desactivar(False)
 		ui.message("Obteniendo los datos del video...")
 		Thread(target=self.startViewData, daemon= True).start()
@@ -289,6 +321,48 @@ Descripción: {p["description"]}'''
 			return f"{hs}:{ms}:{ss}"
 		else:
 			return f"{ms}:{ss}"
+
+	def script_openAudio(self, gesture):
+		if len(self.channels) == 0:
+			ui.message("Ningún canal seleccionado")
+			return
+		self.desactivar(False)
+		Thread(target=self.startOpenAudio, daemon= True).start()
+		ui.message("Activando el reproductor web...")
+
+	def startOpenAudio(self, time= False):
+		audio_url = self.getAudioUrl(self.videos[self.y][self.z][1])
+		self.openPlayer(self.videos[self.y][self.z][0], audio_url)
+
+	def openPlayer(self, title, url):
+		code = f'''
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>{title}</title>
+<script src="reproductor.js"></script>
+</head>
+<body>
+<audio src="{url}" id="reproductor" preload="auto">
+</audio>
+</body>
+</html>
+		'''
+		with open(os.path.join(dirAddon, "reproductor", "index.html"), "w", encoding="utf-8") as file:
+			file.write(code)
+		webbrowser.open(f"file://{dirAddon}/reproductor/index.html", new=2)
+
+	def getAudioUrl(self, url, tiempo=False):
+		ydl = youtube_dl.YoutubeDL({'format': "bestaudio/best", 'logger': MyLogger()})
+		ydl.add_default_info_extractors()
+		result = ydl.extract_info(url, download=False)
+		video = result['entries'][0] if 'entries' in result else result
+		for format in video['formats']:
+			if format['ext'] == 'm4a':
+				audioUrl = format['url']
+		tiempoTotal = str(timedelta(seconds=int(str(video['duration']).split(".")[0])))
+		return [audioUrl, tiempoTotal] if tiempo else audioUrl
 
 	def checkUpdate(self):
 		self.mainThread = HiloComplemento()
@@ -479,6 +553,16 @@ Cierre la ventana para terminar de instalar la librería y reiniciar NVDA.""")
 		except Exception as e:
 			wx.CallAfter(self.frame.error, _("Algo salió mal.\n") + _("Compruebe que tiene conexión a internet y vuelva a intentarlo.\n") + _("Ya puede cerrar esta ventana."))
 
+class MyLogger(object):
+	def debug(self, msg):
+		pass
+
+	def warning(self, msg):
+		pass
+
+	def error(self, msg):
+		pass
+
 class NewChannel(wx.Dialog):
 	def __init__(self, parent, titulo, frame, connect, cursor):
 		super(NewChannel, self).__init__(parent, -1, title=titulo)
@@ -523,7 +607,7 @@ class NewChannel(wx.Dialog):
 			data_dict = ydl.extract_info(channelUrl, download= False)
 		data = data_dict['entries']
 		for i in reversed(range(len(data))):
-			self.insert_videos((data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["id"], data[i]["id"], channelID))
+			self.insert_videos((data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["id"], data[i]["id"], channelID, data[i]["view_count"]))
 		self.connect.close()
 		self.frame.startDB()
 		winsound.PlaySound(None, winsound.SND_PURGE)
@@ -534,7 +618,7 @@ class NewChannel(wx.Dialog):
 		self.connect.commit()
 
 	def insert_videos(self, entities):
-		self.cursor.execute(f'insert into videos(title, url, video_id, channel_id) values(?, ?, ?, ?)', entities)
+		self.cursor.execute(f'insert into videos(title, url, video_id, channel_id, view_count) values(?, ?, ?, ?, ?)', entities)
 		self.connect.commit()
 
 	def onSalir(self, event):
