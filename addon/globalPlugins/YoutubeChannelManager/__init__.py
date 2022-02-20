@@ -48,6 +48,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.channels = []
 		self.videos = []
 		self.index = []
+		self.channels_temp = []
+		self.videos_temp = []
+		self.index_temp = []
 		self.y = 0
 		self.z = 1
 		core.postNvdaStartup.register(self.startDB)
@@ -90,26 +93,38 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
 
-	def script_newChannelFromThisWeb(self, gesture):
-		ui.message("Capturando la url del canal...")
-		Thread(target=self.startNewChannelFromThisWeb, daemon= True).start()
-
-	def startNewChannelFromThisWeb(self):
-		for obj in api.getForegroundObject().recursiveDescendants:
-			try:
-				if re.search(r'youtube.com.channel.[\w\-]{20,30}', obj.value):
-					ui.browseableMessage(obj.value, "¡Encontrado!")
-					break
-			except:
-				ui.message("😔. No hemos encontrado resultados")
-
-	def script_removeChannel(self, gesture):
+	def script_newSearch(self, gesture):
 		if len(self.channels) == 0:
 			ui.message("Ningún canal seleccionado")
 			return
-		Thread(target=self.startRemoveChannel, daemon= True).start()
 		self.desactivar(False)
+		winsound.PlaySound(os.path.join(dirAddon, "sounds", "search.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+		if self.channels[0][1] == None:
+			self.channels = self.channels_temp
+			self.videos = self.videos_temp
+			self.index = self.index_temp
+		self.dlg = NewSearch(gui.mainFrame, "Nueva búsqueda", self, self.connect, self.cursor)
+		gui.mainFrame.prePopup()
+		self.dlg.Show()
 
+	def script_removeChannel(self, gesture):
+		try:
+			if len(self.channels) == 0:
+				ui.message("Ningún canal seleccionado")
+				return
+			elif self.channels[0][1] == None:
+				self.channels = self.channels_temp
+				self.videos = self.videos_temp
+				self.index = self.index_temp
+				self.x = 0
+				self.y = 0
+				ui.message("Búsqueda eliminada")
+				winsound.PlaySound(os.path.join(dirAddon, "sounds", "recicled.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+				return
+			Thread(target=self.startRemoveChannel, daemon= True).start()
+			self.desactivar(False)
+		except:
+			pass
 	def startRemoveChannel(self):
 		modal = wx.MessageDialog(None, f'¿Quieres eliminar el canal {self.channels[self.y][0]}?', _("Atención"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 		if modal.ShowModal() == wx.ID_YES:
@@ -120,7 +135,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.videos.pop(self.y)
 			self.index.pop(self.y)
 			self.y = 0
-			winsound.PlaySound("C:\\Windows\\Media\\Windows Recycle.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
+			winsound.PlaySound(os.path.join(dirAddon, "sounds", "recicled.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 		else:
 			modal.Destroy()
 
@@ -141,7 +156,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:home":"firstItem",
 				"kb:end":"positionAnnounce",
 				"kb:n":"newChannel",
-				"kb:control+n":"newChannelFromThisWeb",
+				"kb:b":"newSearch",
 				"kb:c":"copyLink",
 				"kb:d":"viewData",
 				"kb:delete":"removeChannel",
@@ -172,10 +187,12 @@ f5; Busca videos nuevos en el canal actual.
 
 	def script_nextItem(self, gesture):
 		try:
+			winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 			self.z += 1
 			if self.z < len(self.videos[self.y]):
 				ui.message(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}')
 			else:
+				winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 				self.z = 0
 				ui.message(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}')
 		except IndexError:
@@ -183,10 +200,12 @@ f5; Busca videos nuevos en el canal actual.
 
 	def script_previousItem(self, gesture):
 		try:
+			winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 			self.z -= 1
 			if self.z >= 0:
 				ui.message(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}')
 			else:
+				winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 				self.z = len(self.videos[self.y]) - 1
 				ui.message(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}')
 		except IndexError:
@@ -194,12 +213,14 @@ f5; Busca videos nuevos en el canal actual.
 
 	def script_nextSection(self, gesture):
 		try:
+			winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 			self.index[self.y] = self.z
 			self.y += 1
 			if self.y < len(self.index):
 				self.z = self.index[self.y]
 				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
 			else:
+				winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 				self.y = 0
 				self.z = self.index[self.y]
 				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
@@ -208,12 +229,14 @@ f5; Busca videos nuevos en el canal actual.
 
 	def script_previousSection(self, gesture):
 		try:
+			winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 			self.index[self.y] = self.z
 			self.y -= 1
 			if self.y >= 0:
 				self.z = self.index[self.y]
 				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
 			else:
+				winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 				self.y = len(self.index) - 1
 				self.z = self.index[self.y]
 				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
@@ -643,6 +666,59 @@ class NewChannel(wx.Dialog):
 	def insert_videos(self, entities):
 		self.cursor.execute(f'insert into videos(title, url, video_id, channel_id, view_count) values(?, ?, ?, ?, ?)', entities)
 		self.connect.commit()
+
+	def onSalir(self, event):
+		if event.GetEventType() == 10012:
+			self.Destroy()
+			gui.mainFrame.postPopup()
+		elif event.GetActive() == False:
+			self.Destroy()
+			gui.mainFrame.postPopup()
+		event.Skip()
+
+class NewSearch(wx.Dialog):
+	def __init__(self, parent, titulo, frame, connect, cursor):
+		super(NewSearch, self).__init__(parent, -1, title=titulo)
+		self.frame = frame
+		self.connect = connect
+		self.cursor = cursor
+		self.Panel = wx.Panel(self)
+		wx.StaticText(self.Panel, wx.ID_ANY, "Ingresa el término de búsqueda y pulsa intro")
+		self.searchText = wx.TextCtrl(self.Panel,wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
+		self.searchBTN = wx.Button(self.Panel, wx.ID_ANY, "&Iniciar la búsqueda")
+		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, "&Cancelar")
+		self.searchText.Bind(wx.EVT_CONTEXT_MENU, self.onPass)
+		self.searchText.Bind(wx.EVT_TEXT_ENTER, self.startSearch)
+		self.searchBTN.Bind(wx.EVT_BUTTON, self.startSearch)
+		self.Bind(wx.EVT_ACTIVATE, self.onSalir)
+		self.Bind(wx.EVT_BUTTON, self.onSalir, id=wx.ID_CANCEL)
+
+	def onPass(self, event):
+		pass
+
+	def startSearch(self, evt):
+		text = self.searchText.GetValue()
+		self.cursor.execute(f'select * from videos where title like "%{text}%"')
+		results = self.cursor.fetchall()
+		if results:
+			self.frame.channels_temp = self.frame.channels
+			self.frame.videos_temp = self.frame.videos
+			self.frame.index_temp = self.frame.index
+			self.frame.channels = [("Resultados de búsqueda", None)]
+			self.frame.videos = [results]
+			self.frame.index = [0]
+			self.frame.y = 0
+			self.frame.activar()
+			Thread(target=self.modalDialog, args=(f"Se han encontrado {len(results)} resultados",), daemon= True).start()
+		else:
+			Thread(target=self.modalDialog, args=("No se han encontrado resultados",), daemon= True).start()
+			self.frame.activar()
+		self.Close()
+
+	def modalDialog(self, mensaje):
+		modal = wx.MessageDialog(None, mensaje, _("Atención"), wx.OK | wx.ICON_QUESTION)
+		modal.ShowModal()
+		modal.Destroy()
 
 	def onSalir(self, event):
 		if event.GetEventType() == 10012:
