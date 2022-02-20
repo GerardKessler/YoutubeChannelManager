@@ -63,7 +63,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.cursor = self.connect.cursor()
 			self.cursor.execute('create table channels(name text, url text, channel_id text, id integer primary key autoincrement)')
 			self.connect.commit()
-			self.cursor.execute('create table videos(title text, url text, video_id text, channel_id text, view_count integer, id integer primary key autoincrement)')
+			self.cursor.execute('create table videos(title text, url text, video_id text, channel_id text, view_count integer, channel_name text, id integer primary key autoincrement)')
 			self.connect.commit()
 			self.cursor.execute('VACUUM')
 			self.connect.commit()
@@ -262,7 +262,7 @@ f5; Busca videos nuevos en el canal actual.
 		if len(self.channels) == 0:
 			ui.message("Ningún canal seleccionado")
 			return
-		ui.message(f'{self.z+1} de {len(self.videos[self.y])}, {self.videos[self.y][self.z][4]} reproducciones. {self.channels[self.y][0]}. Pulsa f1 para ver la ayuda de comandos')
+		ui.message(f'{self.z+1} de {len(self.videos[self.y])}, {self.videos[self.y][self.z][4]} reproducciones. {self.videos[self.y][self.z][5]}. Pulsa f1 para ver la ayuda de comandos')
 
 	def script_reloadChannel(self, gesture):
 		if len(self.channels) == 0:
@@ -299,7 +299,7 @@ f5; Busca videos nuevos en el canal actual.
 			list_videos = list(reversed(new_videos))
 			for video in list_videos:
 				data = self.getData(f'https://www.youtube.com/watch?v={video}')
-				self.insert_videos((data["title"], f'https://www.youtube.com/watch?v={video}', video, self.channels[self.y][2], data["view_count"]))
+				self.insert_videos((data["title"], f'https://www.youtube.com/watch?v={video}', video, self.channels[self.y][2], data["view_count"], self.channels[self.y][0]))
 			winsound.PlaySound(None, winsound.SND_PURGE)
 			ui.message("Proceso finalizado")
 			self.connect.close()
@@ -308,7 +308,7 @@ f5; Busca videos nuevos en el canal actual.
 			modal.Destroy()
 
 	def insert_videos(self, entities):
-		self.cursor.execute(f'insert into videos(title, url, video_id, channel_id, view_count) values(?, ?, ?, ?, ?)', entities)
+		self.cursor.execute(f'insert into videos(title, url, video_id, channel_id, view_count, channel_name) values(?, ?, ?, ?, ?, ?)', entities)
 		self.connect.commit()
 
 	def script_copyLink(self, gesture):
@@ -638,11 +638,11 @@ class NewChannel(wx.Dialog):
 		self.Close()
 
 	def getChannelUrl(self, url):
-		if not re.search(r'http(s)?...www.youtube.com.', url): return None
+		if not re.search(r'http(s)?...(www)?.?youtube.com.', url): return None
 		content = urllib.request.urlopen(url).read().decode()
-		channelUrl = re.search(r'(?<=href=")http(s)?...www.youtube.com.channel.[\w\-]+(?=">)', content)
+		channelUrl = re.search(r'(?<=")\/channel\/[\w\-\?\.]+(?=")', content)
 		if channelUrl:
-			return channelUrl[0]
+			return f'https://www.youtube.com/{channelUrl[0]}'
 		# else:
 			# return None
 
@@ -653,7 +653,7 @@ class NewChannel(wx.Dialog):
 			data_dict = ydl.extract_info(channelUrl, download= False)
 		data = data_dict['entries']
 		for i in reversed(range(len(data))):
-			self.insert_videos((data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["id"], data[i]["id"], channelID, data[i]["view_count"]))
+			self.insert_videos((data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["id"], data[i]["id"], channelID, data[i]["view_count"], channelName))
 		self.connect.close()
 		self.frame.startDB()
 		winsound.PlaySound(None, winsound.SND_PURGE)
@@ -664,7 +664,7 @@ class NewChannel(wx.Dialog):
 		self.connect.commit()
 
 	def insert_videos(self, entities):
-		self.cursor.execute(f'insert into videos(title, url, video_id, channel_id, view_count) values(?, ?, ?, ?, ?)', entities)
+		self.cursor.execute(f'insert into videos(title, url, video_id, channel_id, view_count, channel_name) values(?, ?, ?, ?, ?, ?)', entities)
 		self.connect.commit()
 
 	def onSalir(self, event):
