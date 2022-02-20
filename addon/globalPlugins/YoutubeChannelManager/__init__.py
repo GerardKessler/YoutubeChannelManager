@@ -6,7 +6,7 @@ from datetime import timedelta
 from collections import OrderedDict
 import core
 import gui
-from re import search, findall
+import re
 import api
 import webbrowser
 import globalPluginHandler
@@ -90,6 +90,19 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
 
+	def script_newChannelFromThisWeb(self, gesture):
+		ui.message("Capturando la url del canal...")
+		Thread(target=self.startNewChannelFromThisWeb, daemon= True).start()
+
+	def startNewChannelFromThisWeb(self):
+		for obj in api.getForegroundObject().recursiveDescendants:
+			try:
+				if re.search(r'youtube.com.channel.[\w\-]{20,30}', obj.value):
+					ui.browseableMessage(obj.value, "¡Encontrado!")
+					break
+			except:
+				ui.message("😔. No hemos encontrado resultados")
+
 	def script_removeChannel(self, gesture):
 		if len(self.channels) == 0:
 			ui.message("Ningún canal seleccionado")
@@ -128,6 +141,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:home":"firstItem",
 				"kb:end":"positionAnnounce",
 				"kb:n":"newChannel",
+				"kb:control+n":"newChannelFromThisWeb",
 				"kb:c":"copyLink",
 				"kb:d":"viewData",
 				"kb:delete":"removeChannel",
@@ -250,7 +264,7 @@ f5; Busca videos nuevos en el canal actual.
 
 	def getVideosList(self, channel_url):
 		content = urllib.request.urlopen(channel_url).read().decode('utf-8')
-		ids_list = findall(r'(?<="videoId":")[\w\d\-\.\,]+(?=")', content)
+		ids_list = re.findall(r'(?<="videoId":")[\w\d\-\.\,]+(?=")', content)
 		# Método que elimina las duplicaciones de una lista manteniendo el órden de los elementos
 		final_list = list(OrderedDict.fromkeys(ids_list))
 		return final_list
@@ -584,17 +598,30 @@ class NewChannel(wx.Dialog):
 
 	def addChannel(self, event):
 		channel_name = self.channelName.GetValue()
-		channel_url = self.channelLink.GetValue()
-		if not search(r"https\:\/\/www\.youtube\.com\/channel\/[\w\-]+", channel_url):
+		if channel_name == "":
+			ui.message("Debes ingresar algún nombre para este canal")
+			self.channelName.SetFocus()
+			return
+		channel_url = self.getChannelUrl(self.channelLink.GetValue())
+		if not channel_url:
 			ui.message("La url ingresada no es válida")
 			self.channelLink.SetValue("")
 			self.channelLink.SetFocus()
 			return
-		channel_id = "".join([chard for chard in channel_name if search(r"[a-zA-Z0-9]", chard)])
+		channel_id = "".join([chard for chard in channel_name if re.search(r"[a-zA-Z0-9]", chard)])
 		if channel_url[-7:] != "/videos":
 			channel_url = f"{channel_url}/videos"
 		Thread(target=self.getVideos, args=(channel_name, channel_url, channel_id), daemon= True).start()
 		self.Close()
+
+	def getChannelUrl(self, url):
+		if not re.search(r'http(s)?...www.youtube.com.', url): return None
+		content = urllib.request.urlopen(url).read().decode()
+		channelUrl = re.search(r'(?<=href=")http(s)?...www.youtube.com.channel.[\w\-]+(?=">)', content)
+		if channelUrl:
+			return channelUrl[0]
+		# else:
+			# return None
 
 	def getVideos(self, channelName, channelUrl, channelID):
 		winsound.PlaySound("C:\\Windows\\Media\\Alarm05.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
