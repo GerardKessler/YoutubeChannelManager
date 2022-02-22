@@ -54,9 +54,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.index_temp = []
 		self.y = 0
 		self.z = 1
-		self.update_check = None
-		self.update_time = None
 		self.sounds = None
+		self.update_time = None
 		core.postNvdaStartup.register(self.startDB)
 
 	def startDB(self):
@@ -69,9 +68,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.connect.commit()
 			self.cursor.execute('create table videos(title text, url text, video_id text, channel_id text, view_count integer, channel_name text, id integer primary key autoincrement)')
 			self.connect.commit()
-			self.cursor.execute('create table settings(sounds bit, update_check bit, update_time integer, id integer primary key autoincrement)')
+			self.cursor.execute('create table settings(sounds bit, update_time integer, id integer primary key autoincrement)')
 			self.connect.commit()
-			self.cursor.execute('insert into settings(sounds, update_check, update_time) values(1, 0, 12)')
+			self.cursor.execute('insert into settings(sounds, update_time) values(1, 0)')
 			self.connect.commit()
 			self.cursor.execute('VACUUM')
 			self.connect.commit()
@@ -89,8 +88,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.cursor.execute('select * from settings')
 		settings = self.cursor.fetchall()
 		self.sounds = settings[0][0]
-		self.update_check = settings[0][1]
-		self.update_time = settings[0][2]
+		self.update_time = settings[0][1]
 		for channel in self.channels:
 			self.cursor.execute(f'select * from videos where channel_id = "{channel[2]}" order by id desc')
 			videos = self.cursor.fetchall()
@@ -100,20 +98,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if speak:
 			ui.message(speak)
 
-	def speak(self, str, pause):
-		ui.message(str)
-		time.sleep(0.1)
-		Thread(target=self.tSpeak, args=(pause,), daemon= True).start()
-
-	def tSpeak(self, pause):
-		speech.setSpeechMode(speech.SpeechMode.off)
-		time.sleep(1)
-		speech.setSpeechMode(speech.SpeechMode.talk)
-
 	def script_channelSettings(self, gesture):
+		if len(self.channels) == 0: return
 		if self.channels[0][1] == None: return
 		self.desactivar(False)
 		self.dlg = ChannelSettings(gui.mainFrame, "Configuración de canal", self, self.connect, self.cursor)
+		gui.mainFrame.prePopup()
+		self.dlg.Show()
+
+	def script_globalSettings(self, gesture):
+		self.desactivar(False)
+		self.dlg = GlobalSettings(gui.mainFrame, "Configuraciones", self, self.connect, self.cursor)
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
 
@@ -170,12 +165,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		else:
 			modal.Destroy()
 
-	def speak(self, str):
-		Thread(target=self.tSpeak, args=(str,), daemon= True).start()
+	def speak(self, str, pause):
+		Thread(target=self.tSpeak, args=(str, pause), daemon= True).start()
 
-	def tSpeak(self, str):
+	def tSpeak(self, str, pause):
 		speech.setSpeechMode(speech.SpeechMode.off)
-		time.sleep(0.3)
+		time.sleep(pause)
 		speech.setSpeechMode(speech.SpeechMode.talk)
 		ui.message(str)
 
@@ -193,6 +188,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:leftArrow":"previousSection",
 				"kb:o":"open",
 				"kb:s":"channelSettings",
+				"kb:g":"globalSettings",
 				"kb:r":"openAudio",
 				"kb:home":"firstItem",
 				"kb:end":"positionAnnounce",
@@ -690,7 +686,7 @@ class NewChannel(wx.Dialog):
 			# return None
 
 	def getVideos(self, channelName, channelUrl, channelID):
-		if self.sounds: winsound.PlaySound("C:\\Windows\\Media\\Alarm05.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
+		if self.frame.sounds: winsound.PlaySound("C:\\Windows\\Media\\Alarm05.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
 		self.insert_channel((channelName, channelUrl, channelID, 0))
 		with youtube_dl.YoutubeDL(self.options) as ydl:
 			data_dict = ydl.extract_info(channelUrl, download= False)
@@ -699,7 +695,7 @@ class NewChannel(wx.Dialog):
 			self.insert_videos((data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["id"], data[i]["id"], channelID, data[i]["view_count"], channelName))
 		self.connect.close()
 		self.frame.startDB()
-		if self.sounds: winsound.PlaySound(None, winsound.SND_PURGE)
+		if self.frame.sounds: winsound.PlaySound(None, winsound.SND_PURGE)
 		ui.message("Proceso Finalizado")
 
 	def insert_channel(self, entities):
@@ -753,11 +749,11 @@ class NewSearch(wx.Dialog):
 			self.frame.y = 0
 			self.frame.z = 0
 			self.frame.activar(False)
-			if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "yResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
-			self.frame.speak(f"Se han encontrado {len(results)} resultados")
+			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "yResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			self.frame.speak(f"Se han encontrado {len(results)} resultados", 0.2)
 		else:
-			if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "nResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
-			self.frame.speak("No se han encontrado resultados")
+			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "nResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			self.frame.speak("No se han encontrado resultados", 0.2)
 			self.frame.activar(False)
 		self.Close()
 
@@ -773,7 +769,6 @@ class NewSearch(wx.Dialog):
 class ChannelSettings(wx.Dialog):
 	def __init__(self, parent, titulo, frame, connect, cursor):
 		super(ChannelSettings, self).__init__(parent, -1, title=titulo)
-		self.options = {'ignoreerrors': True, 'quiet': True, 'extract_flat': 'in_playlist', 'dump_single_json': True}
 		self.frame = frame
 		self.connect = connect
 		self.cursor = cursor
@@ -805,12 +800,53 @@ class ChannelSettings(wx.Dialog):
 	def saveSettings(self, evt):
 		text = self.channelName.GetValue()
 		favorite = self.checkbox.GetValue()
-		if text != self.frame.channels[self.frame.y][0] or favorite != self.frame.channels[self.frame.y][3]:
+		if text != self.frame.channels[self.frame.y][0] or int(favorite) != self.frame.channels[self.frame.y][3]:
 			self.cursor.execute(f'update channels set name = "{text}", favorite = "{int(favorite)}" where name = "{self.frame.channels[self.frame.y][0]}"')
 			self.connect.commit()
 			self.connect.close()
 			self.frame.startDB()
 		self.Close()
 		self.frame.activar(False)
-		self.frame.speak("Configuración guardada")
+		self.frame.speak("Configuración guardada", 0.3)
+
+class GlobalSettings(wx.Dialog):
+	def __init__(self, parent, titulo, frame, connect, cursor):
+		super(GlobalSettings, self).__init__(parent, -1, title=titulo)
+		self.frame = frame
+		self.connect = connect
+		self.cursor = cursor
+		self.Panel = wx.Panel(self)
+		self.checkbox = wx.CheckBox(self.Panel, wx.ID_ANY, _("Activar los sonidos del complemento"))
+		self.checkbox.SetValue(self.frame.sounds)
+		wx.StaticText(self.Panel, wx.ID_ANY, "Selecciona el intervalo de tiempo para la verificación de nuevas subidas en los canales favoritos")
+		self.listbox = wx.ListBox(self.Panel, wx.ID_ANY, choices=["Desactivado", "24 horas", "12 horas", "8 horas", "4 horas", "2 horas", "1 hora"])
+		self.listbox.SetSelection(self.frame.update_time)
+		self.saveBTN = wx.Button(self.Panel, wx.ID_ANY, "&Guardar los cambios")
+		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, "&Descartar cambios y cerrar")
+		self.saveBTN.Bind(wx.EVT_BUTTON, self.saveSettings)
+		self.Bind(wx.EVT_ACTIVATE, self.onSalir)
+		self.Bind(wx.EVT_BUTTON, self.onSalir, id=wx.ID_CANCEL)
+
+	def onPass(self, event):
+		pass
+
+	def onSalir(self, event):
+		if event.GetEventType() == 10012:
+			self.Destroy()
+			gui.mainFrame.postPopup()
+		elif event.GetActive() == False:
+			self.Destroy()
+			gui.mainFrame.postPopup()
+		event.Skip()
+
+	def saveSettings(self, evt):
+		self.Close()
+		sounds = int(self.checkbox.GetValue())
+		update_time = self.listbox.GetSelection()
+		if self.frame.sounds != sounds or self.frame.update_time != update_time:
+			self.cursor.execute(f'update settings set sounds = {sounds}, update_time = {update_time}')
+			self.connect.commit()
+			self.connect.close()
+			self.frame.startDB()
+			self.frame.speak("Configuraciones guardadas", 0.7)
 
