@@ -205,10 +205,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		help_text="""
 Escape; desactiva la interfaz virtual.
 n; Activa el diálogo para añadir un nuevo canal.
+s; Activa la ventana de configuración del canal actual.
 o; abre el link del video actual en el navegador por defecto.
 r; Carga el audio en un reproductor web personalizado.
 d; abre una ventana con datos del video actual.
-suprimir; Activa el diálogo para eliminar el canal actual.
+b; Activa el cuadro de búsqueda.
+suprimir; Activa el diálogo para eliminar el canal actual, y en la columna de los resultados de búsqueda, los elimina.
 f5; Busca videos nuevos en el canal actual.
 		"""
 		ui.browseableMessage(help_text, "Ayuda de comandos")

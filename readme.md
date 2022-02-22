@@ -14,13 +14,15 @@ Este complemento permite gestionar de forma sencilla los canales favoritos de la
 * Flecha izquierda; se mueve al canal anterior.
 * Flecha abajo; se mueve al siguiente video del canal con el foco.
 * Flecha arriba; se mueve al anterior video del canal con el foco.
+* inicio; Se mueve al primer video del canal con el foco.
 * fin; verbaliza la posición, el nombre del canal, y el número de visualizaciones del video.
 * n; abre el diálogo para añadir un nuevo canal.
+* s; Activa la ventana de configuración del canal con el foco.
 * Suprimir; elimina el canal con el foco.
 * o; abre el link del video en el navegador por defecto.
 *r; Abre el link de audio en un reproductor web personalizado.
 * c; copia el link del video al portapapeles.
-* d; obtiene algunos datos del video y lo muestra en una ventana de NVDA
+* d; obtiene los datos del video y los muestra en una ventana de NVDA
 * f5; Busca si existen videos nuevos en el canal con el foco.
 * f1; activa la ayuda de comandos.
 
