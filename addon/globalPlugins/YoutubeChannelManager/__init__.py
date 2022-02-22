@@ -214,11 +214,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 Escape; desactiva la interfaz virtual.
 n; Activa el diálogo para añadir un nuevo canal.
 s; Activa la ventana de configuración del canal actual.
+g; Activa la ventana de opciones globales.
 o; abre el link del video actual en el navegador por defecto.
 r; Carga el audio en un reproductor web personalizado.
 d; abre una ventana con datos del video actual.
 b; Activa el cuadro de búsqueda.
-suprimir; Activa el diálogo para eliminar el canal actual, y en la columna de los resultados de búsqueda, los elimina.
+suprimir; Activa el diálogo para eliminar el canal actual, y en la ventana de resultados, elimina la columna y vuelve a la lista de canales.
 f5; Busca videos nuevos en el canal actual.
 		"""
 		ui.browseableMessage(help_text, "Ayuda de comandos")
@@ -678,6 +679,7 @@ class NewChannel(wx.Dialog):
 
 	def getChannelUrl(self, url):
 		if not re.search(r'http(s)?...(www)?.?youtube.com.', url): return None
+		if re.search(r'http(s)?...(www)?.?youtube.com.channel.', url): return url
 		content = urllib.request.urlopen(url).read().decode()
 		channelUrl = re.search(r'(?<=")\/channel\/[\w\-\?\.]+(?=")', content)
 		if channelUrl:

@@ -18,7 +18,8 @@ Este complemento permite gestionar de forma sencilla los canales favoritos de la
 * fin; verbaliza la posición, el nombre del canal, y el número de visualizaciones del video.
 * n; abre el diálogo para añadir un nuevo canal.
 * s; Activa la ventana de configuración del canal con el foco.
-* Suprimir; elimina el canal con el foco.
+* g; Activa la ventana de opciones globales.
+* Suprimir; elimina el canal con el foco, y en la ventana de resultados elimina la columna y vuelve a la vista de canales.
 * o; abre el link del video en el navegador por defecto.
 *r; Abre el link de audio en un reproductor web personalizado.
 * c; copia el link del video al portapapeles.
