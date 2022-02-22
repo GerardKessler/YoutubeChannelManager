@@ -62,7 +62,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if not os.path.exists(os.path.join(globalVars.appArgs.configPath, "channels")):
 			self.connect = sql.connect(os.path.join(globalVars.appArgs.configPath, "channels"), check_same_thread= False)
 			self.cursor = self.connect.cursor()
-			self.cursor.execute('create table channels(name text, url text, channel_id text, id integer primary key autoincrement)')
+			self.cursor.execute('create table channels(name text, url text, channel_id text, favorite bin, id integer primary key autoincrement)')
 			self.connect.commit()
 			self.cursor.execute('create table videos(title text, url text, video_id text, channel_id text, view_count integer, channel_name text, id integer primary key autoincrement)')
 			self.connect.commit()
@@ -80,9 +80,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.cursor.execute('select * from channels')
 		self.channels = self.cursor.fetchall()
 		for channel in self.channels:
-			self.cursor.execute(f'select * from videos where channel_id = "{channel[2]}"')
+			self.cursor.execute(f'select * from videos where channel_id = "{channel[2]}" order by id desc')
 			videos = self.cursor.fetchall()
-			videos_r = tuple(reversed(videos))
+			videos_r = videos
 			self.videos.append(videos_r)
 			self.index.append(0)
 		if speak:
@@ -98,7 +98,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		time.sleep(1)
 		speech.setSpeechMode(speech.SpeechMode.talk)
 
+	def script_channelSettings(self, gesture):
+		if self.channels[0][1] == None: return
+		self.desactivar(False)
+		self.dlg = ChannelSettings(gui.mainFrame, "Configuración de canal", self, self.connect, self.cursor)
+		gui.mainFrame.prePopup()
+		self.dlg.Show()
+
 	def script_newChannel(self, gesture):
+		if len(self.channels) > 0:
+			if self.channels[0][1] == None: return
 		self.desactivar(False)
 		self.dlg = NewChannel(gui.mainFrame, "Añadir canal", self, self.connect, self.cursor)
 		gui.mainFrame.prePopup()
@@ -171,6 +180,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:rightArrow":"nextSection",
 				"kb:leftArrow":"previousSection",
 				"kb:o":"open",
+				"kb:s":"channelSettings",
 				"kb:r":"openAudio",
 				"kb:home":"firstItem",
 				"kb:end":"positionAnnounce",
@@ -667,7 +677,7 @@ class NewChannel(wx.Dialog):
 
 	def getVideos(self, channelName, channelUrl, channelID):
 		winsound.PlaySound("C:\\Windows\\Media\\Alarm05.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
-		self.insert_channel((channelName, channelUrl, channelID))
+		self.insert_channel((channelName, channelUrl, channelID, 0))
 		with youtube_dl.YoutubeDL(self.options) as ydl:
 			data_dict = ydl.extract_info(channelUrl, download= False)
 		data = data_dict['entries']
@@ -679,7 +689,7 @@ class NewChannel(wx.Dialog):
 		ui.message("Proceso Finalizado")
 
 	def insert_channel(self, entities):
-		self.cursor.execute(f'insert into channels(name, url, channel_id) values(?, ?, ?)', entities)
+		self.cursor.execute(f'insert into channels(name, url, channel_id, favorite) values(?, ?, ?, ?)', entities)
 		self.connect.commit()
 
 	def insert_videos(self, entities):
@@ -717,14 +727,14 @@ class NewSearch(wx.Dialog):
 
 	def startSearch(self, evt):
 		text = self.searchText.GetValue()
-		self.cursor.execute(f'select * from videos where title like "%{text}%"')
+		self.cursor.execute(f'select * from videos where title like "%{text}%" order by id desc')
 		results = self.cursor.fetchall()
 		if results:
 			self.frame.channels_temp = self.frame.channels
 			self.frame.videos_temp = self.frame.videos
 			self.frame.index_temp = self.frame.index
 			self.frame.channels = [("Resultados de búsqueda", None)]
-			self.frame.videos = [list(reversed(results))]
+			self.frame.videos = [results]
 			self.frame.index = [0]
 			self.frame.y = 0
 			self.frame.z = 0
@@ -745,3 +755,48 @@ class NewSearch(wx.Dialog):
 			self.Destroy()
 			gui.mainFrame.postPopup()
 		event.Skip()
+
+class ChannelSettings(wx.Dialog):
+	def __init__(self, parent, titulo, frame, connect, cursor):
+		super(ChannelSettings, self).__init__(parent, -1, title=titulo)
+		self.options = {'ignoreerrors': True, 'quiet': True, 'extract_flat': 'in_playlist', 'dump_single_json': True}
+		self.frame = frame
+		self.connect = connect
+		self.cursor = cursor
+		self.Panel = wx.Panel(self)
+		wx.StaticText(self.Panel, wx.ID_ANY, "Nombre del canal")
+		self.channelName = wx.TextCtrl(self.Panel,wx.ID_ANY)
+		self.channelName.SetValue(self.frame.channels[self.frame.y][0])
+		self.checkbox = wx.CheckBox(self.Panel, wx.ID_ANY, _("Canal favorito"))
+		self.checkbox.SetValue(self.frame.channels[self.frame.y][3])
+		self.saveBTN = wx.Button(self.Panel, wx.ID_ANY, "&Guardar los cambios")
+		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, "&Descartar cambios y cerrar")
+		self.channelName.Bind(wx.EVT_CONTEXT_MENU, self.onPass)
+		self.saveBTN.Bind(wx.EVT_BUTTON, self.saveSettings)
+		self.Bind(wx.EVT_ACTIVATE, self.onSalir)
+		self.Bind(wx.EVT_BUTTON, self.onSalir, id=wx.ID_CANCEL)
+
+	def onPass(self, event):
+		pass
+
+	def onSalir(self, event):
+		if event.GetEventType() == 10012:
+			self.Destroy()
+			gui.mainFrame.postPopup()
+		elif event.GetActive() == False:
+			self.Destroy()
+			gui.mainFrame.postPopup()
+		event.Skip()
+
+	def saveSettings(self, evt):
+		text = self.channelName.GetValue()
+		favorite = self.checkbox.GetValue()
+		if text != self.frame.channels[self.frame.y][0] or favorite != self.frame.channels[self.frame.y][3]:
+			self.cursor.execute(f'update channels set name = "{text}", favorite = "{int(favorite)}" where name = "{self.frame.channels[self.frame.y][0]}"')
+			self.connect.commit()
+			self.connect.close()
+			self.frame.startDB()
+		self.Close()
+		self.frame.activar(False)
+		self.frame.speak("Configuración guardada")
+
