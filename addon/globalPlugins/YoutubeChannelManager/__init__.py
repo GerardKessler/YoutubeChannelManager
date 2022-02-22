@@ -3,6 +3,7 @@
 # This file is covered by the GNU General Public License.
 
 from datetime import timedelta
+import speech
 from collections import OrderedDict
 import core
 import gui
@@ -87,6 +88,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if speak:
 			ui.message(speak)
 
+	def speak(self, str, pause):
+		ui.message(str)
+		time.sleep(0.1)
+		Thread(target=self.tSpeak, args=(pause,), daemon= True).start()
+
+	def tSpeak(self, pause):
+		speech.setSpeechMode(speech.SpeechMode.off)
+		time.sleep(1)
+		speech.setSpeechMode(speech.SpeechMode.talk)
+
 	def script_newChannel(self, gesture):
 		self.desactivar(False)
 		self.dlg = NewChannel(gui.mainFrame, "Añadir canal", self, self.connect, self.cursor)
@@ -98,7 +109,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			ui.message("Ningún canal seleccionado")
 			return
 		self.desactivar(False)
-		winsound.PlaySound(os.path.join(dirAddon, "sounds", "search.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 		if self.channels[0][1] == None:
 			self.channels = self.channels_temp
 			self.videos = self.videos_temp
@@ -139,13 +149,22 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		else:
 			modal.Destroy()
 
+	def speak(self, str):
+		Thread(target=self.tSpeak, args=(str,), daemon= True).start()
+
+	def tSpeak(self, str):
+		speech.setSpeechMode(speech.SpeechMode.off)
+		time.sleep(0.3)
+		speech.setSpeechMode(speech.SpeechMode.talk)
+		ui.message(str)
+
 	@script(gesture="kb:NVDA+y", description="Activa y desactiva la interfaz invisible", category= "YoutubeChannelManager")
 	def script_toggle(self, gesture):
 		self.desactivar() if self.switch else self.activar()
 
-	def activar(self):
+	def activar(self, speak= True):
 			self.switch = True
-			ui.message("Atajos activados")
+			if speak: ui.message("Atajos activados")
 			self.bindGestures(
 				{"kb:downArrow":"nextItem",
 				"kb:upArrow":"previousItem",
@@ -705,20 +724,18 @@ class NewSearch(wx.Dialog):
 			self.frame.videos_temp = self.frame.videos
 			self.frame.index_temp = self.frame.index
 			self.frame.channels = [("Resultados de búsqueda", None)]
-			self.frame.videos = [results]
+			self.frame.videos = [list(reversed(results))]
 			self.frame.index = [0]
 			self.frame.y = 0
-			self.frame.activar()
-			Thread(target=self.modalDialog, args=(f"Se han encontrado {len(results)} resultados",), daemon= True).start()
+			self.frame.z = 0
+			self.frame.activar(False)
+			winsound.PlaySound(os.path.join(dirAddon, "sounds", "yResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			self.frame.speak(f"Se han encontrado {len(results)} resultados")
 		else:
-			Thread(target=self.modalDialog, args=("No se han encontrado resultados",), daemon= True).start()
-			self.frame.activar()
+			winsound.PlaySound(os.path.join(dirAddon, "sounds", "nResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			self.frame.speak("No se han encontrado resultados")
+			self.frame.activar(False)
 		self.Close()
-
-	def modalDialog(self, mensaje):
-		modal = wx.MessageDialog(None, mensaje, _("Atención"), wx.OK | wx.ICON_QUESTION)
-		modal.ShowModal()
-		modal.Destroy()
 
 	def onSalir(self, event):
 		if event.GetEventType() == 10012:
