@@ -800,16 +800,17 @@ class ChannelSettings(wx.Dialog):
 		event.Skip()
 
 	def saveSettings(self, evt):
+		self.Close()
 		text = self.channelName.GetValue()
 		favorite = self.checkbox.GetValue()
 		if text != self.frame.channels[self.frame.y][0] or int(favorite) != self.frame.channels[self.frame.y][3]:
+			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 			self.cursor.execute(f'update channels set name = "{text}", favorite = "{int(favorite)}" where name = "{self.frame.channels[self.frame.y][0]}"')
 			self.connect.commit()
 			self.connect.close()
 			self.frame.startDB()
-		self.Close()
 		self.frame.activar(False)
-		self.frame.speak("Configuración guardada", 0.3)
+		self.frame.speak("Configuración guardada", 1)
 
 class GlobalSettings(wx.Dialog):
 	def __init__(self, parent, titulo, frame, connect, cursor):
@@ -846,9 +847,10 @@ class GlobalSettings(wx.Dialog):
 		sounds = int(self.checkbox.GetValue())
 		update_time = self.listbox.GetSelection()
 		if self.frame.sounds != sounds or self.frame.update_time != update_time:
+			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 			self.cursor.execute(f'update settings set sounds = {sounds}, update_time = {update_time}')
 			self.connect.commit()
 			self.connect.close()
 			self.frame.startDB()
-			self.frame.speak("Configuraciones guardadas", 0.7)
+			self.frame.speak("Configuraciones guardadas", 1)
 
