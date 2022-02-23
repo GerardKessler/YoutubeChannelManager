@@ -19,7 +19,7 @@ import urllib.request
 import json
 import zipfile
 import winsound
-from threading import Thread
+from threading import Thread, Timer
 import socket
 import time
 import shutil
@@ -56,6 +56,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.z = 1
 		self.sounds = None
 		self.update_time = None
+		self.startTimer = None
 		core.postNvdaStartup.register(self.firstRun)
 
 	def firstRun(self):
@@ -99,8 +100,20 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			videos_r = videos
 			self.videos.append(videos_r)
 			self.index.append(0)
+		self.setTimer()
 		if speak:
 			ui.message(speak)
+
+	def setTimer(self):
+		if self.update_time > 0:
+			times = [False, 86400, 43200, 28800, 14400, 7200, 3600]
+			self.startTimer = StartTimer(times[self.update_time], self.checkUpdate)
+
+	def checkUpdate(self):
+		for i in range(len(self.channels)):
+			if self.channels[i][3]:
+				self.startReload(self.channels[i], i, False)
+				time.sleep(20)
 
 	def script_channelSettings(self, gesture):
 		if len(self.channels) == 0: return
@@ -236,8 +249,8 @@ r; Carga el audio en un reproductor web personalizado.
 d; abre una ventana con datos del video actual.
 b; Activa el cuadro de búsqueda.
 suprimir; Activa el diálogo para eliminar el canal actual, y en la ventana de resultados, elimina la columna y vuelve a la lista de canales.
-f5; Busca videos nuevos en el canal actual.
-		"""
+control + shift + suprimir; elimina la base de datos.
+f5; Busca videos nuevos en el canal actual."""
 		ui.browseableMessage(help_text, "Ayuda de comandos")
 
 
@@ -324,22 +337,22 @@ f5; Busca videos nuevos en el canal actual.
 		if len(self.channels) == 0:
 			ui.message("Ningún canal seleccionado")
 			return
-		Thread(target=self.startReload, daemon= True).start()
+		Thread(target=self.startReload, args=(self.channels[self.y], self.y), daemon= True).start()
 
-	def startReload(self):
+	def startReload(self, channel, index, messages= True):
 		new_videos = []
-		videos_list = self.getVideosList(self.channels[self.y][1])
+		videos_list = self.getVideosList(channel[1])
 		for video in videos_list:
-			if self.videos[self.y][0][2] != video:
+			if self.videos[index][0][2] != video:
 				new_videos.append(video)
 			else:
 				break
 		if len(new_videos) == 0:
-			ui.message("No se han encontrado videos nuevos para este canal")
+			if messages: ui.message("No se han encontrado videos nuevos para este canal")
 		elif len(new_videos) == 1:
-			Thread(target=self.downloadNewVideos, args=(new_videos, "Se ha encontrado un video nuevo. ¿Quieres actualizar la base de datos?"), daemon= True).start()
+			Thread(target=self.downloadNewVideos, args=(new_videos, f"Se ha añadido un video nuevo en {channel[0]}", channel), daemon= True).start()
 		elif len(new_videos) > 1:
-			Thread(target=self.downloadNewVideos, args=(new_videos, f"Se han encontrado {len(new_videos)} videos nuevos. ¿Quieres actualizar la base de datos?"), daemon= True).start()
+			Thread(target=self.downloadNewVideos, args=(new_videos, f"Se han añadido {len(new_videos)} videos nuevos en {channel[0]}", channel), daemon= True).start()
 
 	def getVideosList(self, channel_url):
 		content = urllib.request.urlopen(channel_url).read().decode('utf-8')
@@ -348,20 +361,16 @@ f5; Busca videos nuevos en el canal actual.
 		final_list = list(OrderedDict.fromkeys(ids_list))
 		return final_list
 
-	def downloadNewVideos(self, new_videos, message_text):
-		modal = wx.MessageDialog(None, message_text, "⬆", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
-		if modal.ShowModal() == wx.ID_YES:
-			if self.sounds: winsound.PlaySound("C:\\Windows\\Media\\Alarm05.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
-			list_videos = list(reversed(new_videos))
-			for video in list_videos:
-				data = self.getData(f'https://www.youtube.com/watch?v={video}')
-				self.insert_videos((data["title"], f'https://www.youtube.com/watch?v={video}', video, self.channels[self.y][2], data["view_count"], self.channels[self.y][0]))
-			if self.sounds: winsound.PlaySound(None, winsound.SND_PURGE)
-			ui.message("Proceso finalizado")
-			self.connect.close()
-			self.startDB()
-		else:
-			modal.Destroy()
+	def downloadNewVideos(self, new_videos, message_text, channel):
+		if self.sounds: winsound.PlaySound("C:\\Windows\\Media\\Alarm05.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
+		list_videos = list(reversed(new_videos))
+		for video in list_videos:
+			data = self.getData(f'https://www.youtube.com/watch?v={video}')
+			self.insert_videos((data["title"], f'https://www.youtube.com/watch?v={video}', video, channel[2], data["view_count"], channel[0]))
+		if self.sounds: winsound.PlaySound(None, winsound.SND_PURGE)
+		ui.message(message_text)
+		self.connect.close()
+		self.startDB()
 
 	def insert_videos(self, entities):
 		self.cursor.execute(f'insert into videos(title, url, video_id, channel_id, view_count, channel_name) values(?, ?, ?, ?, ?, ?)', entities)
@@ -827,6 +836,11 @@ class ChannelSettings(wx.Dialog):
 			self.frame.startDB()
 		self.frame.activar(False)
 		self.frame.speak("Configuración guardada", 1)
+		try:
+			if self.frame.startTimer.is_running:
+				self.frame.startTimer.stop()
+		except:
+			pass
 
 class GlobalSettings(wx.Dialog):
 	def __init__(self, parent, titulo, frame, connect, cursor):
@@ -863,10 +877,38 @@ class GlobalSettings(wx.Dialog):
 		sounds = int(self.checkbox.GetValue())
 		update_time = self.listbox.GetSelection()
 		if self.frame.sounds != sounds or self.frame.update_time != update_time:
-			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 			self.cursor.execute(f'update settings set sounds = {sounds}, update_time = {update_time}')
 			self.connect.commit()
 			self.connect.close()
-			self.frame.startDB()
-			self.frame.speak("Configuraciones guardadas", 1)
+			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			modal = wx.MessageDialog(None, f'Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres reiniciar ahora?', 'Atención', wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+			if modal.ShowModal() == wx.ID_YES:
+				core.restart()
+			else:
+				modal.Destroy()
 
+class StartTimer(object):
+	def __init__(self, interval, function, *args, **kwargs):
+		self._timer = None
+		self.interval = interval
+		self.function   = function
+		self.args = args
+		self.kwargs = kwargs
+		self.is_running = False
+		self.daemon = True
+		self.start()
+
+	def _run(self):
+		self.is_running = False
+		self.start()
+		self.function(*self.args, **self.kwargs)
+
+	def start(self):
+		if not self.is_running:
+			self._timer = Timer(self.interval, self._run)
+			self._timer.start()
+			self.is_running = True
+
+	def stop(self):
+		self._timer.cancel()
+		self.is_running = False
