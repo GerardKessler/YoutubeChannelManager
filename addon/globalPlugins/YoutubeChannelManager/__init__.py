@@ -56,11 +56,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.z = 1
 		self.sounds = None
 		self.update_time = None
-		core.postNvdaStartup.register(self.startDB)
+		core.postNvdaStartup.register(self.firstRun)
 
-	def startDB(self):
+	def firstRun(self):
 		self.mainThread = HiloComplemento()
 		self.mainThread.start()
+		self.startDB()
+
+	def startDB(self, read= True):
 		if not os.path.exists(os.path.join(globalVars.appArgs.configPath, "channels")):
 			self.connect = sql.connect(os.path.join(globalVars.appArgs.configPath, "channels"), check_same_thread= False)
 			self.cursor = self.connect.cursor()
@@ -77,7 +80,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		else:
 			self.connect = sql.connect(os.path.join(globalVars.appArgs.configPath, "channels"), check_same_thread= False)
 			self.cursor = self.connect.cursor()
-		Thread(target=self.start, daemon= True).start()
+		if read:
+			Thread(target=self.start, daemon= True).start()
 
 	def start(self, speak= False):
 		self.channels = []
@@ -132,6 +136,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.dlg = NewSearch(gui.mainFrame, "Nueva búsqueda", self, self.connect, self.cursor)
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
+
+	def script_removeDatabase(self, gesture):
+		Thread(target=self.startRemoveDatabase, daemon= True).start()
+
+	def startRemoveDatabase(self):
+		modal = wx.MessageDialog(None, f'¿Seguro que quieres eliminar la base de datos?', _("¡Atención!"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+		if modal.ShowModal() == wx.ID_YES:
+			self.connect.close()
+			os.remove(os.path.join(globalVars.appArgs.configPath, "channels"))
+			self.startDB(True)
+			self.speak("Base de datos eliminada", 0.3)
 
 	def script_removeChannel(self, gesture):
 		try:
@@ -197,6 +212,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:c":"copyLink",
 				"kb:d":"viewData",
 				"kb:delete":"removeChannel",
+				"kb:control+shift+delete":"removeDatabase",
 				"kb:f5":"reloadChannel",
 				"kb:f1":"helpCommands",
 				"kb:escape":"toggle"}
