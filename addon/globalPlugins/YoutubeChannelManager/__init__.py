@@ -44,7 +44,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if globalVars.appArgs.secure: return
 		self.connect = None
 		self.cursor = None
-		self.options = {'ignoreerrors': True, 'quiet': True, 'extract_flat': 'in_playlist', 'dump_single_json': True}
+		self.options = {
+			'ignoreerrors': True,
+			'quiet': True,
+			'extract_flat': 'in_playlist',
+			'dump_single_json': True
+		}
 		self.switch = False
 		self.channels = []
 		self.videos = []
@@ -56,6 +61,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.z = 1
 		self.sounds = None
 		self.update_time = None
+		self.order_by = None
+		self.order = ["id desc", "id asc", "view_count desc", "view_count asc"]
 		self.startTimer = None
 		core.postNvdaStartup.register(self.firstRun)
 
@@ -72,9 +79,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.connect.commit()
 			self.cursor.execute('create table videos(title text, url text, video_id text, channel_id text, view_count integer, channel_name text, id integer primary key autoincrement)')
 			self.connect.commit()
-			self.cursor.execute('create table settings(sounds bit, update_time integer, id integer primary key autoincrement)')
+			self.cursor.execute('create table settings(sounds bit, update_time integer, order_by integer, id integer primary key autoincrement)')
 			self.connect.commit()
-			self.cursor.execute('insert into settings(sounds, update_time) values(1, 0)')
+			self.cursor.execute('insert into settings(sounds, update_time, order_by) values(1, 0, 0)')
 			self.connect.commit()
 			self.cursor.execute('VACUUM')
 			self.connect.commit()
@@ -94,8 +101,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		settings = self.cursor.fetchall()
 		self.sounds = settings[0][0]
 		self.update_time = settings[0][1]
+		self.order_by = settings[0][2]
 		for channel in self.channels:
-			self.cursor.execute(f'select * from videos where channel_id = "{channel[2]}" order by id desc')
+			self.cursor.execute(f'select * from videos where channel_id = "{channel[2]}" order by {self.order[self.order_by]}')
 			videos = self.cursor.fetchall()
 			videos_r = videos
 			self.videos.append(videos_r)
@@ -764,7 +772,7 @@ class NewSearch(wx.Dialog):
 
 	def startSearch(self, evt):
 		text = self.searchText.GetValue()
-		self.cursor.execute(f'select * from videos where title like "%{text}%" order by id desc')
+		self.cursor.execute(f'select * from videos where title like "%{text}%" order by {self.frame.order[self.frame.order_by]}')
 		results = self.cursor.fetchall()
 		if results:
 			self.frame.channels_temp = self.frame.channels
@@ -851,9 +859,10 @@ class GlobalSettings(wx.Dialog):
 		self.Panel = wx.Panel(self)
 		self.checkbox = wx.CheckBox(self.Panel, wx.ID_ANY, _("Activar los sonidos del complemento"))
 		self.checkbox.SetValue(self.frame.sounds)
-		wx.StaticText(self.Panel, wx.ID_ANY, "Selecciona el intervalo de tiempo para la verificación de nuevas subidas en los canales favoritos")
-		self.listbox = wx.ListBox(self.Panel, wx.ID_ANY, choices=["Desactivado", "24 horas", "12 horas", "8 horas", "4 horas", "2 horas", "1 hora"])
+		self.listbox = wx.RadioBox(self.Panel, wx.ID_ANY, "Selecciona el intervalo de tiempo para la verificación de nuevas subidas en los canales favoritos", choices=["Desactivado", "24 horas", "12 horas", "8 horas", "4 horas", "2 horas", "1 hora"])
 		self.listbox.SetSelection(self.frame.update_time)
+		self.radio = wx.RadioBox(self.Panel, wx.ID_ANY, "Selecciona el órden en el que van a mostrarse los videos", choices=["Del último al primero", "Del primero al último", "Del más visto al menos visto", "Del menos visto al mas visto"])
+		self.radio.SetSelection(self.frame.order_by)
 		self.saveBTN = wx.Button(self.Panel, wx.ID_ANY, "&Guardar los cambios")
 		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, "&Descartar cambios y cerrar")
 		self.saveBTN.Bind(wx.EVT_BUTTON, self.saveSettings)
@@ -876,16 +885,21 @@ class GlobalSettings(wx.Dialog):
 		self.Close()
 		sounds = int(self.checkbox.GetValue())
 		update_time = self.listbox.GetSelection()
-		if self.frame.sounds != sounds or self.frame.update_time != update_time:
-			self.cursor.execute(f'update settings set sounds = {sounds}, update_time = {update_time}')
+		order_by = self.radio.GetSelection()
+		if self.frame.sounds != sounds or self.frame.update_time != update_time or self.frame.order_by != order_by:
+			self.cursor.execute(f'update settings set sounds = {sounds}, update_time = {update_time}, order_by = {order_by}')
 			self.connect.commit()
 			self.connect.close()
 			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
-			modal = wx.MessageDialog(None, f'Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres reiniciar ahora?', 'Atención', wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
-			if modal.ShowModal() == wx.ID_YES:
-				core.restart()
+			if self.frame.update_time != update_time:
+				modal = wx.MessageDialog(None, f'Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres reiniciar ahora?', 'Atención', wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+				if modal.ShowModal() == wx.ID_YES:
+					core.restart()
+				else:
+					modal.Destroy()
 			else:
-				modal.Destroy()
+				self.frame.startDB()
+				self.frame.speak("Configuraciones aplicadas", 1)
 
 class StartTimer(object):
 	def __init__(self, interval, function, *args, **kwargs):
