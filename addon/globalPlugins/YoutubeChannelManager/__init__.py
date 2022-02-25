@@ -114,13 +114,15 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def setTimer(self):
 		if self.update_time > 0:
-			times = [False, 86400, 43200, 28800, 14400, 7200, 3600]
+			times = [False, 86400, 43200, 28800, 14400, 7200, 360]
 			self.startTimer = StartTimer(times[self.update_time], self.checkUpdate)
 
 	def checkUpdate(self):
 		for i in range(len(self.channels)):
 			if self.channels[i][3]:
-				self.startReload(self.channels[i], i, False)
+				self.cursor.execute(f'select video_id from videos where channel_id = "{self.channels[i][2]}"')
+				last_video = self.cursor.fetchall()
+				self.startReload(self.channels[i], i, last_video[-1][0], False)
 				time.sleep(20)
 
 	def script_channelSettings(self, gesture):
@@ -345,13 +347,15 @@ f5; Busca videos nuevos en el canal actual."""
 		if len(self.channels) == 0:
 			ui.message("Ningún canal seleccionado")
 			return
-		Thread(target=self.startReload, args=(self.channels[self.y], self.y), daemon= True).start()
+		self.cursor.execute(f'select video_id from videos where channel_id = "{self.channels[self.y][2]}"')
+		last_video = self.cursor.fetchall()
+		Thread(target=self.startReload, args=(self.channels[self.y], self.y, last_video[-1][0]), daemon= True).start()
 
-	def startReload(self, channel, index, messages= True):
+	def startReload(self, channel, index, last_video, messages= True):
 		new_videos = []
 		videos_list = self.getVideosList(channel[1])
 		for video in videos_list:
-			if self.videos[index][0][2] != video:
+			if last_video != video:
 				new_videos.append(video)
 			else:
 				break
