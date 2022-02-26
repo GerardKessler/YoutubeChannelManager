@@ -846,8 +846,8 @@ class ChannelSettings(wx.Dialog):
 			self.connect.commit()
 			self.connect.close()
 			self.frame.startDB()
+			self.frame.speak("Configuración guardada", 1)
 		self.frame.activar(False)
-		self.frame.speak("Configuración guardada", 1)
 		try:
 			if self.frame.startTimer.is_running:
 				self.frame.startTimer.stop()
