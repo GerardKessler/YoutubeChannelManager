@@ -37,10 +37,24 @@ import sqlite3 as sql
 sql.__path__.append(os.path.join(dirAddon, "lib", "sqlite3"))
 import youtube_dl
 del sys.path[-2:]
+import addonHandler
+
+# Lína de traducción
+addonHandler.initTranslation()
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
-	def __init__(self):
-		super(GlobalPlugin, self).__init__()
+
+	# messages:
+	unselected = _('Ningún canal seleccionado')
+	noDatabase = _('No hay canales en la base de datos')
+	attention = _('Atención')
+	saveChanges = _('&Guardar los cambios')
+	discard = _('&Descartar cambios y cerrar')
+	itemsData = [_('Duración'), _('Fecha de subida'), _('Reproducciones'), _('Me gusta'), _('Descripción'), _('Datos del video')]
+
+
+	def __init__(self, *args, **kwargs):
+		super(GlobalPlugin, self).__init__(*args, **kwargs)
 		if globalVars.appArgs.secure: return
 		self.connect = None
 		self.cursor = None
@@ -67,7 +81,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		core.postNvdaStartup.register(self.firstRun)
 
 	def firstRun(self):
-		self.mainThread = HiloComplemento()
+		self.mainThread = AddonThread()
 		self.mainThread.start()
 		self.startDB()
 
@@ -114,7 +128,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def setTimer(self):
 		if self.update_time > 0:
-			times = [False, 86400, 43200, 28800, 14400, 7200, 360]
+			times = [False, 86400, 43200, 28800, 14400, 7200, 3600]
 			self.startTimer = StartTimer(times[self.update_time], self.checkUpdate)
 
 	def checkUpdate(self):
@@ -129,13 +143,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if len(self.channels) == 0: return
 		if self.channels[0][1] == None: return
 		self.desactivar(False)
-		self.dlg = ChannelSettings(gui.mainFrame, "Configuración de canal", self, self.connect, self.cursor)
+		self.dlg = ChannelSettings(gui.mainFrame, _('Configuración de canal'), self, self.connect, self.cursor)
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
 
 	def script_globalSettings(self, gesture):
 		self.desactivar(False)
-		self.dlg = GlobalSettings(gui.mainFrame, "Configuraciones", self, self.connect, self.cursor)
+		self.dlg = GlobalSettings(gui.mainFrame, _('Configuraciones'), self, self.connect, self.cursor)
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
 
@@ -143,20 +157,20 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if len(self.channels) > 0:
 			if self.channels[0][1] == None: return
 		self.desactivar(False)
-		self.dlg = NewChannel(gui.mainFrame, "Añadir canal", self, self.connect, self.cursor)
+		self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor)
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
 
 	def script_newSearch(self, gesture):
 		if len(self.channels) == 0:
-			ui.message("Ningún canal seleccionado")
+			ui.message(unselected)
 			return
 		self.desactivar(False)
 		if self.channels[0][1] == None:
 			self.channels = self.channels_temp
 			self.videos = self.videos_temp
 			self.index = self.index_temp
-		self.dlg = NewSearch(gui.mainFrame, "Nueva búsqueda", self, self.connect, self.cursor)
+		self.dlg = NewSearch(gui.mainFrame, _('Nueva búsqueda'), self, self.connect, self.cursor)
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
 
@@ -164,17 +178,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		Thread(target=self.startRemoveDatabase, daemon= True).start()
 
 	def startRemoveDatabase(self):
-		modal = wx.MessageDialog(None, f'¿Seguro que quieres eliminar la base de datos?', _("¡Atención!"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+		modal = wx.MessageDialog(None, _(f'¿Seguro que quieres eliminar la base de datos?'), _('¡Atención!'), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 		if modal.ShowModal() == wx.ID_YES:
 			self.connect.close()
 			os.remove(os.path.join(globalVars.appArgs.configPath, "channels"))
 			self.startDB(True)
-			self.speak("Base de datos eliminada", 0.3)
+			self.speak(_('Base de datos eliminada'), 0.3)
 
 	def script_removeChannel(self, gesture):
 		try:
 			if len(self.channels) == 0:
-				ui.message("Ningún canal seleccionado")
+				ui.message(unselected)
 				return
 			elif self.channels[0][1] == None:
 				self.channels = self.channels_temp
@@ -182,7 +196,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self.index = self.index_temp
 				self.x = 0
 				self.y = 0
-				ui.message("Búsqueda eliminada")
+				ui.message(_('Búsqueda eliminada'))
 				if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "recicled.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 				return
 			Thread(target=self.startRemoveChannel, daemon= True).start()
@@ -190,7 +204,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		except:
 			pass
 	def startRemoveChannel(self):
-		modal = wx.MessageDialog(None, f'¿Quieres eliminar el canal {self.channels[self.y][0]}?', _("Atención"), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+		modal = wx.MessageDialog(None, _(f'¿Quieres eliminar el canal {self.channels[self.y][0]}?'), attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 		if modal.ShowModal() == wx.ID_YES:
 			self.cursor.execute(f'delete from videos where channel_id = "{self.channels[self.y][2]}"')
 			self.cursor.execute(f'delete from channels where channel_id = "{self.channels[self.y][2]}"')
@@ -212,13 +226,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		speech.setSpeechMode(speech.SpeechMode.talk)
 		ui.message(str)
 
-	@script(gesture="kb:NVDA+y", description="Activa y desactiva la interfaz invisible", category= "YoutubeChannelManager")
+	@script(
+		category= "YoutubeChannelManager",
+		# Translators: Descripción del elemento en el diálogo gestos de entrada
+		description= _('Activa y desactiva la interfaz invisible'),
+		gesture="kb:NVDA+y"
+	)
 	def script_toggle(self, gesture):
 		self.desactivar() if self.switch else self.activar()
 
 	def activar(self, speak= True):
 			self.switch = True
-			if speak: ui.message("Atajos activados")
+			if speak: ui.message(_('Atajos activados'))
 			self.bindGestures(
 				{"kb:downArrow":"nextItem",
 				"kb:upArrow":"previousItem",
@@ -243,13 +262,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def desactivar(self, speak=True):
 		self.switch = False
-		if speak: ui.message("Atajos desactivados")
+		if speak: ui.message(_('Atajos desactivados'))
 		self.clearGestureBindings()
 		self.bindGestures(self.__gestures)
 
 	def script_helpCommands(self, gesture):
 		self.desactivar(False)
-		help_text="""
+		# Translators: Ayuda de teclado
+		help_text= _("""
 Escape; desactiva la interfaz virtual.
 n; Activa el diálogo para añadir un nuevo canal.
 s; Activa la ventana de configuración del canal actual.
@@ -260,20 +280,19 @@ d; abre una ventana con datos del video actual.
 b; Activa el cuadro de búsqueda.
 suprimir; Activa el diálogo para eliminar el canal actual, y en la ventana de resultados, elimina la columna y vuelve a la lista de canales.
 control + shift + suprimir; elimina la base de datos.
-f5; Busca videos nuevos en el canal actual."""
-		ui.browseableMessage(help_text, "Ayuda de comandos")
-
+f5; Busca videos nuevos en el canal actual.""")
+		ui.browseableMessage(help_text, _('Ayuda de comandos'))
 
 	def script_nextItem(self, gesture):
 		try:
 			if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 			self.z += 1
 			if self.z < len(self.videos[self.y]):
-				ui.message(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}')
+				ui.message(_(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}'))
 			else:
 				if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 				self.z = 0
-				ui.message(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}')
+				ui.message(_(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}'))
 		except IndexError:
 			pass
 
@@ -282,11 +301,11 @@ f5; Busca videos nuevos en el canal actual."""
 			if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 			self.z -= 1
 			if self.z >= 0:
-				ui.message(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}')
+				ui.message(_(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}'))
 			else:
 				if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 				self.z = len(self.videos[self.y]) - 1
-				ui.message(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}')
+				ui.message(_(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}'))
 		except IndexError:
 			pass
 
@@ -297,14 +316,14 @@ f5; Busca videos nuevos en el canal actual."""
 			self.y += 1
 			if self.y < len(self.index):
 				self.z = self.index[self.y]
-				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
+				ui.message(_(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}'))
 			else:
 				if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 				self.y = 0
 				self.z = self.index[self.y]
-				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
+				ui.message(_(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}'))
 		except IndexError:
-			ui.message("No hay canales en la base de datos")
+			ui.message(noDatabase)
 
 	def script_previousSection(self, gesture):
 		try:
@@ -320,32 +339,32 @@ f5; Busca videos nuevos en el canal actual."""
 				self.z = self.index[self.y]
 				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
 		except IndexError:
-			ui.message("No hay canales en la base de datos")
+			ui.message(noDatabase)
 
 	def script_open(self, gesture):
 		if len(self.channels) == 0:
-			ui.message("Ningún canal seleccionado")
+			ui.message(unselected)
 			return
-		ui.message("Abriendo el link en el navegador...")
+		ui.message(_('Abriendo el link en el navegador...'))
 		webbrowser.open(self.videos[self.y][self.z][1], new=0, autoraise=True)
 		self.desactivar(False)
 
 	def script_firstItem(self, gesture):
 		if len(self.channels) == 0:
-			ui.message("Ningún canal seleccionado")
+			ui.message(unselected)
 			return
 		self.z = 0
 		ui.message(self.videos[self.y][self.z][0])
 
 	def script_positionAnnounce(self, gesture):
 		if len(self.channels) == 0:
-			ui.message("Ningún canal seleccionado")
+			ui.message(unselected)
 			return
-		ui.message(f'{self.z+1} de {len(self.videos[self.y])}, {self.videos[self.y][self.z][4]} reproducciones. {self.videos[self.y][self.z][5]}. Pulsa f1 para ver la ayuda de comandos')
+		ui.message(_(f'{self.z+1} de {len(self.videos[self.y])}, {self.videos[self.y][self.z][4]} reproducciones. {self.videos[self.y][self.z][5]}. Pulsa f1 para ver la ayuda de comandos'))
 
 	def script_reloadChannel(self, gesture):
 		if len(self.channels) == 0:
-			ui.message("Ningún canal seleccionado")
+			ui.message(unselected)
 			return
 		self.cursor.execute(f'select video_id from videos where channel_id = "{self.channels[self.y][2]}"')
 		last_video = self.cursor.fetchall()
@@ -360,11 +379,11 @@ f5; Busca videos nuevos en el canal actual."""
 			else:
 				break
 		if len(new_videos) == 0:
-			if messages: ui.message("No se han encontrado videos nuevos para este canal")
+			if messages: ui.message(_('No se han encontrado videos nuevos para este canal'))
 		elif len(new_videos) == 1:
-			Thread(target=self.downloadNewVideos, args=(new_videos, f"Se ha añadido un video nuevo en {channel[0]}", channel), daemon= True).start()
+			Thread(target=self.downloadNewVideos, args=(new_videos, _(f'Se ha añadido un video nuevo en {channel[0]}'), channel), daemon= True).start()
 		elif len(new_videos) > 1:
-			Thread(target=self.downloadNewVideos, args=(new_videos, f"Se han añadido {len(new_videos)} videos nuevos en {channel[0]}", channel), daemon= True).start()
+			Thread(target=self.downloadNewVideos, args=(new_videos, _(f'Se han añadido {len(new_videos)} videos nuevos en {channel[0]}'), channel), daemon= True).start()
 
 	def getVideosList(self, channel_url):
 		content = urllib.request.urlopen(channel_url).read().decode('utf-8')
@@ -390,7 +409,7 @@ f5; Busca videos nuevos en el canal actual."""
 
 	def script_copyLink(self, gesture):
 		if len(self.channels) == 0:
-			ui.message("Ningún canal seleccionado")
+			ui.message(unselected)
 			return
 		self.desactivar(False)
 		api.copyToClip(self.videos[self.y][self.z][1])
@@ -401,10 +420,10 @@ f5; Busca videos nuevos en el canal actual."""
 
 	def script_viewData(self, gesture):
 		if len(self.channels) == 0:
-			ui.message("Ningún canal seleccionado")
+			ui.message(unselected)
 			return
 		self.desactivar(False)
-		ui.message("Obteniendo los datos del video...")
+		ui.message(_('Obteniendo los datos del video...'))
 		Thread(target=self.startViewData, daemon= True).start()
 
 	def getData(self, url):
@@ -416,12 +435,12 @@ f5; Busca videos nuevos en el canal actual."""
 		p = self.getData(self.videos[self.y][self.z][1])
 		upload_date = f'{p["upload_date"][6:][:2]}.{p["upload_date"][4:][:2]}.{p["upload_date"][:4]}'
 		time = self.timeFormat(p["duration"])
-		data = f'''Duración: {time}
-Fecha de subida: {upload_date}
-Reproducciones: {p["view_count"]}
-Me gusta: {p["like_count"]}
-Descripción: {p["description"]}'''
-		ui.browseableMessage(data, "Datos del video")
+		data = f'''{self.itemsData[0]}: {time}
+{self.itemsData[1]}: {upload_date}
+{self.itemsData[2]}: {p["view_count"]}
+{self.itemsData[3]}: {p["like_count"]}
+{self.itemsData[4]}: {p["description"]}'''
+		ui.browseableMessage(data, self.itemsData[5])
 
 	def timeFormat(self, seconds):
 		hs = int(seconds/3600)
@@ -441,18 +460,18 @@ Descripción: {p["description"]}'''
 
 	def script_openAudio(self, gesture):
 		if len(self.channels) == 0:
-			ui.message("Ningún canal seleccionado")
+			ui.message(unselected)
 			return
 		self.desactivar(False)
 		Thread(target=self.startOpenAudio, daemon= True).start()
-		ui.message("Activando el reproductor web...")
+		ui.message(_('Activando el reproductor web...'))
 
 	def startOpenAudio(self, time= False):
 		audio_url = self.getAudioUrl(self.videos[self.y][self.z][1])
 		self.openPlayer(self.videos[self.y][self.z][0], audio_url)
 
 	def openPlayer(self, title, url):
-		code = f'''
+		code = _(f'''
 <!doctype html>
 <html lang="es">
 <head>
@@ -465,7 +484,7 @@ Descripción: {p["description"]}'''
 </audio>
 </body>
 </html>
-		'''
+		''')
 		with open(os.path.join(dirAddon, "reproductor", "index.html"), "w", encoding="utf-8") as file:
 			file.write(code)
 		webbrowser.open(f"file://{dirAddon}/reproductor/index.html", new=2)
@@ -481,9 +500,9 @@ Descripción: {p["description"]}'''
 		tiempoTotal = str(timedelta(seconds=int(str(video['duration']).split(".")[0])))
 		return [audioUrl, tiempoTotal] if tiempo else audioUrl
 
-class HiloComplemento(Thread):
+class AddonThread(Thread):
 	def __init__(self):
-		super(HiloComplemento, self).__init__()
+		super(AddonThread, self).__init__()
 		self.daemon = True
 
 	def run(self):
@@ -494,8 +513,8 @@ class HiloComplemento(Thread):
 			gitJson = json.loads(r.decode('utf-8'))
 			if gitJson[0]["tag_name"] > youtube_dl.version.__version__:
 				urlDescarga = gitJson[0]['zipball_url']
-				xguiMsg = "Existe una nueva versión de la librería youtube_dl. ¿Quieres actualizarla?"
-				msg = wx.MessageDialog(None, xguiMsg, "Atención", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+				xguiMsg = _('Existe una nueva versión de la librería youtube_dl. ¿Quieres actualizarla?')
+				msg = wx.MessageDialog(None, xguiMsg, attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 				ret = msg.ShowModal()
 				if ret == wx.ID_YES:
 					msg.Destroy()
@@ -523,14 +542,13 @@ class HiloComplemento(Thread):
 
 		wx.CallAfter(chkActualizacion)
 
-
 class DescargaDialogo(wx.Dialog):
 	def __init__(self, url):
 
 		WIDTH = 550
 		HEIGHT = 400
 
-		super(DescargaDialogo, self).__init__(None, -1, title=_("Actualizando la librería..."), size = (WIDTH, HEIGHT))
+		super(DescargaDialogo, self).__init__(None, -1, title=_('Actualizando la librería...'), size = (WIDTH, HEIGHT))
 
 		self.CenterOnScreen()
 
@@ -543,11 +561,11 @@ class DescargaDialogo(wx.Dialog):
 		self.textorefresco = wx.TextCtrl(self.Panel, wx.ID_ANY, style =wx.TE_MULTILINE|wx.TE_READONLY)
 		self.textorefresco.Bind(wx.EVT_CONTEXT_MENU, self.skip)
 
-		self.aceptarBTN = wx.Button(self.Panel, 1, _("&Aceptar"))
+		self.aceptarBTN = wx.Button(self.Panel, 1, _('&Aceptar'))
 		self.Bind(wx.EVT_BUTTON, self.onAceptar, id=self.aceptarBTN.GetId())
 		self.aceptarBTN.Disable()
 
-		self.cerrarBTN = wx.Button(self.Panel, 2, _("&Cerrar"))
+		self.cerrarBTN = wx.Button(self.Panel, 2, _('&Cerrar'))
 		self.Bind(wx.EVT_BUTTON, self.onCerrar, id=self.cerrarBTN.GetId())
 		self.cerrarBTN.Disable()
 
@@ -646,11 +664,11 @@ class HiloDescarga(Thread):
 			if readsofar >= total_size: # Si queremos hacer algo cuando la descarga termina.
 				pass
 		else: # Si la descarga es solo el tamaño
-			wx.CallAfter(self.frame.TextoRefresco, _("Espere por favor...\n") + _("Descargando: %s") % self.humanbytes(readsofar))
+			wx.CallAfter(self.frame.TextoRefresco, _('Espere por favor...\n') + _('Descargando: %s') % self.humanbytes(readsofar))
 
 	def run(self):
 		try:
-			socket.setdefaulttimeout(30) # Dara error si pasan 30 seg sin internet
+			socket.setdefaulttimeout(30) # Error si pasan 30 segundos sin internet
 			try:
 				req = urllib.request.Request(self.url, headers={'User-Agent': 'Mozilla/5.0'})
 				obj = urllib.request.urlopen(req).geturl()
@@ -658,10 +676,10 @@ class HiloDescarga(Thread):
 			except Exception as e:
 				urllib.request.urlretrieve(self.url, os.path.join(dirAddon, "temp.zip"), reporthook=self.__call__)
 
-			msg = _("Descarga finalizada. Cierre la ventana para terminar de instalar la librería y reiniciar NVDA.")
+			msg = _('Descarga finalizada. Cierre la ventana para terminar de instalar la librería y reiniciar NVDA.')
 			wx.CallAfter(self.frame.done, msg)
 		except Exception as e:
-			wx.CallAfter(self.frame.error, _("Algo salió mal.\n") + _("Compruebe que tiene conexión a internet y vuelva a intentarlo.\n") + _("Ya puede cerrar esta ventana."))
+			wx.CallAfter(self.frame.error, _('Algo salió mal.\n') + _('Compruebe si tiene conexión a internet y vuelva a intentarlo.\n') + _('Ya puede cerrar esta ventana.'))
 
 class MyLogger(object):
 	def debug(self, msg):
@@ -681,9 +699,9 @@ class NewChannel(wx.Dialog):
 		self.connect = connect
 		self.cursor = cursor
 		self.Panel = wx.Panel(self)
-		wx.StaticText(self.Panel, wx.ID_ANY, "Ingresa el nombre del canal")
+		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa el nombre del canal'))
 		self.channelName = wx.TextCtrl(self.Panel,wx.ID_ANY)
-		wx.StaticText(self.Panel, wx.ID_ANY, "Ingresa la URL del canal")
+		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa la URL del canal'))
 		self.channelLink = wx.TextCtrl(self.Panel,wx.ID_ANY)
 		self.addBTN = wx.Button(self.Panel, wx.ID_ANY, "&Añadir canal")
 		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, "&Cancelar")
@@ -699,12 +717,12 @@ class NewChannel(wx.Dialog):
 	def addChannel(self, event):
 		channel_name = self.channelName.GetValue()
 		if channel_name == "":
-			ui.message("Debes ingresar algún nombre para este canal")
+			ui.message(_('Debes ingresar algún nombre para este canal'))
 			self.channelName.SetFocus()
 			return
 		channel_url = self.getChannelUrl(self.channelLink.GetValue())
 		if not channel_url:
-			ui.message("La url ingresada no es válida")
+			ui.message(_('La url ingresada no es válida'))
 			self.channelLink.SetValue("")
 			self.channelLink.SetFocus()
 			return
@@ -715,8 +733,8 @@ class NewChannel(wx.Dialog):
 		self.Close()
 
 	def getChannelUrl(self, url):
-		if not re.search(r'http(s)?...(www)?.?youtube.com.', url): return None
-		if re.search(r'http(s)?...(www)?.?youtube.com.channel.', url): return url
+		if not re.search(r'https?...(www.)?youtube.com.', url): return None
+		if re.search(r'https?...(www.)?youtube.com.channel.', url): return url
 		content = urllib.request.urlopen(url).read().decode()
 		channelUrl = re.search(r'(?<=")\/channel\/[\w\-\?\.]+(?=")', content)
 		if channelUrl:
@@ -735,7 +753,7 @@ class NewChannel(wx.Dialog):
 		self.connect.close()
 		self.frame.startDB()
 		if self.frame.sounds: winsound.PlaySound(None, winsound.SND_PURGE)
-		ui.message("Proceso Finalizado")
+		ui.message(_('Proceso Finalizado'))
 
 	def insert_channel(self, entities):
 		self.cursor.execute(f'insert into channels(name, url, channel_id, favorite) values(?, ?, ?, ?)', entities)
@@ -761,10 +779,10 @@ class NewSearch(wx.Dialog):
 		self.connect = connect
 		self.cursor = cursor
 		self.Panel = wx.Panel(self)
-		wx.StaticText(self.Panel, wx.ID_ANY, "Ingresa el término de búsqueda y pulsa intro")
+		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa el término de búsqueda y pulsa intro'))
 		self.searchText = wx.TextCtrl(self.Panel,wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
-		self.searchBTN = wx.Button(self.Panel, wx.ID_ANY, "&Iniciar la búsqueda")
-		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, "&Cancelar")
+		self.searchBTN = wx.Button(self.Panel, wx.ID_ANY, _('&Iniciar la búsqueda'))
+		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, _('&Cancelar'))
 		self.searchText.Bind(wx.EVT_CONTEXT_MENU, self.onPass)
 		self.searchText.Bind(wx.EVT_TEXT_ENTER, self.startSearch)
 		self.searchBTN.Bind(wx.EVT_BUTTON, self.startSearch)
@@ -789,10 +807,10 @@ class NewSearch(wx.Dialog):
 			self.frame.z = 0
 			self.frame.activar(False)
 			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "yResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
-			self.frame.speak(f"Se han encontrado {len(results)} resultados", 0.2)
+			self.frame.speak(_(f'Se han encontrado {len(results)} resultados'), 0.2)
 		else:
 			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "nResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
-			self.frame.speak("No se han encontrado resultados", 0.2)
+			self.frame.speak(_('No se han encontrado resultados'), 0.2)
 			self.frame.activar(False)
 		self.Close()
 
@@ -812,13 +830,13 @@ class ChannelSettings(wx.Dialog):
 		self.connect = connect
 		self.cursor = cursor
 		self.Panel = wx.Panel(self)
-		wx.StaticText(self.Panel, wx.ID_ANY, "Nombre del canal")
+		wx.StaticText(self.Panel, wx.ID_ANY, _('Nombre del canal'))
 		self.channelName = wx.TextCtrl(self.Panel,wx.ID_ANY)
 		self.channelName.SetValue(self.frame.channels[self.frame.y][0])
-		self.checkbox = wx.CheckBox(self.Panel, wx.ID_ANY, _("Canal favorito"))
+		self.checkbox = wx.CheckBox(self.Panel, wx.ID_ANY, _('Canal favorito'))
 		self.checkbox.SetValue(self.frame.channels[self.frame.y][3])
-		self.saveBTN = wx.Button(self.Panel, wx.ID_ANY, "&Guardar los cambios")
-		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, "&Descartar cambios y cerrar")
+		self.saveBTN = wx.Button(self.Panel, wx.ID_ANY, saveChanges)
+		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, discard)
 		self.channelName.Bind(wx.EVT_CONTEXT_MENU, self.onPass)
 		self.saveBTN.Bind(wx.EVT_BUTTON, self.saveSettings)
 		self.Bind(wx.EVT_ACTIVATE, self.onSalir)
@@ -846,7 +864,7 @@ class ChannelSettings(wx.Dialog):
 			self.connect.commit()
 			self.connect.close()
 			self.frame.startDB()
-			self.frame.speak("Configuración guardada", 1)
+			self.frame.speak(_('Configuración guardada'), 1)
 		self.frame.activar(False)
 		try:
 			if self.frame.startTimer.is_running:
@@ -861,14 +879,14 @@ class GlobalSettings(wx.Dialog):
 		self.connect = connect
 		self.cursor = cursor
 		self.Panel = wx.Panel(self)
-		self.checkbox = wx.CheckBox(self.Panel, wx.ID_ANY, _("Activar los sonidos del complemento"))
+		self.checkbox = wx.CheckBox(self.Panel, wx.ID_ANY, _('Activar los sonidos del complemento'))
 		self.checkbox.SetValue(self.frame.sounds)
-		self.listbox = wx.RadioBox(self.Panel, wx.ID_ANY, "Selecciona el intervalo de tiempo para la verificación de nuevas subidas en los canales favoritos", choices=["Desactivado", "24 horas", "12 horas", "8 horas", "4 horas", "2 horas", "1 hora"])
+		self.listbox = wx.RadioBox(self.Panel, wx.ID_ANY, _('Selecciona el intervalo de tiempo para la verificación de nuevas subidas en los canales favoritos'), choices=[_('Desactivado'), _('24 horas'), _('12 horas'), _('8 horas'), _('4 horas'), _('2 horas'), _('1 hora')])
 		self.listbox.SetSelection(self.frame.update_time)
-		self.radio = wx.RadioBox(self.Panel, wx.ID_ANY, "Selecciona el órden en el que van a mostrarse los videos", choices=["Del último al primero", "Del primero al último", "Del más visto al menos visto", "Del menos visto al mas visto"])
+		self.radio = wx.RadioBox(self.Panel, wx.ID_ANY, _('Seleccione el órden de aparición de los videos del canal'), choices=[_('Del último al primero'), _('Del primero al último'), _('Del más visto al menos visto'), _('Del menos visto al mas visto')])
 		self.radio.SetSelection(self.frame.order_by)
-		self.saveBTN = wx.Button(self.Panel, wx.ID_ANY, "&Guardar los cambios")
-		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, "&Descartar cambios y cerrar")
+		self.saveBTN = wx.Button(self.Panel, wx.ID_ANY, saveChanges)
+		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, discard)
 		self.saveBTN.Bind(wx.EVT_BUTTON, self.saveSettings)
 		self.Bind(wx.EVT_ACTIVATE, self.onSalir)
 		self.Bind(wx.EVT_BUTTON, self.onSalir, id=wx.ID_CANCEL)
@@ -896,14 +914,14 @@ class GlobalSettings(wx.Dialog):
 			self.connect.close()
 			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 			if self.frame.update_time != update_time:
-				modal = wx.MessageDialog(None, f'Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres reiniciar ahora?', 'Atención', wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+				modal = wx.MessageDialog(None, _(f'Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres reiniciar ahora?'), attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 				if modal.ShowModal() == wx.ID_YES:
 					core.restart()
 				else:
 					modal.Destroy()
 			else:
 				self.frame.startDB()
-				self.frame.speak("Configuraciones aplicadas", 1)
+				self.frame.speak(_('Configuraciones aplicadas'), 1)
 
 class StartTimer(object):
 	def __init__(self, interval, function, *args, **kwargs):
