@@ -68,7 +68,7 @@ El complemento permite buscar por palabras clave entre el nombre de todos los vi
 
 * Activar la interfaz virtual con el gesto asignado, por defecto, NVDA + i griega.
 * Activar la ventana de búsqueda con la letra b.
-* Escribir una palabra o algo de referencia.
+* Escribir una palabra o frase de referencia.
 * pulsar intro o el botón iniciar la búsqueda.
 
 Si no se encuentran resultados, se avisa a través de un mensaje y no se  modifica la interfaz virtual.  
