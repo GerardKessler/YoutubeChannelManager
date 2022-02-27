@@ -81,9 +81,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		core.postNvdaStartup.register(self.firstRun)
 
 	def firstRun(self):
-		self.mainThread = AddonThread()
-		self.mainThread.start()
+		Thread(target=self.updatedYoutube_dl, daemon= True).start()
 		self.startDB()
+
+	def updatedYoutube_dl(self):
+		time.sleep(10)
+		self.mainThread = AddonThread(self)
+		self.mainThread.start()
 
 	def startDB(self, read= True):
 		if not os.path.exists(os.path.join(globalVars.appArgs.configPath, "channels")):
@@ -501,8 +505,9 @@ f5; Busca videos nuevos en el canal actual.""")
 		return [audioUrl, tiempoTotal] if tiempo else audioUrl
 
 class AddonThread(Thread):
-	def __init__(self):
-		super(AddonThread, self).__init__()
+	def __init__(self, frame):
+		super(AddonThread, self).__init__(frame)
+		self.frame = frame
 		self.daemon = True
 
 	def run(self):
@@ -514,7 +519,7 @@ class AddonThread(Thread):
 			if gitJson[0]["tag_name"] > youtube_dl.version.__version__:
 				urlDescarga = gitJson[0]['zipball_url']
 				xguiMsg = _('Existe una nueva versión de la librería youtube_dl. ¿Quieres actualizarla?')
-				msg = wx.MessageDialog(None, xguiMsg, attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+				msg = wx.MessageDialog(None, xguiMsg, self.frame.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 				ret = msg.ShowModal()
 				if ret == wx.ID_YES:
 					msg.Destroy()
