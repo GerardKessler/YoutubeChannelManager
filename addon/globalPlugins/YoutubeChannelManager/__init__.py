@@ -44,14 +44,14 @@ addonHandler.initTranslation()
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
-	# messages:
+	# Translatable Strings
 	unselected = _('Ningún canal seleccionado')
 	noDatabase = _('No hay canales en la base de datos')
 	attention = _('Atención')
 	saveChanges = _('&Guardar los cambios')
 	discard = _('&Descartar cambios y cerrar')
 	itemsData = [_('Duración'), _('Fecha de subida'), _('Reproducciones'), _('Me gusta'), _('Descripción'), _('Datos del video')]
-	html_elements = ["Reproducir", "Retroceder 10 segundos", "Adelantar 10 segundos", "Velocidad de reproducción", "Bajar volúmen", "Silenciar, Quitar silencio", "Subir volúmen"]
+	html_elements = [_('Reproducir'), _('Retroceder 10 segundos'), _('Adelantar 10 segundos'), _('Velocidad de reproducción'), _('Bajar volúmen'), _('Silenciar, quitar silencio'), _('Subir volúmen')]
 
 
 	def __init__(self, *args, **kwargs):
