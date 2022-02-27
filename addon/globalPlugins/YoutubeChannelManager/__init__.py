@@ -51,6 +51,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	saveChanges = _('&Guardar los cambios')
 	discard = _('&Descartar cambios y cerrar')
 	itemsData = [_('Duración'), _('Fecha de subida'), _('Reproducciones'), _('Me gusta'), _('Descripción'), _('Datos del video')]
+	html_elements = ["Reproducir", "Retroceder 10 segundos", "Adelantar 10 segundos", "Velocidad de reproducción", "Bajar volúmen", "Silenciar, Quitar silencio", "Subir volúmen"]
 
 
 	def __init__(self, *args, **kwargs):
@@ -475,20 +476,32 @@ f5; Busca videos nuevos en el canal actual.""")
 		self.openPlayer(self.videos[self.y][self.z][0], audio_url)
 
 	def openPlayer(self, title, url):
-		code = _(f'''
+		code = f'''
 <!doctype html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <title>{title}</title>
-<script src="reproductor.js"></script>
 </head>
 <body>
-<audio src="{url}" id="reproductor" preload="metadata">
+<audio onTimeUpdate='audioTime();' src="{url}" id="reproductor" preload="auto">
 </audio>
+<ul style="list-style:none;margin-left:auto;margin-right:auto;">
+<li><button accesskey="k" id="toggle" onClick='playPause();'>{self.html_elements[0]}</button></li>
+<li><button accesskey="j" id="back" onClick='timeBack();'>{self.html_elements[1]}</button></li>
+<li><p accesskey="i" id="time" onClick='speak(this.textContent);'>0:00</p></li>
+<li><button accesskey="l" id="advance" onClick='timeAdvance();'>{self.html_elements[2]}</button></li>
+<li><label>{self.html_elements[3]}<input type="range" min="0" max="100" step="10" value="50" onChange='audioRate(this.value)' /></label></li>
+<li><button accesskey="o" onClick='volumeDown();'>{self.html_elements[4]}</button></li>
+<li><button accesskey="m" onClick='toggleMute();'>{self.html_elements[5]}</button></li>
+<li><button accesskey="u" onClick='volumeUp();'>{self.html_elements[6]}</button></li>
+<div id="alert" aria-live="assertive"></div>
+</ul>
+
 </body>
+<script src="reproductor.js"></script>
 </html>
-		''')
+		'''
 		with open(os.path.join(dirAddon, "reproductor", "index.html"), "w", encoding="utf-8") as file:
 			file.write(code)
 		webbrowser.open(f"file://{dirAddon}/reproductor/index.html", new=2)
