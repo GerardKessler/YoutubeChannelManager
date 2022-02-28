@@ -19,8 +19,6 @@ Este complemento permite gestionar los canales favoritos de la plataforma Youtub
 * n; abre el diálogo para añadir un nuevo canal.
 * s; Activa la ventana de configuración del canal con el foco.
 * g; Activa la ventana de opciones globales.
-* b; Activa la ventana de búsqueda de videos en la base de datos.
-* control + b; Activa la ventana de búsqueda de videos en la página de Youtube.
 * Suprimir; elimina el canal con el foco, y en la ventana de resultados elimina la columna y vuelve a la vista de canales.
 * control + shift + suprimir; Elimina la base de datos.
 * o; abre el link del video en el navegador por defecto.

@@ -179,6 +179,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
 
+	def script_globalSearch(self, gesture):
+		self.desactivar(False)
+		if self.channels[0][1] == None:
+			self.channels = self.channels_temp
+			self.videos = self.videos_temp
+			self.index = self.index_temp
+		gSearch = GlobalSearch(gui.mainFrame, _('Búsqueda global'), self)
+		gui.mainFrame.prePopup()
+		gSearch.Show()
+
 	def script_removeDatabase(self, gesture):
 		Thread(target=self.startRemoveDatabase, daemon= True).start()
 
@@ -256,6 +266,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:end":"positionAnnounce",
 				"kb:n":"newChannel",
 				"kb:b":"newSearch",
+				"kb:control+b":"globalSearch",
 				"kb:c":"copyLink",
 				"kb:d":"viewData",
 				"kb:delete":"removeChannel",
@@ -281,8 +292,10 @@ s; Activa la ventana de configuración del canal actual.
 g; Activa la ventana de opciones globales.
 o; abre el link del video actual en el navegador por defecto.
 r; Carga el audio en un reproductor web personalizado.
+c; copia el link del video actual al portapapeles.
 d; abre una ventana con datos del video actual.
-b; Activa el cuadro de búsqueda.
+b; Activa el cuadro de búsqueda de videos en la base de datos.
+control + b; Activa el cuadro de búsqueda de videos en la página de Youtube.
 suprimir; Activa el diálogo para eliminar el canal actual, y en la ventana de resultados, elimina la columna y vuelve a la lista de canales.
 control + shift + suprimir; elimina la base de datos.
 f5; Busca videos nuevos en el canal actual.""")
@@ -966,3 +979,82 @@ class StartTimer(object):
 	def stop(self):
 		self._timer.cancel()
 		self.is_running = False
+
+class MyLogger(object):
+	def debug(self, msg):
+		pass
+	def warning(self, msg):
+		pass
+	def error(self, msg):
+		pass
+
+class GlobalSearch(wx.Dialog):
+	def __init__(self, parent, title, frame):
+		super(GlobalSearch, self).__init__(parent, -1, title= title)
+		self.YDL_OPTIONS = {
+			'format': 'bestaudio',
+			'extract_flat': 'in_playlist',
+			'dump_single_json': True,
+			'noplaylist':'True',
+			'logger': MyLogger()
+		}
+		self.frame = frame
+		self.Panel = wx.Panel(self)
+		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa los términos de búsqueda'))
+		self.textSearch = wx.TextCtrl(self.Panel,wx.ID_ANY)
+		self.radiobox = wx.RadioBox(self.Panel, wx.ID_ANY, _('Selecciona el número de resultados  a mostrarse'), choices=[_('10 resultados'), _('20 resultados'), _('30 resultados'), _('40 resultados'), _('50 resultados')])
+		self.radiobox.SetSelection(2)
+		self.searchBTN = wx.Button(self.Panel, wx.ID_ANY, _('Iniciar la búsqueda'))
+		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, _('Cancelar'))
+		self.searchBTN.Bind(wx.EVT_BUTTON, self.search)
+		self.Bind(wx.EVT_ACTIVATE, self.onSalir)
+		self.Bind(wx.EVT_BUTTON, self.onSalir, id=wx.ID_CANCEL)
+
+	def onPass(self, event):
+		pass
+
+	def onSalir(self, event):
+		if event.GetEventType() == 10012:
+			self.Destroy()
+			gui.mainFrame.postPopup()
+		elif event.GetActive() == False:
+			self.Destroy()
+			gui.mainFrame.postPopup()
+		event.Skip()
+
+	def search(self, evt):
+		str = self.textSearch.GetValue()
+		if len(str) > 0:
+			if self.frame.sounds: winsound.PlaySound("C:\\Windows\\Media\\Alarm05.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
+			self.Close()
+			Thread(target=self.startSearch, args=(str,), daemon= True).start()
+		else:
+			ui.message("Debes ingresar algún texto de búsqueda")
+			self.textSearch.SetFocus()
+
+	def startSearch(self, str):
+		count = (self.radiobox.GetSelection() + 1) * 10
+		with youtube_dl.YoutubeDL(self.YDL_OPTIONS) as ydl:
+			try:
+				results = ydl.extract_info(f'ytsearch{count}:{str}', download= False)
+			except:
+				if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "yResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+				ui.message(_('No se han encontrado resultados'))
+				return
+		if not len(results['entries']):
+			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "yResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			ui.message(_('No se han encontrado resultados'))
+			return
+		self.frame.channels_temp = self.frame.channels
+		self.frame.videos_temp = self.frame.videos
+		self.frame.index_temp = self.frame.index
+		self.frame.channels = [("Resultados globales", None)]
+		self.frame.index = [0]
+		self.frame.videos = []
+		videos = []
+		for video in results['entries']:
+			videos.append((video['title'], f"https://www.youtube.com/watch?v={video['url']}", video['id'], "Resultados globales", video['view_count'], "Resultados"))
+		self.frame.videos = [videos]
+		if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+		self.frame.activar(False)
+		
