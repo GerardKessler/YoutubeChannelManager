@@ -1054,6 +1054,8 @@ class GlobalSearch(wx.Dialog):
 		self.frame.channels_temp = self.frame.channels
 		self.frame.videos_temp = self.frame.videos
 		self.frame.index_temp = self.frame.index
+		self.frame.x = 0
+		self.frame.z = 0
 		self.frame.channels = [("Resultados globales", None)]
 		self.frame.index = [0]
 		self.frame.videos = []
