@@ -253,9 +253,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def script_toggle(self, gesture):
 		self.desactivar() if self.switch else self.activar()
 
-	def activar(self, speak= True):
+	def activar(self, speak= _('Atajos activados')):
 			self.switch = True
-			if speak: ui.message(_('Atajos activados'))
+			if speak: ui.message(speak)
 			self.bindGestures(
 				{"kb:downArrow":"nextItem",
 				"kb:upArrow":"previousItem",
@@ -1054,15 +1054,15 @@ class GlobalSearch(wx.Dialog):
 		self.frame.channels_temp = self.frame.channels
 		self.frame.videos_temp = self.frame.videos
 		self.frame.index_temp = self.frame.index
-		self.frame.x = 0
-		self.frame.z = 0
 		self.frame.channels = [("Resultados globales", None)]
 		self.frame.index = [0]
 		self.frame.videos = []
 		videos = []
 		for video in results['entries']:
 			videos.append((video['title'], f"https://www.youtube.com/watch?v={video['url']}", video['id'], None, video['view_count'], video['uploader']))
+		self.frame.x = 0
+		self.frame.z = 0
 		self.frame.videos = [videos]
+		time.sleep(3)
+		self.frame.activar(_('Búsqueda finalizada'))
 		if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
-		self.frame.activar(False)
-		
