@@ -5,7 +5,7 @@ Este complemento permite gestionar los canales favoritos de la plataforma Youtub
 
 ## Atajos del complemento
 
-* NVDA + y; Activa y desactiva la interfaz invisible
+* NVDA + i griega; Activa y desactiva la interfaz invisible
 
 ## Atajos disponibles en la interfaz invisible
 
@@ -17,17 +17,17 @@ Este complemento permite gestionar los canales favoritos de la plataforma Youtub
 * inicio; Se mueve al primer video del canal con el foco.
 * fin; verbaliza la posición, el nombre del canal, y el número de visualizaciones del video.
 * n; abre el diálogo para añadir un nuevo canal.
-* s; Activa la ventana de configuración del canal con el foco.
-* g; Activa la ventana de opciones globales.
-* b; Activa la ventana de búsqueda de videos en la base de datos.
-* control + b; Activa la ventana de búsqueda de videos en la página de Youtube.
-* Suprimir; elimina el canal con el foco, y en la ventana de resultados elimina la columna y vuelve a la vista de canales.
-* control + shift + suprimir; Elimina la base de datos.
 * o; abre el link del video en el navegador por defecto.
-*r; Abre el link de audio en un reproductor web personalizado.
+* r; Abre el link de audio en un reproductor web personalizado.
 * c; copia el link del video al portapapeles.
 * d; obtiene los datos del video y los muestra en una ventana de NVDA
+* b; Activa el diálogo de búsqueda en la base de datos.
+* Control + b; Activa el diálogo de búsqueda en la página de Youtube.
 * f5; Busca si existen videos nuevos en el canal con el foco.
+* s; Activa la ventana de configuración del canal con el foco.
+* g; Activa la ventana de opciones globales.
+* Suprimir; elimina el canal con el foco, y en la ventana de resultados elimina la columna y vuelve a la vista de canales.
+* control + shift + suprimir; Elimina la base de datos.
 * f1; activa la ayuda de comandos.
 
 ### Añadir canales
@@ -64,9 +64,9 @@ La verificación de novedades en los canales favoritos está desactivada por def
 
 Al encontrar novedades, el complemento emitirá un sonido durante la actualización y un mensaje al finalizar la misma.
 
-### Búsqueda de videos:
+### Búsqueda de videos en la base de datos:
 
-El complemento permite buscar por palabras clave entre el nombre de todos los videos en los canales agregados.  
+El complemento permite buscar por palabras clave entre los videos de los canales agregados a la base de datos.  
 
 * Activar la interfaz virtual con el gesto asignado, por defecto, NVDA + i griega.
 * Activar la ventana de búsqueda con la letra b.
@@ -78,4 +78,18 @@ En el caso de encontrar videos que se correspondan con los datos ingresados, se 
 Para navegar en ella, lo pueden hacer con flechas arriba y abajo. Están disponibles los mismos comandos que en la interfaz de canales; r para el reproductor web personalizado, o para abrir en el navegador, etcétera.  
 Para volver a la interfaz de canales hay que pulsar la tecla suprimir en la interfaz de resultados, lo que eliminará esa columna y devolverá la lista de canales y videos.
 
+### Búsqueda global:
+
+Para realizar una búsqueda global fuera de la base de datos hay que hacer lo siguiente:
+
+* Activar la interfaz virtual con el gesto asignado, por defecto, NVDA + i griega.
+* Activar la ventana de búsqueda con el atajo control + b.
+* Escribir una palabra o frase de referencia y seleccionar la cantidad de resultados a mostrar.
+* pulsar el botón iniciar la búsqueda.
+
+Si no se encuentran resultados, se avisa a través de un mensaje.  
+cuando se encuentran resultados, estos se agregan a la lista principal, la cual podemos recorrer con flechas arriba y abajo.  
+Aquí también tenemos los mismos atajos que en la búsqueda por base de datos. O para abrir en el navegador, r para el reproductor web, c para copiar el link, etcétera.
+Si alguno de los videos está en un canal que quiera agregarse a la base de datos, al pulsar la letra n sobre esta lista va a activarse el diálogo de nuevo canal con los campos de nombre y url ya completos. Estos campos pueden editarse si así lo prefieren.  
+Al igual que en las búsquedas en la base de datos, para volver a la lista de canales tan solo hay que pulsar suprimir para eliminar los resultados y volver a la interfaz de canales.
 

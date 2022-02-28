@@ -160,9 +160,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def script_newChannel(self, gesture):
 		if len(self.channels) > 0:
-			if self.channels[0][1] == None: return
+			if self.videos[0][0][3] != None: return
 		self.desactivar(False)
-		self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor)
+		if self.videos[0][0][3] == None:
+			self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, self.videos[0][self.z][5], self.videos[0][self.z][1])
+		else:
+			self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, "", "")
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
 
@@ -219,7 +222,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		except:
 			pass
 	def startRemoveChannel(self):
-		modal = wx.MessageDialog(None, _(f'¿Quieres eliminar el canal {self.channels[self.y][0]}?'), attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+		modal = wx.MessageDialog(None, _(f'¿Quieres eliminar el canal {self.channels[self.y][0]}?'), self.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 		if modal.ShowModal() == wx.ID_YES:
 			self.cursor.execute(f'delete from videos where channel_id = "{self.channels[self.y][2]}"')
 			self.cursor.execute(f'delete from channels where channel_id = "{self.channels[self.y][2]}"')
@@ -285,20 +288,21 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def script_helpCommands(self, gesture):
 		self.desactivar(False)
 		# Translators: Ayuda de teclado
-		help_text= _("""
+		help_text= _('''
 Escape; desactiva la interfaz virtual.
 n; Activa el diálogo para añadir un nuevo canal.
-s; Activa la ventana de configuración del canal actual.
-g; Activa la ventana de opciones globales.
 o; abre el link del video actual en el navegador por defecto.
 r; Carga el audio en un reproductor web personalizado.
 c; copia el link del video actual al portapapeles.
 d; abre una ventana con datos del video actual.
 b; Activa el cuadro de búsqueda de videos en la base de datos.
 control + b; Activa el cuadro de búsqueda de videos en la página de Youtube.
+s; Activa la ventana de configuración del canal actual.
+g; Activa la ventana de opciones globales.
 suprimir; Activa el diálogo para eliminar el canal actual, y en la ventana de resultados, elimina la columna y vuelve a la lista de canales.
+f5; Busca videos nuevos en el canal actual.
 control + shift + suprimir; elimina la base de datos.
-f5; Busca videos nuevos en el canal actual.""")
+		''')
 		ui.browseableMessage(help_text, _('Ayuda de comandos'))
 
 	def script_nextItem(self, gesture):
@@ -723,7 +727,7 @@ class MyLogger(object):
 		pass
 
 class NewChannel(wx.Dialog):
-	def __init__(self, parent, titulo, frame, connect, cursor):
+	def __init__(self, parent, titulo, frame, connect, cursor, channel_name, channel_link):
 		super(NewChannel, self).__init__(parent, -1, title=titulo)
 		self.options = {'ignoreerrors': True, 'quiet': True, 'extract_flat': 'in_playlist', 'dump_single_json': True}
 		self.frame = frame
@@ -732,8 +736,10 @@ class NewChannel(wx.Dialog):
 		self.Panel = wx.Panel(self)
 		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa el nombre del canal'))
 		self.channelName = wx.TextCtrl(self.Panel,wx.ID_ANY)
+		self.channelName.SetValue(channel_name)
 		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa la URL del canal'))
 		self.channelLink = wx.TextCtrl(self.Panel,wx.ID_ANY)
+		self.channelLink.SetValue(channel_link)
 		self.addBTN = wx.Button(self.Panel, wx.ID_ANY, "&Añadir canal")
 		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, "&Cancelar")
 		self.channelName.Bind(wx.EVT_CONTEXT_MENU, self.onPass)
@@ -945,7 +951,7 @@ class GlobalSettings(wx.Dialog):
 			self.connect.close()
 			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 			if self.frame.update_time != update_time:
-				modal = wx.MessageDialog(None, _(f'Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres reiniciar ahora?'), attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+				modal = wx.MessageDialog(None, _(f'Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres reiniciar ahora?'), self.frame.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 				if modal.ShowModal() == wx.ID_YES:
 					core.restart()
 				else:
@@ -1003,7 +1009,7 @@ class GlobalSearch(wx.Dialog):
 		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa los términos de búsqueda'))
 		self.textSearch = wx.TextCtrl(self.Panel,wx.ID_ANY)
 		self.radiobox = wx.RadioBox(self.Panel, wx.ID_ANY, _('Selecciona el número de resultados  a mostrarse'), choices=[_('10 resultados'), _('20 resultados'), _('30 resultados'), _('40 resultados'), _('50 resultados')])
-		self.radiobox.SetSelection(2)
+		self.radiobox.SetSelection(1)
 		self.searchBTN = wx.Button(self.Panel, wx.ID_ANY, _('Iniciar la búsqueda'))
 		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, _('Cancelar'))
 		self.searchBTN.Bind(wx.EVT_BUTTON, self.search)
@@ -1053,7 +1059,7 @@ class GlobalSearch(wx.Dialog):
 		self.frame.videos = []
 		videos = []
 		for video in results['entries']:
-			videos.append((video['title'], f"https://www.youtube.com/watch?v={video['url']}", video['id'], "Resultados globales", video['view_count'], "Resultados"))
+			videos.append((video['title'], f"https://www.youtube.com/watch?v={video['url']}", video['id'], None, video['view_count'], video['uploader']))
 		self.frame.videos = [videos]
 		if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
 		self.frame.activar(False)
