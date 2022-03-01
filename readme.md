@@ -32,7 +32,7 @@ Este complemento permite gestionar los canales favoritos de la plataforma Youtub
 
 ### Añadir canales
 
-Para añadir un nuevo canal a la base de datos, tan solo hay que abrir la interfaz virtual con el atajo para dicha acción, por defecto; NVDA + i griega.  
+Para añadir un nuevo canal a la base de datos, tan solo hay que abrir la interfaz virtual con el atajo para dicha acción, por defecto; NVDA + i griega. Y pulsar la letra n.    
 La ventana solicita 2 campos. Un nombre de canal, y la dirección  URL del mismo. En este último caso, el complemento permite el ingreso de los siguientes formatos URL:
 
 * link de un video, que suele tener el siguiente formato:
