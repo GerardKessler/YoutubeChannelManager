@@ -1,7 +1,7 @@
 # YoutubeChannelManager
 [Gerardo Késsler](http://gera.ar)  
 
-Este complemento permite gestionar los canales favoritos de la plataforma Youtube en una interfaz amigable.  
+Este complemento permite gestionar los canales favoritos de la plataforma Youtube con atajos de teclado y con una interfaz invisible y sencilla.  
 
 ## Atajos del complemento
 
@@ -44,6 +44,8 @@ La ventana solicita 2 campos. Un nombre de canal, y la dirección  URL del mismo
     https://www.youtube.com/channel/IdDelCanal
 
 Por lo que una forma de conseguirlo es abriendo algún video en la página de Youtube a través del navegador, pulsar alt y la letra d para abrir la barra de direcciones, y copiar la URL con control + c, la cual ya va a estar seleccionada por defecto.  
+También pueden añadirse canales desde la lista de resultados globales. Para ello tan solo basta con realizar la búsqueda, situarse sobre el video del canal a añadir y pulsar la tecla n.  
+Esto va a activar el diálogo para ingresar los datos del canal, los cuales van a ser completados automáticamente con el link  y el nombre tomados desde Youtube.
 
 ### Actualizador automático:
 
