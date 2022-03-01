@@ -396,6 +396,7 @@ control + shift + suprimir; elimina la base de datos.
 		if len(self.channels) == 0:
 			ui.message(self.unselected)
 			return
+		if self.channels[0][1] == None: return
 		self.cursor.execute(f'select video_id from videos where channel_id = "{self.channels[self.y][2]}"')
 		last_video = self.cursor.fetchall()
 		Thread(target=self.startReload, args=(self.channels[self.y], self.y, last_video[-1][0]), daemon= True).start()
