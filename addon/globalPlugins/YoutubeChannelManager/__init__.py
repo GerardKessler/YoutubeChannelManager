@@ -171,7 +171,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def script_newSearch(self, gesture):
 		if len(self.channels) == 0:
-			ui.message(unselected)
+			ui.message(self.unselected)
 			return
 		self.desactivar(False)
 		if self.channels[0][1] == None:
@@ -188,6 +188,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.channels = self.channels_temp
 			self.videos = self.videos_temp
 			self.index = self.index_temp
+		self.y = 0
+		self.z = 0
 		gSearch = GlobalSearch(gui.mainFrame, _('Búsqueda global'), self)
 		gui.mainFrame.prePopup()
 		gSearch.Show()
@@ -206,7 +208,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def script_removeChannel(self, gesture):
 		try:
 			if len(self.channels) == 0:
-				ui.message(unselected)
+				ui.message(self.unselected)
 				return
 			elif self.channels[0][1] == None:
 				self.channels = self.channels_temp
@@ -345,7 +347,7 @@ control + shift + suprimir; elimina la base de datos.
 				self.z = self.index[self.y]
 				ui.message(_(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}'))
 		except IndexError:
-			ui.message(noDatabase)
+			ui.message(self.noDatabase)
 
 	def script_previousSection(self, gesture):
 		try:
@@ -361,11 +363,11 @@ control + shift + suprimir; elimina la base de datos.
 				self.z = self.index[self.y]
 				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
 		except IndexError:
-			ui.message(noDatabase)
+			ui.message(self.noDatabase)
 
 	def script_open(self, gesture):
 		if len(self.channels) == 0:
-			ui.message(unselected)
+			ui.message(self.unselected)
 			return
 		ui.message(_('Abriendo el link en el navegador...'))
 		webbrowser.open(self.videos[self.y][self.z][1], new=0, autoraise=True)
@@ -373,20 +375,26 @@ control + shift + suprimir; elimina la base de datos.
 
 	def script_firstItem(self, gesture):
 		if len(self.channels) == 0:
-			ui.message(unselected)
+			ui.message(self.unselected)
 			return
-		self.z = 0
-		ui.message(self.videos[self.y][self.z][0])
+		try:
+			self.z = 0
+			ui.message(self.videos[self.y][self.z][0])
+		except IndexError:
+			pass
 
 	def script_positionAnnounce(self, gesture):
 		if len(self.channels) == 0:
-			ui.message(unselected)
+			ui.message(self.unselected)
 			return
-		ui.message(_(f'{self.z+1} de {len(self.videos[self.y])}, {self.videos[self.y][self.z][4]} reproducciones. {self.videos[self.y][self.z][5]}. Pulsa f1 para ver la ayuda de comandos'))
+		try:
+			ui.message(_(f'{self.z+1} de {len(self.videos[self.y])}, {self.videos[self.y][self.z][4]} reproducciones. {self.videos[self.y][self.z][5]}. Pulsa f1 para ver la ayuda de comandos'))
+		except IndexError:
+			pass
 
 	def script_reloadChannel(self, gesture):
 		if len(self.channels) == 0:
-			ui.message(unselected)
+			ui.message(self.unselected)
 			return
 		self.cursor.execute(f'select video_id from videos where channel_id = "{self.channels[self.y][2]}"')
 		last_video = self.cursor.fetchall()
@@ -431,7 +439,7 @@ control + shift + suprimir; elimina la base de datos.
 
 	def script_copyLink(self, gesture):
 		if len(self.channels) == 0:
-			ui.message(unselected)
+			ui.message(self.unselected)
 			return
 		self.desactivar(False)
 		api.copyToClip(self.videos[self.y][self.z][1])
@@ -442,7 +450,7 @@ control + shift + suprimir; elimina la base de datos.
 
 	def script_viewData(self, gesture):
 		if len(self.channels) == 0:
-			ui.message(unselected)
+			ui.message(self.unselected)
 			return
 		self.desactivar(False)
 		ui.message(_('Obteniendo los datos del video...'))
@@ -482,7 +490,7 @@ control + shift + suprimir; elimina la base de datos.
 
 	def script_openAudio(self, gesture):
 		if len(self.channels) == 0:
-			ui.message(unselected)
+			ui.message(self.unselected)
 			return
 		self.desactivar(False)
 		Thread(target=self.startOpenAudio, daemon= True).start()
@@ -1060,9 +1068,6 @@ class GlobalSearch(wx.Dialog):
 		videos = []
 		for video in results['entries']:
 			videos.append((video['title'], f"https://www.youtube.com/watch?v={video['url']}", video['id'], None, video['view_count'], video['uploader']))
-		self.frame.x = 0
-		self.frame.z = 0
 		self.frame.videos = [videos]
-		time.sleep(5)
 		self.frame.activar(_('Búsqueda finalizada'))
 		if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
