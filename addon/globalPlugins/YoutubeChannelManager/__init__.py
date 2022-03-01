@@ -159,8 +159,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.dlg.Show()
 
 	def script_newChannel(self, gesture):
-		if len(self.channels) > 0:
-			if self.videos[0][0][3] != None: return
 		self.desactivar(False)
 		if self.videos[0][0][3] == None:
 			self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, self.videos[0][self.z][5], self.videos[0][self.z][1])
