@@ -160,10 +160,15 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def script_newChannel(self, gesture):
 		self.desactivar(False)
-		if self.videos[0][0][3] == None:
-			self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, self.videos[0][self.z][5], self.videos[0][self.z][1])
-		else:
-			self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, "", "")
+		try:
+			if self.videos[0][0][3] == None:
+				self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, self.videos[0][self.z][5], self.videos[0][self.z][1])
+				gui.mainFrame.prePopup()
+				self.dlg.Show()
+				return
+		except IndexError:
+			pass
+		self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, "", "")
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
 
@@ -182,10 +187,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def script_globalSearch(self, gesture):
 		self.desactivar(False)
-		if self.channels[0][1] == None:
-			self.channels = self.channels_temp
-			self.videos = self.videos_temp
-			self.index = self.index_temp
+		try:
+			if self.channels[0][1] == None:
+				self.channels = self.channels_temp
+				self.videos = self.videos_temp
+				self.index = self.index_temp
+		except:
+			pass
 		self.y = 0
 		self.z = 0
 		gSearch = GlobalSearch(gui.mainFrame, _('Búsqueda global'), self)
