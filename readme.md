@@ -1,4 +1,4 @@
-# YoutubeChannelsManager
+# YoutubeChannelManager
 [Gerardo Késsler](http://gera.ar)  
 
 Este complemento permite gestionar los canales favoritos de la plataforma Youtube en una interfaz amigable.  
