@@ -1063,6 +1063,6 @@ class GlobalSearch(wx.Dialog):
 		self.frame.x = 0
 		self.frame.z = 0
 		self.frame.videos = [videos]
-		time.sleep(3)
+		time.sleep(5)
 		self.frame.activar(_('Búsqueda finalizada'))
 		if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
