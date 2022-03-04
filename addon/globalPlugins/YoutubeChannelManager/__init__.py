@@ -14,11 +14,12 @@ import globalPluginHandler
 import addonHandler
 import globalVars
 import ui
+import braille
 from scriptHandler import script
 import urllib.request
 import json
 import zipfile
-import winsound
+from nvwave import playWaveFile
 from threading import Thread, Timer
 import socket
 import time
@@ -80,13 +81,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.order = ["id desc", "id asc", "view_count desc", "view_count asc"]
 		self.startTimer = None
 		core.postNvdaStartup.register(self.firstRun)
+		if hasattr(globalVars, 'youtubeChannelManager'):
+			self.firstRun()
+		else:
+			globalVars.youtubeChannelManager = None
 
 	def firstRun(self):
 		Thread(target=self.updatedYoutube_dl, daemon= True).start()
 		self.startDB()
 
 	def updatedYoutube_dl(self):
-		time.sleep(10)
+		time.sleep(20)
 		self.mainThread = AddonThread(self)
 		self.mainThread.start()
 
@@ -100,7 +105,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.connect.commit()
 			self.cursor.execute('create table settings(sounds bit, update_time integer, order_by integer, id integer primary key autoincrement)')
 			self.connect.commit()
-			self.cursor.execute('insert into settings(sounds, update_time, order_by) values(1, 0, 0)')
+			self.cursor.execute('insert into settings(sounds, update_time, order_by) values(?, ?, ?, [1, 0, 0])')
 			self.connect.commit()
 			self.cursor.execute('VACUUM')
 			self.connect.commit()
@@ -182,10 +187,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def script_globalSearch(self, gesture):
 		self.desactivar(False)
-		if self.channels[0][1] == None:
-			self.channels = self.channels_temp
-			self.videos = self.videos_temp
-			self.index = self.index_temp
+		try:
+			if self.channels[0][1] == None:
+				self.channels = self.channels_temp
+				self.videos = self.videos_temp
+				self.index = self.index_temp
+		except IndexError:
+			pass
 		self.y = 0
 		self.z = 0
 		gSearch = GlobalSearch(gui.mainFrame, _('Búsqueda global'), self)
@@ -212,17 +220,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self.channels = self.channels_temp
 				self.videos = self.videos_temp
 				self.index = self.index_temp
-				self.x = 0
 				self.y = 0
+				self.z = 0
 				ui.message(_('Búsqueda eliminada'))
-				if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "recicled.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+				if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "recicled.wav"))
 				return
 			Thread(target=self.startRemoveChannel, daemon= True).start()
 			self.desactivar(False)
 		except:
 			pass
+
 	def startRemoveChannel(self):
-		modal = wx.MessageDialog(None, _(f'¿Quieres eliminar el canal {self.channels[self.y][0]}?'), self.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+		modal = wx.MessageDialog(None, _('¿Quieres eliminar el canal {}?'.format(self.channels[self.y][0])), self.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 		if modal.ShowModal() == wx.ID_YES:
 			self.cursor.execute(f'delete from videos where channel_id = "{self.channels[self.y][2]}"')
 			self.cursor.execute(f'delete from channels where channel_id = "{self.channels[self.y][2]}"')
@@ -231,7 +240,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.videos.pop(self.y)
 			self.index.pop(self.y)
 			self.y = 0
-			if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "recicled.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "recicled.wav"))
+			gui.messageBox(_('{} Eliminado'.format(self.channels[self.y][0])))
 		else:
 			modal.Destroy()
 
@@ -245,7 +255,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ui.message(str)
 
 	@script(
-		category= "YoutubeChannelManager",
+		# Translators: Descripción del elemento en el diálogo gestos de entrada
+		category= _('YoutubeChannelManager'),
 		# Translators: Descripción del elemento en el diálogo gestos de entrada
 		description= _('Activa y desactiva la interfaz invisible'),
 		gesture="kb:NVDA+y"
@@ -307,59 +318,59 @@ control + shift + suprimir; elimina la base de datos.
 
 	def script_nextItem(self, gesture):
 		try:
-			if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 			self.z += 1
 			if self.z < len(self.videos[self.y]):
-				ui.message(_(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}'))
+				ui.message(_('{}- {} de {}'.format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y]))))
 			else:
-				if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+				if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 				self.z = 0
-				ui.message(_(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}'))
+				ui.message(_('{}- {} de {}'.format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y]))))
 		except IndexError:
 			pass
 
 	def script_previousItem(self, gesture):
 		try:
-			if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 			self.z -= 1
 			if self.z >= 0:
-				ui.message(_(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}'))
+				ui.message(_('{}- {} de {}'.format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y]))))
 			else:
-				if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+				if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 				self.z = len(self.videos[self.y]) - 1
-				ui.message(_(f'{self.videos[self.y][self.z][0]}- {self.z+1} de {len(self.videos[self.y])}'))
+				ui.message(_('{}- {} de {}'.format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y]))))
 		except IndexError:
 			pass
 
 	def script_nextSection(self, gesture):
 		try:
-			if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 			self.index[self.y] = self.z
 			self.y += 1
 			if self.y < len(self.index):
 				self.z = self.index[self.y]
-				ui.message(_(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}'))
+				ui.message(_('{}, {}'.format(self.channels[self.y][0], self.videos[self.y][self.z][0])))
 			else:
-				if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+				if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 				self.y = 0
 				self.z = self.index[self.y]
-				ui.message(_(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}'))
+				ui.message(_('{}, {}'.format(self.channels[self.y][0], self.videos[self.y][self.z][0])))
 		except IndexError:
 			ui.message(self.noDatabase)
 
 	def script_previousSection(self, gesture):
 		try:
-			if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 			self.index[self.y] = self.z
 			self.y -= 1
 			if self.y >= 0:
 				self.z = self.index[self.y]
-				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
+				ui.message(_('{}, {}'.format(self.channels[self.y][0], self.videos[self.y][self.z][0])))
 			else:
-				if self.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "click.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+				if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 				self.y = len(self.index) - 1
 				self.z = self.index[self.y]
-				ui.message(f'{self.channels[self.y][0]}, {self.videos[self.y][self.z][0]}')
+				ui.message(_('{}, {}'.format(self.channels[self.y][0], self.videos[self.y][self.z][0])))
 		except IndexError:
 			ui.message(self.noDatabase)
 
@@ -386,7 +397,7 @@ control + shift + suprimir; elimina la base de datos.
 			ui.message(self.unselected)
 			return
 		try:
-			ui.message(_(f'{self.z+1} de {len(self.videos[self.y])}, {self.videos[self.y][self.z][4]} reproducciones. {self.videos[self.y][self.z][5]}. Pulsa f1 para ver la ayuda de comandos'))
+			ui.message(_('{} de {}, {} reproducciones. {}. Pulsa f1 para ver la ayuda de comandos'.format(self.z + 1, len(self.videos[self.y]), self.videos[self.y][self.z][4], self.videos[self.y][self.z][5])))
 		except IndexError:
 			pass
 
@@ -402,6 +413,9 @@ control + shift + suprimir; elimina la base de datos.
 	def startReload(self, channel, index, last_video, messages= True):
 		new_videos = []
 		videos_list = self.getVideosList(channel[1])
+		if not videos_list:
+			ui.message(_('Se han producido errores en el requerimiento web. Comprueba tu conexión y vuelve a intentarlo'))
+			return
 		for video in videos_list:
 			if last_video != video:
 				new_videos.append(video)
@@ -410,24 +424,28 @@ control + shift + suprimir; elimina la base de datos.
 		if len(new_videos) == 0:
 			if messages: ui.message(_('No se han encontrado videos nuevos para este canal'))
 		elif len(new_videos) == 1:
-			Thread(target=self.downloadNewVideos, args=(new_videos, _(f'Se ha añadido un video nuevo en {channel[0]}'), channel), daemon= True).start()
+			Thread(target=self.downloadNewVideos, args=(new_videos, _('Se ha añadido un video nuevo en {}'.format(channel[0])), channel), daemon= True).start()
 		elif len(new_videos) > 1:
-			Thread(target=self.downloadNewVideos, args=(new_videos, _(f'Se han añadido {len(new_videos)} videos nuevos en {channel[0]}'), channel), daemon= True).start()
+			Thread(target=self.downloadNewVideos, args=(new_videos, _('Se han añadido {} videos nuevos en {}'.format(len(new_videos), channel[0])), channel), daemon= True).start()
 
 	def getVideosList(self, channel_url):
-		content = urllib.request.urlopen(channel_url).read().decode('utf-8')
+		try:
+			content = urllib.request.urlopen(channel_url).read().decode('utf-8')
+		except:
+			pass
 		ids_list = re.findall(r'(?<="videoId":")[\w\d\-\.\,]+(?=")', content)
 		# Método que elimina las duplicaciones de una lista manteniendo el órden de los elementos
 		final_list = list(OrderedDict.fromkeys(ids_list))
 		return final_list
 
 	def downloadNewVideos(self, new_videos, message_text, channel):
-		if self.sounds: winsound.PlaySound("C:\\Windows\\Media\\Alarm05.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
+		if self.sounds: playWaveFile(os.path.join(os.environ['systemroot'], "Media", "Alarm05.wav"))
+		braille.handler.message(_('Proceso iniciado'))
 		list_videos = list(reversed(new_videos))
 		for video in list_videos:
 			data = self.getData(f'https://www.youtube.com/watch?v={video}')
 			self.insert_videos((data["title"], f'https://www.youtube.com/watch?v={video}', video, channel[2], data["view_count"], channel[0]))
-		if self.sounds: winsound.PlaySound(None, winsound.SND_PURGE)
+		if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
 		ui.message(message_text)
 		self.connect.close()
 		self.startDB()
@@ -442,10 +460,11 @@ control + shift + suprimir; elimina la base de datos.
 			return
 		self.desactivar(False)
 		api.copyToClip(self.videos[self.y][self.z][1])
-		if self.sounds: winsound.PlaySound("C:\\Windows\\Media\\Windows Recycle.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
+		if self.sounds: playWaveFile(os.path.join(os.environ['systemroot'], 'Media', 'Windows Recycle.wav'))
+		braille.handler.message(_('copiado'))
 
 	def terminate(self):
-		pass
+		core.postNvdaStartup.unregister(self.firstRun)
 
 	def script_viewData(self, gesture):
 		if len(self.channels) == 0:
@@ -502,7 +521,6 @@ control + shift + suprimir; elimina la base de datos.
 	def openPlayer(self, title, url):
 		code = f'''
 <!doctype html>
-<html lang="es">
 <head>
 <meta charset="UTF-8">
 <title>{title}</title>
@@ -550,8 +568,11 @@ class AddonThread(Thread):
 	def run(self):
 		def chkActualizacion():
 			url = "https://api.github.com/repos/ytdl-org/youtube-dl/releases"
-			req = urllib.request.Request(url)
-			r = urllib.request.urlopen(req).read()
+			try:
+				req = urllib.request.Request(url)
+				r = urllib.request.urlopen(req).read()
+			except:
+				return
 			gitJson = json.loads(r.decode('utf-8'))
 			if gitJson[0]["tag_name"] > youtube_dl.version.__version__:
 				urlDescarga = gitJson[0]['zipball_url']
@@ -575,7 +596,11 @@ class AddonThread(Thread):
 						shutil.rmtree(os.path.join(dirAddon, "lib", "youtube_dl"))
 						shutil.move(os.path.join(dirAddon, root, "youtube_dl"), os.path.join(dirAddon, "lib", "youtube_dl"))
 						shutil.rmtree(os.path.join(dirAddon, root))
-						core.restart()
+						modal = wx.MessageDialog(None, _('Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres hacerlo ahora?'), _('¡Atención!'), wx.YES_NO | wx.YES_DEFAULT | wx.ICON_QUESTION)
+						if modal.ShowModal() == wx.ID_YES:
+							core.restart()
+						else:
+							modal.Destroy()
 					else:
 						dlg.Destroy()
 				else:
@@ -643,14 +668,12 @@ class DescargaDialogo(wx.Dialog):
 		self.textorefresco.AppendText(event)
 
 	def done(self, event):
-		winsound.MessageBeep(0)
 		self.aceptarBTN.Enable()
 		self.textorefresco.Clear()
 		self.textorefresco.AppendText(event)
 		self.textorefresco.SetInsertionPoint(0) 
 		self.aceptarBTN.SetFocus()
 	def error(self, event):
-		winsound.MessageBeep(16)
 		self.cerrarBTN.Enable()
 		self.textorefresco.Clear()
 		self.textorefresco.AppendText(event)
@@ -747,8 +770,8 @@ class NewChannel(wx.Dialog):
 		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa la URL del canal'))
 		self.channelLink = wx.TextCtrl(self.Panel,wx.ID_ANY)
 		self.channelLink.SetValue(channel_link)
-		self.addBTN = wx.Button(self.Panel, wx.ID_ANY, "&Añadir canal")
-		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, "&Cancelar")
+		self.addBTN = wx.Button(self.Panel, wx.ID_ANY, _('&Añadir canal'))
+		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, _('&Cancelar'))
 		self.channelName.Bind(wx.EVT_CONTEXT_MENU, self.onPass)
 		self.channelLink.Bind(wx.EVT_CONTEXT_MENU, self.onPass)
 		self.addBTN.Bind(wx.EVT_BUTTON, self.addChannel)
@@ -787,7 +810,8 @@ class NewChannel(wx.Dialog):
 			# return None
 
 	def getVideos(self, channelName, channelUrl, channelID):
-		if self.frame.sounds: winsound.PlaySound("C:\\Windows\\Media\\Alarm05.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
+		if self.frame.sounds: playWaveFile(os.path.join(os.environ['systemroot'], "Media", "Alarm05.wav"))
+		braille.handler.message(_('Proceso iniciado'))
 		self.insert_channel((channelName, channelUrl, channelID, 0))
 		with youtube_dl.YoutubeDL(self.options) as ydl:
 			data_dict = ydl.extract_info(channelUrl, download= False)
@@ -796,7 +820,7 @@ class NewChannel(wx.Dialog):
 			self.insert_videos((data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["id"], data[i]["id"], channelID, data[i]["view_count"], channelName))
 		self.connect.close()
 		self.frame.startDB()
-		if self.frame.sounds: winsound.PlaySound(None, winsound.SND_PURGE)
+		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
 		ui.message(_('Proceso Finalizado'))
 
 	def insert_channel(self, entities):
@@ -844,16 +868,16 @@ class NewSearch(wx.Dialog):
 			self.frame.channels_temp = self.frame.channels
 			self.frame.videos_temp = self.frame.videos
 			self.frame.index_temp = self.frame.index
-			self.frame.channels = [("Resultados de búsqueda", None)]
+			self.frame.channels = [(_('Resultados de búsqueda'), None)]
 			self.frame.videos = [results]
 			self.frame.index = [0]
 			self.frame.y = 0
 			self.frame.z = 0
 			self.frame.activar(False)
-			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "yResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "yResults.wav"))
 			self.frame.speak(_(f'Se han encontrado {len(results)} resultados'), 0.2)
 		else:
-			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "nResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "nResults.wav"))
 			self.frame.speak(_('No se han encontrado resultados'), 0.2)
 			self.frame.activar(False)
 		self.Close()
@@ -899,14 +923,14 @@ class ChannelSettings(wx.Dialog):
 		event.Skip()
 
 	def saveSettings(self, evt):
-		self.Close()
 		text = self.channelName.GetValue()
 		favorite = self.checkbox.GetValue()
 		if text != self.frame.channels[self.frame.y][0] or int(favorite) != self.frame.channels[self.frame.y][3]:
-			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
-			self.cursor.execute(f'update channels set name = "{text}", favorite = "{int(favorite)}" where name = "{self.frame.channels[self.frame.y][0]}"')
+			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
+			self.cursor.execute('update channels set name = ?, favorite = ? where name = "{}"'.format(self.frame.channels[self.frame.y][0]), [text, int(favorite)])
 			self.connect.commit()
 			self.connect.close()
+			self.Close()
 			self.frame.startDB()
 			self.frame.speak(_('Configuración guardada'), 1)
 		self.frame.activar(False)
@@ -948,15 +972,14 @@ class GlobalSettings(wx.Dialog):
 		event.Skip()
 
 	def saveSettings(self, evt):
-		self.Close()
 		sounds = int(self.checkbox.GetValue())
 		update_time = self.listbox.GetSelection()
 		order_by = self.radio.GetSelection()
 		if self.frame.sounds != sounds or self.frame.update_time != update_time or self.frame.order_by != order_by:
-			self.cursor.execute(f'update settings set sounds = {sounds}, update_time = {update_time}, order_by = {order_by}')
+			self.cursor.execute('update settings set sounds = ?, update_time = ?, order_by = {}'.format(order_by), [sounds, update_time])
 			self.connect.commit()
 			self.connect.close()
-			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
+			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
 			if self.frame.update_time != update_time:
 				modal = wx.MessageDialog(None, _(f'Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres reiniciar ahora?'), self.frame.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 				if modal.ShowModal() == wx.ID_YES:
@@ -966,6 +989,7 @@ class GlobalSettings(wx.Dialog):
 			else:
 				self.frame.startDB()
 				self.frame.speak(_('Configuraciones aplicadas'), 1)
+		self.Close()
 
 class StartTimer(object):
 	def __init__(self, interval, function, *args, **kwargs):
@@ -992,14 +1016,6 @@ class StartTimer(object):
 	def stop(self):
 		self._timer.cancel()
 		self.is_running = False
-
-class MyLogger(object):
-	def debug(self, msg):
-		pass
-	def warning(self, msg):
-		pass
-	def error(self, msg):
-		pass
 
 class GlobalSearch(wx.Dialog):
 	def __init__(self, parent, title, frame):
@@ -1038,35 +1054,36 @@ class GlobalSearch(wx.Dialog):
 	def search(self, evt):
 		str = self.textSearch.GetValue()
 		if len(str) > 0:
-			if self.frame.sounds: winsound.PlaySound("C:\\Windows\\Media\\Alarm05.wav", winsound.SND_LOOP + winsound.SND_ASYNC)
 			self.Close()
 			Thread(target=self.startSearch, args=(str,), daemon= True).start()
 		else:
-			ui.message("Debes ingresar algún texto de búsqueda")
+			ui.message(_('Debes ingresar algún texto de búsqueda'))
 			self.textSearch.SetFocus()
 
 	def startSearch(self, str):
 		count = (self.radiobox.GetSelection() + 1) * 10
+		if self.frame.sounds: playWaveFile(os.path.join(os.environ['systemroot'], "Media", "Alarm05.wav"))
+		braille.handler.message(_('Proceso iniciado'))
 		with youtube_dl.YoutubeDL(self.YDL_OPTIONS) as ydl:
 			try:
 				results = ydl.extract_info(f'ytsearch{count}:{str}', download= False)
 			except:
-				if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "yResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
-				ui.message(_('No se han encontrado resultados'))
+				if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "yResults.wav"))
+				gui.messageBox(_('No se han encontrado resultados'))
 				return
 		if not len(results['entries']):
-			if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "yResults.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
-			ui.message(_('No se han encontrado resultados'))
+			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "yResults.wav"))
+			gui.messageBox(_('No se han encontrado resultados'))
 			return
 		self.frame.channels_temp = self.frame.channels
 		self.frame.videos_temp = self.frame.videos
 		self.frame.index_temp = self.frame.index
-		self.frame.channels = [("Resultados globales", None)]
+		self.frame.channels = [(_('Resultados globales'), None)]
 		self.frame.index = [0]
 		self.frame.videos = []
 		videos = []
 		for video in results['entries']:
 			videos.append((video['title'], f"https://www.youtube.com/watch?v={video['url']}", video['id'], None, video['view_count'], video['uploader']))
 		self.frame.videos = [videos]
+		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
 		self.frame.activar(_('Búsqueda finalizada'))
-		if self.frame.sounds: winsound.PlaySound(os.path.join(dirAddon, "sounds", "finish.wav"), winsound.SND_FILENAME | winsound.SND_ASYNC)
