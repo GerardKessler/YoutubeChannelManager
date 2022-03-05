@@ -27,6 +27,7 @@ import shutil
 import wx
 import sys
 import os
+from . import player
 dirAddon=os.path.dirname(__file__)
 sys.path.append(dirAddon)
 sys.path.append(os.path.join(dirAddon, "lib"))
@@ -52,8 +53,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	saveChanges = _('&Guardar los cambios')
 	discard = _('&Descartar cambios y cerrar')
 	itemsData = [_('Duración'), _('Fecha de subida'), _('Reproducciones'), _('Me gusta'), _('Descripción'), _('Datos del video')]
-	html_elements = [_('Reproducir'), _('Retroceder 10 segundos'), _('Adelantar 10 segundos'), _('Velocidad de reproducción'), _('Bajar volúmen'), _('Silenciar, quitar silencio'), _('Subir volúmen')]
-
 
 	def __init__(self, *args, **kwargs):
 		super(GlobalPlugin, self).__init__(*args, **kwargs)
@@ -516,37 +515,8 @@ control + shift + suprimir; elimina la base de datos.
 
 	def startOpenAudio(self, time= False):
 		audio_url = self.getAudioUrl(self.videos[self.y][self.z][1])
-		self.openPlayer(self.videos[self.y][self.z][0], audio_url)
-
-	def openPlayer(self, title, url):
-		code = f'''
-<!doctype html>
-<head>
-<meta charset="UTF-8">
-<title>{title}</title>
-</head>
-<body>
-<audio onTimeUpdate='audioTime();' src="{url}" id="reproductor" preload="auto">
-</audio>
-<ul style="list-style:none;margin-left:auto;margin-right:auto;">
-<li><button accesskey="k" id="toggle" onClick='playPause();'>{self.html_elements[0]}</button></li>
-<li><button accesskey="j" id="back" onClick='timeBack();'>{self.html_elements[1]}</button></li>
-<li><p accesskey="i" id="time" onClick='speak(this.textContent);'>0:00</p></li>
-<li><button accesskey="l" id="advance" onClick='timeAdvance();'>{self.html_elements[2]}</button></li>
-<li><label>{self.html_elements[3]}<input type="range" min="0" max="100" step="10" value="50" onChange='audioRate(this.value)' /></label></li>
-<li><button accesskey="o" onClick='volumeDown();'>{self.html_elements[4]}</button></li>
-<li><button accesskey="m" onClick='toggleMute();'>{self.html_elements[5]}</button></li>
-<li><button accesskey="u" onClick='volumeUp();'>{self.html_elements[6]}</button></li>
-<div id="alert" aria-live="assertive"></div>
-</ul>
-
-</body>
-<script src="reproductor.js"></script>
-</html>
-		'''
-		with open(os.path.join(dirAddon, "reproductor", "index.html"), "w", encoding="utf-8") as file:
-			file.write(code)
-		webbrowser.open(f"file://{dirAddon}/reproductor/index.html", new=2)
+		self.openPlayer = player.PlayerCode(self.videos[self.y][self.z][0], audio_url)
+		self.openPlayer.createFile()
 
 	def getAudioUrl(self, url, tiempo=False):
 		ydl = youtube_dl.YoutubeDL({'format': "bestaudio/best", 'logger': MyLogger()})
