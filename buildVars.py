@@ -50,7 +50,7 @@ addon_info = {
 # pythonSources = ["addon/globalPlugins/*.py"]
 # For more information on SCons Glob expressions please take a look at:
 # https://scons.org/doc/production/HTML/scons-user/apd.html
-pythonSources = ["addon/globalPlugins/YoutubeChannelManager/__init__.py"]
+pythonSources = ["addon/globalPlugins/YoutubeChannelManager/__init__.py", "addon/globalPlugins/YoutubeChannelManager/player.py"]
 
 # Files that contain strings for translation. Usually your python sources
 i18nSources = pythonSources + ["buildVars.py"]
