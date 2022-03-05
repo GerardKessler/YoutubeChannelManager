@@ -46,13 +46,30 @@ addonHandler.initTranslation()
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
-	# Translatable Strings
+	# Translators: informa que no se ha seleccionado ningún canal
 	unselected = _('Ningún canal seleccionado')
+	# Translators: avisa de que no hay canales en la base de datos
 	noDatabase = _('No hay canales en la base de datos')
+	# Translators: título de la ventana
 	attention = _('Atención')
+	# Translators: texto del botón para guardar los cambios
 	saveChanges = _('&Guardar los cambios')
+	# Translators: texto del botón para descartar los cambios
 	discard = _('&Descartar cambios y cerrar')
-	itemsData = [_('Duración'), _('Fecha de subida'), _('Reproducciones'), _('Me gusta'), _('Descripción'), _('Datos del video')]
+	itemsData = (
+		# Translators: duración del video
+		_('Duración'),
+# Translators: fecha de subida del video
+		_('Fecha de subida'),
+		# Translators: cantidad de reproducciones
+		_('Reproducciones'),
+		# Translators: cantidad de me gusta
+		_('Me gusta'),
+		# Translators: descripción del video
+		_('Descripción'),
+		# Translators: título de la ventana con los datos del video
+		_('Datos del video')
+	)
 
 	def __init__(self, *args, **kwargs):
 		super(GlobalPlugin, self).__init__(*args, **kwargs)
@@ -141,23 +158,28 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.startTimer = StartTimer(times[self.update_time], self.checkUpdate)
 
 	def checkUpdate(self):
-		for i in range(len(self.channels)):
-			if self.channels[i][3]:
-				self.cursor.execute(f'select video_id from videos where channel_id = "{self.channels[i][2]}"')
-				last_video = self.cursor.fetchall()
-				self.startReload(self.channels[i], i, last_video[-1][0], False)
-				time.sleep(20)
+		try:
+			for i in range(len(self.channels)):
+				if self.channels[i][3]:
+					self.cursor.execute(f'select video_id from videos where channel_id = "{self.channels[i][2]}"')
+					last_video = self.cursor.fetchall()
+					self.startReload(self.channels[i], i, last_video[-1][0], False)
+					time.sleep(20)
+		except:
+			pass
 
 	def script_channelSettings(self, gesture):
 		if len(self.channels) == 0: return
 		if self.channels[0][1] == None: return
 		self.desactivar(False)
+		# Translators: Título de la ventana de configuración de canal
 		self.dlg = ChannelSettings(gui.mainFrame, _('Configuración de canal'), self, self.connect, self.cursor)
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
 
 	def script_globalSettings(self, gesture):
 		self.desactivar(False)
+		# Translators: título de la ventana de configuraciones
 		self.dlg = GlobalSettings(gui.mainFrame, _('Configuraciones'), self, self.connect, self.cursor)
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
@@ -165,8 +187,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def script_newChannel(self, gesture):
 		self.desactivar(False)
 		if self.videos[0][0][3] == None:
+			# Translators: título de la ventana para añadir un nuevo canal
 			self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, self.videos[0][self.z][5], self.videos[0][self.z][1])
 		else:
+			# Translators: título de la ventana para añadir un nuevo canal
 			self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, "", "")
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
@@ -180,6 +204,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.channels = self.channels_temp
 			self.videos = self.videos_temp
 			self.index = self.index_temp
+		# Translators: título de la ventana de nueva búsqueda
 		self.dlg = NewSearch(gui.mainFrame, _('Nueva búsqueda'), self, self.connect, self.cursor)
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
@@ -195,6 +220,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			pass
 		self.y = 0
 		self.z = 0
+		# Translators: título de la ventana de búsqueda global
 		gSearch = GlobalSearch(gui.mainFrame, _('Búsqueda global'), self)
 		gui.mainFrame.prePopup()
 		gSearch.Show()
@@ -203,11 +229,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		Thread(target=self.startRemoveDatabase, daemon= True).start()
 
 	def startRemoveDatabase(self):
-		modal = wx.MessageDialog(None, _(f'¿Seguro que quieres eliminar la base de datos?'), _('¡Atención!'), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+		# Translators: texto de la ventana que pregunta por la eliminación de la base de datos
+		modal = wx.MessageDialog(None, _(f'¿Seguro que quieres eliminar la base de datos?'), self.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 		if modal.ShowModal() == wx.ID_YES:
 			self.connect.close()
 			os.remove(os.path.join(globalVars.appArgs.configPath, "channels"))
 			self.startDB(True)
+			# Translators: verbalización de la eliminación de la base de datos
 			self.speak(_('Base de datos eliminada'), 0.3)
 
 	def script_removeChannel(self, gesture):
@@ -221,6 +249,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self.index = self.index_temp
 				self.y = 0
 				self.z = 0
+				# Translators: verbalización de que la búsqueda ha sido eliminada
 				ui.message(_('Búsqueda eliminada'))
 				if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "recicled.wav"))
 				return
@@ -230,6 +259,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			pass
 
 	def startRemoveChannel(self):
+		# Translators: texto en la ventana de eliminación de canal
 		modal = wx.MessageDialog(None, _('¿Quieres eliminar el canal {}?'.format(self.channels[self.y][0])), self.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 		if modal.ShowModal() == wx.ID_YES:
 			self.cursor.execute(f'delete from videos where channel_id = "{self.channels[self.y][2]}"')
@@ -240,6 +270,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.index.pop(self.y)
 			self.y = 0
 			if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "recicled.wav"))
+			# Translators: texto de la ventana de eliminación
 			gui.messageBox(_('{} Eliminado'.format(self.channels[self.y][0])))
 		else:
 			modal.Destroy()
@@ -254,7 +285,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ui.message(str)
 
 	@script(
-		# Translators: Descripción del elemento en el diálogo gestos de entrada
+		# Translators: nombre de la categoría en el diálogo gestos de entrada
 		category= _('YoutubeChannelManager'),
 		# Translators: Descripción del elemento en el diálogo gestos de entrada
 		description= _('Activa y desactiva la interfaz invisible'),
@@ -263,6 +294,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def script_toggle(self, gesture):
 		self.desactivar() if self.switch else self.activar()
 
+	# Translators: aviso de activación de los atajos de teclado
 	def activar(self, speak= _('Atajos activados')):
 			self.switch = True
 			if speak: ui.message(speak)
@@ -291,13 +323,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def desactivar(self, speak=True):
 		self.switch = False
+		# Translators: aviso de atajos desactivados
 		if speak: ui.message(_('Atajos desactivados'))
 		self.clearGestureBindings()
 		self.bindGestures(self.__gestures)
 
 	def script_helpCommands(self, gesture):
 		self.desactivar(False)
-		# Translators: Ayuda de teclado
+		# Translators: texto de la ventana de ayuda rápida de comandos
 		help_text= _('''
 Escape; desactiva la interfaz virtual.
 n; Activa el diálogo para añadir un nuevo canal.
@@ -320,10 +353,12 @@ control + shift + suprimir; elimina la base de datos.
 			if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 			self.z += 1
 			if self.z < len(self.videos[self.y]):
+				# Translators: posición actual de cantidad total
 				ui.message(_('{}- {} de {}'.format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y]))))
 			else:
 				if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 				self.z = 0
+				# Translators: posición actual de cantidad total
 				ui.message(_('{}- {} de {}'.format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y]))))
 		except IndexError:
 			pass
@@ -333,10 +368,12 @@ control + shift + suprimir; elimina la base de datos.
 			if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 			self.z -= 1
 			if self.z >= 0:
+				# Translators: posición actual de cantidad total
 				ui.message(_('{}- {} de {}'.format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y]))))
 			else:
 				if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 				self.z = len(self.videos[self.y]) - 1
+				# Translators: posición actual de cantidad total
 				ui.message(_('{}- {} de {}'.format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y]))))
 		except IndexError:
 			pass
@@ -348,12 +385,12 @@ control + shift + suprimir; elimina la base de datos.
 			self.y += 1
 			if self.y < len(self.index):
 				self.z = self.index[self.y]
-				ui.message(_('{}, {}'.format(self.channels[self.y][0], self.videos[self.y][self.z][0])))
+				ui.message('{}, {}'.format(self.channels[self.y][0], self.videos[self.y][self.z][0]))
 			else:
 				if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 				self.y = 0
 				self.z = self.index[self.y]
-				ui.message(_('{}, {}'.format(self.channels[self.y][0], self.videos[self.y][self.z][0])))
+				ui.message('{}, {}'.format(self.channels[self.y][0], self.videos[self.y][self.z][0]))
 		except IndexError:
 			ui.message(self.noDatabase)
 
@@ -364,12 +401,12 @@ control + shift + suprimir; elimina la base de datos.
 			self.y -= 1
 			if self.y >= 0:
 				self.z = self.index[self.y]
-				ui.message(_('{}, {}'.format(self.channels[self.y][0], self.videos[self.y][self.z][0])))
+				ui.message('{}, {}'.format(self.channels[self.y][0], self.videos[self.y][self.z][0]))
 			else:
 				if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 				self.y = len(self.index) - 1
 				self.z = self.index[self.y]
-				ui.message(_('{}, {}'.format(self.channels[self.y][0], self.videos[self.y][self.z][0])))
+				ui.message('{}, {}'.format(self.channels[self.y][0], self.videos[self.y][self.z][0]))
 		except IndexError:
 			ui.message(self.noDatabase)
 
@@ -377,6 +414,7 @@ control + shift + suprimir; elimina la base de datos.
 		if len(self.channels) == 0:
 			ui.message(self.unselected)
 			return
+		# Translators: aviso de apertura del link en el navegador
 		ui.message(_('Abriendo el link en el navegador...'))
 		webbrowser.open(self.videos[self.y][self.z][1], new=0, autoraise=True)
 		self.desactivar(False)
@@ -396,6 +434,7 @@ control + shift + suprimir; elimina la base de datos.
 			ui.message(self.unselected)
 			return
 		try:
+			# Translators: posición actual de cantidad total. número de reproducciones. Mensaje de ayuda de comandos
 			ui.message(_('{} de {}, {} reproducciones. {}. Pulsa f1 para ver la ayuda de comandos'.format(self.z + 1, len(self.videos[self.y]), self.videos[self.y][self.z][4], self.videos[self.y][self.z][5])))
 		except IndexError:
 			pass
@@ -413,6 +452,7 @@ control + shift + suprimir; elimina la base de datos.
 		new_videos = []
 		videos_list = self.getVideosList(channel[1])
 		if not videos_list:
+			# Translators: aviso de problemas con el requerimiento de conexión
 			ui.message(_('Se han producido errores en el requerimiento web. Comprueba tu conexión y vuelve a intentarlo'))
 			return
 		for video in videos_list:
@@ -421,10 +461,13 @@ control + shift + suprimir; elimina la base de datos.
 			else:
 				break
 		if len(new_videos) == 0:
+			# Translators: aviso de ausencia de novedades en el canal
 			if messages: ui.message(_('No se han encontrado videos nuevos para este canal'))
 		elif len(new_videos) == 1:
+			# Translators: aviso de videos nuevos
 			Thread(target=self.downloadNewVideos, args=(new_videos, _('Se ha añadido un video nuevo en {}'.format(channel[0])), channel), daemon= True).start()
 		elif len(new_videos) > 1:
+			# Translators: aviso de videos nuevos
 			Thread(target=self.downloadNewVideos, args=(new_videos, _('Se han añadido {} videos nuevos en {}'.format(len(new_videos), channel[0])), channel), daemon= True).start()
 
 	def getVideosList(self, channel_url):
@@ -439,6 +482,7 @@ control + shift + suprimir; elimina la base de datos.
 
 	def downloadNewVideos(self, new_videos, message_text, channel):
 		if self.sounds: playWaveFile(os.path.join(os.environ['systemroot'], "Media", "Alarm05.wav"))
+		# Translators: aviso de proceso iniciado
 		braille.handler.message(_('Proceso iniciado'))
 		list_videos = list(reversed(new_videos))
 		for video in list_videos:
@@ -460,6 +504,7 @@ control + shift + suprimir; elimina la base de datos.
 		self.desactivar(False)
 		api.copyToClip(self.videos[self.y][self.z][1])
 		if self.sounds: playWaveFile(os.path.join(os.environ['systemroot'], 'Media', 'Windows Recycle.wav'))
+		# Translators: aviso de copia
 		braille.handler.message(_('copiado'))
 
 	def terminate(self):
@@ -470,6 +515,7 @@ control + shift + suprimir; elimina la base de datos.
 			ui.message(self.unselected)
 			return
 		self.desactivar(False)
+		# Translators: aviso de obtención de los datos del video
 		ui.message(_('Obteniendo los datos del video...'))
 		Thread(target=self.startViewData, daemon= True).start()
 
@@ -481,7 +527,7 @@ control + shift + suprimir; elimina la base de datos.
 	def startViewData(self):
 		p = self.getData(self.videos[self.y][self.z][1])
 		upload_date = f'{p["upload_date"][6:][:2]}.{p["upload_date"][4:][:2]}.{p["upload_date"][:4]}'
-		time = self.timeFormat(p["duration"])
+		time = str(timedelta(seconds=int(p['duration'])))
 		data = f'''{self.itemsData[0]}: {time}
 {self.itemsData[1]}: {upload_date}
 {self.itemsData[2]}: {p["view_count"]}
@@ -489,28 +535,13 @@ control + shift + suprimir; elimina la base de datos.
 {self.itemsData[4]}: {p["description"]}'''
 		ui.browseableMessage(data, self.itemsData[5])
 
-	def timeFormat(self, seconds):
-		hs = int(seconds/3600)
-		ms = int(seconds/60)
-		ss = seconds%60
-		if ss < 10:
-			ss = f"0{ss}"
-		if ms < 10:
-			ms = f"0{ms}"
-		if hs > 0:
-			ms = ms%60
-			if ms < 10:
-				ms = f"0{ms}"
-			return f"{hs}:{ms}:{ss}"
-		else:
-			return f"{ms}:{ss}"
-
 	def script_openAudio(self, gesture):
 		if len(self.channels) == 0:
 			ui.message(self.unselected)
 			return
 		self.desactivar(False)
 		Thread(target=self.startOpenAudio, daemon= True).start()
+		# Translators: aviso de activación del reproductor web
 		ui.message(_('Activando el reproductor web...'))
 
 	def startOpenAudio(self, time= False):
@@ -526,7 +557,7 @@ control + shift + suprimir; elimina la base de datos.
 		for format in video['formats']:
 			if format['ext'] == 'm4a':
 				audioUrl = format['url']
-		tiempoTotal = str(timedelta(seconds=int(str(video['duration']).split(".")[0])))
+		tiempoTotal = str(timedelta(seconds=int(video['duration'])))
 		return [audioUrl, tiempoTotal] if tiempo else audioUrl
 
 class AddonThread(Thread):
@@ -546,6 +577,7 @@ class AddonThread(Thread):
 			gitJson = json.loads(r.decode('utf-8'))
 			if gitJson[0]["tag_name"] > youtube_dl.version.__version__:
 				urlDescarga = gitJson[0]['zipball_url']
+				# Translators: aviso de nueva versión de la librería youtube_dl
 				xguiMsg = _('Existe una nueva versión de la librería youtube_dl. ¿Quieres actualizarla?')
 				msg = wx.MessageDialog(None, xguiMsg, self.frame.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 				ret = msg.ShowModal()
@@ -566,6 +598,7 @@ class AddonThread(Thread):
 						shutil.rmtree(os.path.join(dirAddon, "lib", "youtube_dl"))
 						shutil.move(os.path.join(dirAddon, root, "youtube_dl"), os.path.join(dirAddon, "lib", "youtube_dl"))
 						shutil.rmtree(os.path.join(dirAddon, root))
+						# Translators: aviso de reinicio de NVDA
 						modal = wx.MessageDialog(None, _('Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres hacerlo ahora?'), _('¡Atención!'), wx.YES_NO | wx.YES_DEFAULT | wx.ICON_QUESTION)
 						if modal.ShowModal() == wx.ID_YES:
 							core.restart()
@@ -585,6 +618,7 @@ class DescargaDialogo(wx.Dialog):
 		WIDTH = 550
 		HEIGHT = 400
 
+		# Translators: texto de actualización de la librería
 		super(DescargaDialogo, self).__init__(None, -1, title=_('Actualizando la librería...'), size = (WIDTH, HEIGHT))
 
 		self.CenterOnScreen()
@@ -598,10 +632,12 @@ class DescargaDialogo(wx.Dialog):
 		self.textorefresco = wx.TextCtrl(self.Panel, wx.ID_ANY, style =wx.TE_MULTILINE|wx.TE_READONLY)
 		self.textorefresco.Bind(wx.EVT_CONTEXT_MENU, self.skip)
 
+		# Translators: texto del botón aceptar
 		self.aceptarBTN = wx.Button(self.Panel, 1, _('&Aceptar'))
 		self.Bind(wx.EVT_BUTTON, self.onAceptar, id=self.aceptarBTN.GetId())
 		self.aceptarBTN.Disable()
 
+		# Translators: texto del botón cerrar
 		self.cerrarBTN = wx.Button(self.Panel, 2, _('&Cerrar'))
 		self.Bind(wx.EVT_BUTTON, self.onCerrar, id=self.cerrarBTN.GetId())
 		self.cerrarBTN.Disable()
@@ -699,6 +735,7 @@ class HiloDescarga(Thread):
 			if readsofar >= total_size: # Si queremos hacer algo cuando la descarga termina.
 				pass
 		else: # Si la descarga es solo el tamaño
+			# Translators: texto de la ventana que avisa que espere
 			wx.CallAfter(self.frame.TextoRefresco, _('Espere por favor...\n') + _('Descargando: %s') % self.humanbytes(readsofar))
 
 	def run(self):
@@ -711,9 +748,11 @@ class HiloDescarga(Thread):
 			except Exception as e:
 				urllib.request.urlretrieve(self.url, os.path.join(dirAddon, "temp.zip"), reporthook=self.__call__)
 
+			# Translators: aviso sobre la finalización de la actualización
 			msg = _('Descarga finalizada. Cierre la ventana para terminar de instalar la librería y reiniciar NVDA.')
 			wx.CallAfter(self.frame.done, msg)
 		except Exception as e:
+			# Translators: aviso de error y verificación de la conexión
 			wx.CallAfter(self.frame.error, _('Algo salió mal.\n') + _('Compruebe si tiene conexión a internet y vuelva a intentarlo.\n') + _('Ya puede cerrar esta ventana.'))
 
 class MyLogger(object):
@@ -734,13 +773,17 @@ class NewChannel(wx.Dialog):
 		self.connect = connect
 		self.cursor = cursor
 		self.Panel = wx.Panel(self)
+		# Translators: texto que solicita el ingreso del nombre del canal
 		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa el nombre del canal'))
 		self.channelName = wx.TextCtrl(self.Panel,wx.ID_ANY)
 		self.channelName.SetValue(channel_name)
+		# Translators: texto que solicita el ingreso del link del canal
 		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa la URL del canal'))
 		self.channelLink = wx.TextCtrl(self.Panel,wx.ID_ANY)
 		self.channelLink.SetValue(channel_link)
+		# Translators: texto del botón añadir canal
 		self.addBTN = wx.Button(self.Panel, wx.ID_ANY, _('&Añadir canal'))
+		# Translators: texto del botón cancelar
 		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, _('&Cancelar'))
 		self.channelName.Bind(wx.EVT_CONTEXT_MENU, self.onPass)
 		self.channelLink.Bind(wx.EVT_CONTEXT_MENU, self.onPass)
@@ -754,11 +797,13 @@ class NewChannel(wx.Dialog):
 	def addChannel(self, event):
 		channel_name = self.channelName.GetValue()
 		if channel_name == "":
+			# Translators: texto de aviso que solicita el nombre del canal
 			ui.message(_('Debes ingresar algún nombre para este canal'))
 			self.channelName.SetFocus()
 			return
 		channel_url = self.getChannelUrl(self.channelLink.GetValue())
 		if not channel_url:
+			# Translators: aviso de la invalidez del link ingresado
 			ui.message(_('La url ingresada no es válida'))
 			self.channelLink.SetValue("")
 			self.channelLink.SetFocus()
@@ -781,6 +826,7 @@ class NewChannel(wx.Dialog):
 
 	def getVideos(self, channelName, channelUrl, channelID):
 		if self.frame.sounds: playWaveFile(os.path.join(os.environ['systemroot'], "Media", "Alarm05.wav"))
+		# Translators: aviso de proceso iniciado
 		braille.handler.message(_('Proceso iniciado'))
 		self.insert_channel((channelName, channelUrl, channelID, 0))
 		with youtube_dl.YoutubeDL(self.options) as ydl:
@@ -791,6 +837,7 @@ class NewChannel(wx.Dialog):
 		self.connect.close()
 		self.frame.startDB()
 		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
+		# Translators: aviso de proceso finalizado
 		ui.message(_('Proceso Finalizado'))
 
 	def insert_channel(self, entities):
@@ -817,9 +864,12 @@ class NewSearch(wx.Dialog):
 		self.connect = connect
 		self.cursor = cursor
 		self.Panel = wx.Panel(self)
+		# Translators: texto del cuadro para ingresar los términos de búsqueda
 		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa el término de búsqueda y pulsa intro'))
 		self.searchText = wx.TextCtrl(self.Panel,wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
+		# Translators: texto del botón para iniciar la búsqueda
 		self.searchBTN = wx.Button(self.Panel, wx.ID_ANY, _('&Iniciar la búsqueda'))
+		# Translators: texto del botón para cancelar la búsqueda
 		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, _('&Cancelar'))
 		self.searchText.Bind(wx.EVT_CONTEXT_MENU, self.onPass)
 		self.searchText.Bind(wx.EVT_TEXT_ENTER, self.startSearch)
@@ -838,6 +888,7 @@ class NewSearch(wx.Dialog):
 			self.frame.channels_temp = self.frame.channels
 			self.frame.videos_temp = self.frame.videos
 			self.frame.index_temp = self.frame.index
+			# Translators: nombre de la columna resultados de búsqueda
 			self.frame.channels = [(_('Resultados de búsqueda'), None)]
 			self.frame.videos = [results]
 			self.frame.index = [0]
@@ -848,6 +899,7 @@ class NewSearch(wx.Dialog):
 			self.frame.speak(_(f'Se han encontrado {len(results)} resultados'), 0.2)
 		else:
 			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "nResults.wav"))
+			# Translators: aviso de resultados no encontrados
 			self.frame.speak(_('No se han encontrado resultados'), 0.2)
 			self.frame.activar(False)
 		self.Close()
@@ -868,9 +920,11 @@ class ChannelSettings(wx.Dialog):
 		self.connect = connect
 		self.cursor = cursor
 		self.Panel = wx.Panel(self)
+		# Translators: texto del cuadro nombre del canal
 		wx.StaticText(self.Panel, wx.ID_ANY, _('Nombre del canal'))
 		self.channelName = wx.TextCtrl(self.Panel,wx.ID_ANY)
 		self.channelName.SetValue(self.frame.channels[self.frame.y][0])
+		# Translators: texto de la casilla de verificación de canal favorito
 		self.checkbox = wx.CheckBox(self.Panel, wx.ID_ANY, _('Canal favorito'))
 		self.checkbox.SetValue(self.frame.channels[self.frame.y][3])
 		self.saveBTN = wx.Button(self.Panel, wx.ID_ANY, self.frame.saveChanges)
@@ -902,6 +956,7 @@ class ChannelSettings(wx.Dialog):
 			self.connect.close()
 			self.Close()
 			self.frame.startDB()
+			# Translators: aviso de configuración guardada
 			self.frame.speak(_('Configuración guardada'), 1)
 		self.frame.activar(False)
 		try:
@@ -917,10 +972,13 @@ class GlobalSettings(wx.Dialog):
 		self.connect = connect
 		self.cursor = cursor
 		self.Panel = wx.Panel(self)
+		# Translators: texto de la casilla de verificación para activar los sonidos
 		self.checkbox = wx.CheckBox(self.Panel, wx.ID_ANY, _('Activar los sonidos del complemento'))
 		self.checkbox.SetValue(self.frame.sounds)
+		# Translators: texto de las opciones del radiobox con las horas
 		self.listbox = wx.RadioBox(self.Panel, wx.ID_ANY, _('Selecciona el intervalo de tiempo para la verificación de nuevas subidas en los canales favoritos'), choices=[_('Desactivado'), _('24 horas'), _('12 horas'), _('8 horas'), _('4 horas'), _('2 horas'), _('1 hora')])
 		self.listbox.SetSelection(self.frame.update_time)
+		# Translators: texto de las opciones del listbox con el órden de los elementos
 		self.radio = wx.RadioBox(self.Panel, wx.ID_ANY, _('Seleccione el órden de aparición de los videos del canal'), choices=[_('Del último al primero'), _('Del primero al último'), _('Del más visto al menos visto'), _('Del menos visto al mas visto')])
 		self.radio.SetSelection(self.frame.order_by)
 		self.saveBTN = wx.Button(self.Panel, wx.ID_ANY, self.frame.saveChanges)
@@ -958,6 +1016,7 @@ class GlobalSettings(wx.Dialog):
 					modal.Destroy()
 			else:
 				self.frame.startDB()
+				# Translators: aviso de configuraciones aplicadas
 				self.frame.speak(_('Configuraciones aplicadas'), 1)
 		self.Close()
 
@@ -999,11 +1058,15 @@ class GlobalSearch(wx.Dialog):
 		}
 		self.frame = frame
 		self.Panel = wx.Panel(self)
+		# Translators: texto del cuadro para ingresar los términos de búsqueda
 		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa los términos de búsqueda'))
 		self.textSearch = wx.TextCtrl(self.Panel,wx.ID_ANY)
+		# Translators: texto de las opciones del radiobox con la cantidad de resultados a mostrar
 		self.radiobox = wx.RadioBox(self.Panel, wx.ID_ANY, _('Selecciona el número de resultados  a mostrarse'), choices=[_('10 resultados'), _('20 resultados'), _('30 resultados'), _('40 resultados'), _('50 resultados')])
 		self.radiobox.SetSelection(1)
+		# Translators: texto del botón para iniciar la búsqueda
 		self.searchBTN = wx.Button(self.Panel, wx.ID_ANY, _('Iniciar la búsqueda'))
+		# Translators: texto del botón cancelar
 		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, _('Cancelar'))
 		self.searchBTN.Bind(wx.EVT_BUTTON, self.search)
 		self.Bind(wx.EVT_ACTIVATE, self.onSalir)
@@ -1027,27 +1090,32 @@ class GlobalSearch(wx.Dialog):
 			self.Close()
 			Thread(target=self.startSearch, args=(str,), daemon= True).start()
 		else:
+			# Translators: aviso de que debe ingresarse alguna búsqueda
 			ui.message(_('Debes ingresar algún texto de búsqueda'))
 			self.textSearch.SetFocus()
 
 	def startSearch(self, str):
 		count = (self.radiobox.GetSelection() + 1) * 10
 		if self.frame.sounds: playWaveFile(os.path.join(os.environ['systemroot'], "Media", "Alarm05.wav"))
+		# Translators: aviso de proceso iniciado
 		braille.handler.message(_('Proceso iniciado'))
 		with youtube_dl.YoutubeDL(self.YDL_OPTIONS) as ydl:
 			try:
 				results = ydl.extract_info(f'ytsearch{count}:{str}', download= False)
 			except:
 				if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "yResults.wav"))
+				# Translators: aviso de que no se han encontrado resultados
 				gui.messageBox(_('No se han encontrado resultados'))
 				return
 		if not len(results['entries']):
 			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "yResults.wav"))
+			# Translators: aviso de resultados no encontrados
 			gui.messageBox(_('No se han encontrado resultados'))
 			return
 		self.frame.channels_temp = self.frame.channels
 		self.frame.videos_temp = self.frame.videos
 		self.frame.index_temp = self.frame.index
+		# Translators: nombre de la columna de resultados globales
 		self.frame.channels = [(_('Resultados globales'), None)]
 		self.frame.index = [0]
 		self.frame.videos = []
@@ -1056,4 +1124,5 @@ class GlobalSearch(wx.Dialog):
 			videos.append((video['title'], f"https://www.youtube.com/watch?v={video['url']}", video['id'], None, video['view_count'], video['uploader']))
 		self.frame.videos = [videos]
 		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
+		# Translators: aviso de búsqueda finalizada
 		self.frame.activar(_('Búsqueda finalizada'))
