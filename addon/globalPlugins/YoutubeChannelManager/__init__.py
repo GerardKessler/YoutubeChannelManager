@@ -121,7 +121,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.connect.commit()
 			self.cursor.execute('create table settings(sounds bit, update_time integer, order_by integer, id integer primary key autoincrement)')
 			self.connect.commit()
-			self.cursor.execute('insert into settings(sounds, update_time, order_by) values(?, ?, ?, [1, 0, 0])')
+			self.cursor.execute('insert into settings(sounds, update_time, order_by) values(1, 0, 0)')
 			self.connect.commit()
 			self.cursor.execute('VACUUM')
 			self.connect.commit()
