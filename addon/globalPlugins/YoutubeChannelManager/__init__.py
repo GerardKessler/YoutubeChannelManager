@@ -186,10 +186,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def script_newChannel(self, gesture):
 		self.desactivar(False)
-		if self.videos[0][0][3] == None:
-			# Translators: título de la ventana para añadir un nuevo canal
-			self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, self.videos[0][self.z][5], self.videos[0][self.z][1])
-		else:
+		try:
+			if self.videos[0][0][3] == None:
+				# Translators: título de la ventana para añadir un nuevo canal
+				self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, self.videos[0][self.z][5], self.videos[0][self.z][1])
+		except:
 			# Translators: título de la ventana para añadir un nuevo canal
 			self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, "", "")
 		gui.mainFrame.prePopup()
@@ -259,8 +260,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			pass
 
 	def startRemoveChannel(self):
+		channel_name = self.channels[self.y][0]
 		# Translators: texto en la ventana de eliminación de canal
-		modal = wx.MessageDialog(None, _('¿Quieres eliminar el canal {}?'.format(self.channels[self.y][0])), self.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+		modal = wx.MessageDialog(None, _('¿Quieres eliminar el canal {}?'.format(channel_name)), self.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 		if modal.ShowModal() == wx.ID_YES:
 			self.cursor.execute(f'delete from videos where channel_id = "{self.channels[self.y][2]}"')
 			self.cursor.execute(f'delete from channels where channel_id = "{self.channels[self.y][2]}"')
@@ -268,10 +270,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.channels.pop(self.y)
 			self.videos.pop(self.y)
 			self.index.pop(self.y)
-			self.y = 0
 			if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "recicled.wav"))
+			self.y = 0
 			# Translators: texto de la ventana de eliminación
-			gui.messageBox(_('{} Eliminado'.format(self.channels[self.y][0])))
+			gui.messageBox(_('{} Eliminado'.format(channel_name)))
 		else:
 			modal.Destroy()
 
