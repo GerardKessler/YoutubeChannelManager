@@ -90,7 +90,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.videos_temp = []
 		self.index_temp = []
 		self.y = 0
-		self.z = 1
+		self.z = 0
 		self.sounds = None
 		self.update_time = None
 		self.order_by = None
@@ -149,6 +149,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.videos.append(videos_r)
 			self.index.append(0)
 		self.setTimer()
+		self.y=0
+		self.z=0
 		if speak:
 			ui.message(speak)
 
