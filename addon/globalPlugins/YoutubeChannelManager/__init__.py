@@ -48,9 +48,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	# Translators: informa que no se ha seleccionado ningún canal
 	unselected = _('Ningún canal seleccionado')
-	# Translators: avisa de que no hay canales en la base de datos
+	# Translators: aviso de ausencia de canales en la base de datos
 	noDatabase = _('No hay canales en la base de datos')
-	# Translators: título de la ventana
+	# título de algunas ventanas de aviso
 	attention = _('Atención')
 	# Translators: texto del botón para guardar los cambios
 	saveChanges = _('&Guardar los cambios')
@@ -770,7 +770,6 @@ class MyLogger(object):
 class NewChannel(wx.Dialog):
 	def __init__(self, parent, titulo, frame, connect, cursor, channel_name, channel_link):
 		super(NewChannel, self).__init__(parent, -1, title=titulo)
-		self.options = {'ignoreerrors': True, 'quiet': True, 'extract_flat': 'in_playlist', 'dump_single_json': True}
 		self.frame = frame
 		self.connect = connect
 		self.cursor = cursor
@@ -831,8 +830,7 @@ class NewChannel(wx.Dialog):
 		# Translators: aviso de proceso iniciado
 		braille.handler.message(_('Proceso iniciado'))
 		self.insert_channel((channelName, channelUrl, channelID, 0))
-		with youtube_dl.YoutubeDL(self.options) as ydl:
-			data_dict = ydl.extract_info(channelUrl, download= False)
+		data_dict = self.frame.getData(channelUrl)
 		data = data_dict['entries']
 		for i in reversed(range(len(data))):
 			self.insert_videos((data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["id"], data[i]["id"], channelID, data[i]["view_count"], channelName))
