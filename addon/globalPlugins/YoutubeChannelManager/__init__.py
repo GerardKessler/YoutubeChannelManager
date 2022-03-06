@@ -192,9 +192,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if self.videos[0][0][3] == None:
 				# Translators: título de la ventana para añadir un nuevo canal
 				self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, self.videos[0][self.z][5], self.videos[0][self.z][1])
+				gui.mainFrame.prePopup()
+				self.dlg.Show()
+				return
 		except:
-			# Translators: título de la ventana para añadir un nuevo canal
-			self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, "", "")
+			pass
+		# Translators: título de la ventana para añadir un nuevo canal
+		self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, "", "")
 		gui.mainFrame.prePopup()
 		self.dlg.Show()
 
