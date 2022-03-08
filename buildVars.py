@@ -23,7 +23,7 @@ addon_info = {
 	"addon_summary": _("YoutubeChannelManager"),
 	# Add-on description
 	# Translators: Long description to be shown for this add-on on add-on information from add-ons manager
-	"addon_description": _("""Permite gestionar los canales de Youtube favoritos a través de una interfaz invisible y sencilla"""),
+	"addon_description": _("""Permite gestionar los canales favoritos de Youtube a través de una interfaz invisible y sencilla"""),
 	# version
 	"addon_version": "1.0",
 	# Author(s)
