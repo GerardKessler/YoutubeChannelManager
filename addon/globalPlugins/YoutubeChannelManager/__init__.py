@@ -2,6 +2,7 @@
 # Copyright (C) 2021 Gerardo Kessler <ReaperYOtrasYerbas@gmail.com>
 # This file is covered by the GNU General Public License.
 
+from logHandler import log
 from datetime import timedelta
 import speech
 from collections import OrderedDict
@@ -46,6 +47,8 @@ addonHandler.initTranslation()
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
+	# Translators: mensaje de error de conexión
+	connectionError = _('Error de conexión')
 	# Translators: informa que no se ha seleccionado ningún canal
 	unselected = _('Ningún canal seleccionado')
 	# Translators: aviso de ausencia de canales en la base de datos
@@ -482,7 +485,8 @@ control + shift + suprimir; elimina la base de datos.
 		try:
 			content = urllib.request.urlopen(channel_url).read().decode('utf-8')
 		except:
-			pass
+			log.error(self.connectionError)
+			return None
 		ids_list = re.findall(r'(?<="videoId":")[\w\d\-\.\,]+(?=")', content)
 		# Método que elimina las duplicaciones de una lista manteniendo el órden de los elementos
 		final_list = list(OrderedDict.fromkeys(ids_list))
@@ -581,6 +585,7 @@ class AddonThread(Thread):
 				req = urllib.request.Request(url)
 				r = urllib.request.urlopen(req).read()
 			except:
+				log.error(self.frame.connectionError)
 				return
 			gitJson = json.loads(r.decode('utf-8'))
 			if gitJson[0]["tag_name"] > youtube_dl.version.__version__:
@@ -824,22 +829,26 @@ class NewChannel(wx.Dialog):
 	def getChannelUrl(self, url):
 		if not re.search(r'https?...(www.)?youtube.com.', url): return None
 		if re.search(r'https?...(www.)?youtube.com.channel.', url): return url
-		content = urllib.request.urlopen(url).read().decode()
+		try:
+			content = urllib.request.urlopen(url).read().decode()
+		except:
+			log.error(self.frame.connectionError)
 		channelUrl = re.search(r'(?<=")\/channel\/[\w\-\?\.]+(?=")', content)
 		if channelUrl:
-			return f'https://www.youtube.com/{channelUrl[0]}'
-		# else:
-			# return None
+			return f'https://www.youtube.com{channelUrl[0]}'
+		else:
+			return None
 
 	def getVideos(self, channelName, channelUrl, channelID):
 		if self.frame.sounds: playWaveFile(os.path.join(os.environ['systemroot'], "Media", "Alarm05.wav"))
 		# Translators: aviso de proceso iniciado
 		braille.handler.message(_('Proceso iniciado'))
-		self.insert_channel((channelName, channelUrl, channelID, 0))
 		data_dict = self.frame.getData(channelUrl)
 		data = data_dict['entries']
+		log.info(f'Se han encontrado {len(data)} videos para este canal')
 		for i in reversed(range(len(data))):
 			self.insert_videos((data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["id"], data[i]["id"], channelID, data[i]["view_count"], channelName))
+		self.insert_channel((channelName, channelUrl, channelID, 0))
 		self.connect.close()
 		self.frame.startDB()
 		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
