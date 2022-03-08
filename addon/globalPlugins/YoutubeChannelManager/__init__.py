@@ -197,6 +197,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self.dlg = NewChannel(gui.mainFrame, _('Añadir canal'), self, self.connect, self.cursor, self.videos[0][self.z][5], self.videos[0][self.z][1])
 				gui.mainFrame.prePopup()
 				self.dlg.Show()
+				self.channels = self.channels_temp
+				self.videos = self.videos_temp
+				self.index = self.index_temp
+				self.y = 0
+				self.z = 0
 				return
 		except:
 			pass
@@ -840,6 +845,7 @@ class NewChannel(wx.Dialog):
 			return None
 
 	def getVideos(self, channelName, channelUrl, channelID):
+		log.info(f'nombre del canal; {channelName}\nID del canal; {channelID}\nURL del canal; {channelUrl}')
 		if self.frame.sounds: playWaveFile(os.path.join(os.environ['systemroot'], "Media", "Alarm05.wav"))
 		# Translators: aviso de proceso iniciado
 		braille.handler.message(_('Proceso iniciado'))
@@ -849,6 +855,7 @@ class NewChannel(wx.Dialog):
 		for i in reversed(range(len(data))):
 			self.insert_videos((data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["id"], data[i]["id"], channelID, data[i]["view_count"], channelName))
 		self.insert_channel((channelName, channelUrl, channelID, 0))
+		self.cursor.close()
 		self.connect.close()
 		self.frame.startDB()
 		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
@@ -856,12 +863,18 @@ class NewChannel(wx.Dialog):
 		ui.message(_('Proceso Finalizado'))
 
 	def insert_channel(self, entities):
-		self.cursor.execute(f'insert into channels(name, url, channel_id, favorite) values(?, ?, ?, ?)', entities)
-		self.connect.commit()
+		try:
+			self.cursor.execute(f'insert into channels(name, url, channel_id, favorite) values(?, ?, ?, ?)', entities)
+			self.connect.commit()
+		except sqlite3.ProgrammingError as e:
+			log.info(e)
 
 	def insert_videos(self, entities):
-		self.cursor.execute(f'insert into videos(title, url, video_id, channel_id, view_count, channel_name) values(?, ?, ?, ?, ?, ?)', entities)
-		self.connect.commit()
+		try:
+			self.cursor.execute(f'insert into videos(title, url, video_id, channel_id, view_count, channel_name) values(?, ?, ?, ?, ?, ?)', entities)
+			self.connect.commit()
+		except sqlite3.ProgrammingError as e:
+			log.info(e)
 
 	def onSalir(self, event):
 		if event.GetEventType() == 10012:

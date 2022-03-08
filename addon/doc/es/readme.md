@@ -22,7 +22,7 @@ Este complemento permite gestionar los canales favoritos de la plataforma Youtub
 * c; copia el link del video al portapapeles.
 * d; obtiene los datos del video y los muestra en una ventana de NVDA
 * b; Activa el diálogo de búsqueda en la base de datos.
-* Control + b; Activa el diálogo de búsqueda en la página de Youtube.
+* Control + b; Activa el diálogo de búsqueda general.
 * f5; Busca si existen videos nuevos en el canal con el foco.
 * s; Activa la ventana de configuración del canal con el foco.
 * g; Activa la ventana de opciones globales.
