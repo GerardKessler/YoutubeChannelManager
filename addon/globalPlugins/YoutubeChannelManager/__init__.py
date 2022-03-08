@@ -845,13 +845,11 @@ class NewChannel(wx.Dialog):
 			return None
 
 	def getVideos(self, channelName, channelUrl, channelID):
-		log.info(f'nombre del canal; {channelName}\nID del canal; {channelID}\nURL del canal; {channelUrl}')
 		if self.frame.sounds: playWaveFile(os.path.join(os.environ['systemroot'], "Media", "Alarm05.wav"))
 		# Translators: aviso de proceso iniciado
 		braille.handler.message(_('Proceso iniciado'))
 		data_dict = self.frame.getData(channelUrl)
 		data = data_dict['entries']
-		log.info(f'Se han encontrado {len(data)} videos para este canal')
 		for i in reversed(range(len(data))):
 			self.insert_videos((data[i]["title"], "https://www.youtube.com/watch?v=" + data[i]["id"], data[i]["id"], channelID, data[i]["view_count"], channelName))
 		self.insert_channel((channelName, channelUrl, channelID, 0))
