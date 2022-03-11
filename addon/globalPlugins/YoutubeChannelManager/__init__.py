@@ -827,6 +827,13 @@ class NewChannel(wx.Dialog):
 		channel_id = "".join([chard for chard in channel_name if re.search(r"[a-zA-Z0-9]", chard)])
 		if channel_url[-7:] != "/videos":
 			channel_url = f"{channel_url}/videos"
+		for channel in self.frame.channels:
+			if channel[1] == channel_url:
+				modal = wx.MessageDialog(None, _('El canal {} ya existe en la base de datos. ¿Quieres añadirlo de todas formas?').format(channel[0]), self.frame.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+				if modal.ShowModal() == wx.ID_NO:
+					modal.Destroy()
+					self.Close()
+					return
 		Thread(target=self.getVideos, args=(channel_name, channel_url, channel_id), daemon= True).start()
 		self.Close()
 
