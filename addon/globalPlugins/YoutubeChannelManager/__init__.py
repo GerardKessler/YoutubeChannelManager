@@ -15,7 +15,6 @@ import globalPluginHandler
 import addonHandler
 import globalVars
 import ui
-import braille
 from scriptHandler import script
 import urllib.request
 import json
@@ -251,7 +250,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			os.remove(os.path.join(globalVars.appArgs.configPath, "channels"))
 			self.startDB(True)
 			# Translators: verbalización de la eliminación de la base de datos
-			self.speak(_('Base de datos eliminada'), 0.3)
+			gui.messageBox(_('Base de datos eliminada'))
 
 	def script_removeChannel(self, gesture):
 		try:
@@ -276,7 +275,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def startRemoveChannel(self):
 		channel_name = self.channels[self.y][0]
 		# Translators: texto en la ventana de eliminación de canal
-		modal = wx.MessageDialog(None, _('¿Quieres eliminar el canal {}?'.format(channel_name)), self.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
+		modal = wx.MessageDialog(None, _('¿Quieres eliminar el canal {}?').format(channel_name), self.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 		if modal.ShowModal() == wx.ID_YES:
 			self.cursor.execute(f'delete from videos where channel_id = "{self.channels[self.y][2]}"')
 			self.cursor.execute(f'delete from channels where channel_id = "{self.channels[self.y][2]}"')
@@ -287,18 +286,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "recicled.wav"))
 			self.y = 0
 			# Translators: texto de la ventana de eliminación
-			gui.messageBox(_('{} Eliminado'.format(channel_name)))
+			gui.messageBox(_('{} Eliminado').format(channel_name))
 		else:
 			modal.Destroy()
 
 	def speak(self, str, pause):
-		Thread(target=self.tSpeak, args=(str, pause), daemon= True).start()
+		ui.message(str)
+		Thread(target=self.tSpeak, args=(pause,), daemon= True).start()
 
-	def tSpeak(self, str, pause):
+	def tSpeak(self, pause):
 		speech.setSpeechMode(speech.SpeechMode.off)
 		time.sleep(pause)
 		speech.setSpeechMode(speech.SpeechMode.talk)
-		ui.message(str)
 
 	@script(
 		# Translators: nombre de la categoría en el diálogo gestos de entrada
@@ -370,12 +369,12 @@ control + shift + suprimir; elimina la base de datos.
 			self.z += 1
 			if self.z < len(self.videos[self.y]):
 				# Translators: posición actual de cantidad total
-				ui.message(_('{}- {} de {}'.format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y]))))
+				ui.message(_('{}- {} de {}').format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y])))
 			else:
 				if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 				self.z = 0
 				# Translators: posición actual de cantidad total
-				ui.message(_('{}- {} de {}'.format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y]))))
+				ui.message(_('{}- {} de {}').format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y])))
 		except IndexError:
 			pass
 
@@ -385,12 +384,12 @@ control + shift + suprimir; elimina la base de datos.
 			self.z -= 1
 			if self.z >= 0:
 				# Translators: posición actual de cantidad total
-				ui.message(_('{}- {} de {}'.format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y]))))
+				ui.message(_('{}- {} de {}').format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y])))
 			else:
 				if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "click.wav"))
 				self.z = len(self.videos[self.y]) - 1
 				# Translators: posición actual de cantidad total
-				ui.message(_('{}- {} de {}'.format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y]))))
+				ui.message(_('{}- {} de {}').format(self.videos[self.y][self.z][0], self.z+1, len(self.videos[self.y])))
 		except IndexError:
 			pass
 
@@ -451,7 +450,7 @@ control + shift + suprimir; elimina la base de datos.
 			return
 		try:
 			# Translators: posición actual de cantidad total. número de reproducciones. Mensaje de ayuda de comandos
-			ui.message(_('{} de {}, {} reproducciones. {}. Pulsa f1 para ver la ayuda de comandos'.format(self.z + 1, len(self.videos[self.y]), self.videos[self.y][self.z][4], self.videos[self.y][self.z][5])))
+			ui.message(_('{} de {}, {} reproducciones. {}. Pulsa f1 para ver la ayuda de comandos').format(self.z + 1, len(self.videos[self.y]), self.videos[self.y][self.z][4], self.videos[self.y][self.z][5]))
 		except IndexError:
 			pass
 
@@ -481,10 +480,10 @@ control + shift + suprimir; elimina la base de datos.
 			if messages: ui.message(_('No se han encontrado videos nuevos para este canal'))
 		elif len(new_videos) == 1:
 			# Translators: aviso de videos nuevos
-			Thread(target=self.downloadNewVideos, args=(new_videos, _('Se ha añadido un video nuevo en {}'.format(channel[0])), channel), daemon= True).start()
+			Thread(target=self.downloadNewVideos, args=(new_videos, _('Se ha añadido un video nuevo en {}').format(channel[0]), channel), daemon= True).start()
 		elif len(new_videos) > 1:
 			# Translators: aviso de videos nuevos
-			Thread(target=self.downloadNewVideos, args=(new_videos, _('Se han añadido {} videos nuevos en {}'.format(len(new_videos), channel[0])), channel), daemon= True).start()
+			Thread(target=self.downloadNewVideos, args=(new_videos, _('Se han añadido {} videos nuevos en {}').format(len(new_videos), channel[0]), channel), daemon= True).start()
 
 	def getVideosList(self, channel_url):
 		try:
@@ -498,9 +497,9 @@ control + shift + suprimir; elimina la base de datos.
 		return final_list
 
 	def downloadNewVideos(self, new_videos, message_text, channel):
-		if self.sounds: playWaveFile(os.path.join(os.environ['systemroot'], "Media", "Alarm05.wav"))
+		if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "tictac.wav"))
 		# Translators: aviso de proceso iniciado
-		braille.handler.message(_('Proceso iniciado'))
+		self.speak(_('Proceso iniciado'), 1)
 		list_videos = list(reversed(new_videos))
 		for video in list_videos:
 			data = self.getData(f'https://www.youtube.com/watch?v={video}')
@@ -522,7 +521,7 @@ control + shift + suprimir; elimina la base de datos.
 		api.copyToClip(self.videos[self.y][self.z][1])
 		if self.sounds: playWaveFile(os.path.join(os.environ['systemroot'], 'Media', 'Windows Recycle.wav'))
 		# Translators: aviso de copia
-		braille.handler.message(_('copiado'))
+		ui.message(_('copiado'))
 
 	def terminate(self):
 		core.postNvdaStartup.unregister(self.firstRun)
@@ -845,9 +844,9 @@ class NewChannel(wx.Dialog):
 			return None
 
 	def getVideos(self, channelName, channelUrl, channelID):
-		if self.frame.sounds: playWaveFile(os.path.join(os.environ['systemroot'], "Media", "Alarm05.wav"))
+		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "tictac.wav"))
 		# Translators: aviso de proceso iniciado
-		braille.handler.message(_('Proceso iniciado'))
+		self.frame.speak(_('Proceso iniciado'), 1)
 		data_dict = self.frame.getData(channelUrl)
 		data = data_dict['entries']
 		for i in reversed(range(len(data))):
@@ -922,11 +921,11 @@ class NewSearch(wx.Dialog):
 			self.frame.z = 0
 			self.frame.activar(False)
 			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "yResults.wav"))
-			self.frame.speak(_(f'Se han encontrado {len(results)} resultados'), 0.2)
+			self.frame.speak(_(f'Se han encontrado {len(results)} resultados'), 0.3)
 		else:
 			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "nResults.wav"))
 			# Translators: aviso de resultados no encontrados
-			self.frame.speak(_('No se han encontrado resultados'), 0.2)
+			self.frame.speak(_('No se han encontrado resultados'), 0.3)
 			self.frame.activar(False)
 		self.Close()
 
@@ -1122,9 +1121,9 @@ class GlobalSearch(wx.Dialog):
 
 	def startSearch(self, str):
 		count = (self.radiobox.GetSelection() + 1) * 10
-		if self.frame.sounds: playWaveFile(os.path.join(os.environ['systemroot'], "Media", "Alarm05.wav"))
+		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "tictac.wav"))
 		# Translators: aviso de proceso iniciado
-		braille.handler.message(_('Proceso iniciado'))
+		self.frame.speak(_('Proceso iniciado'), 1)
 		with youtube_dl.YoutubeDL(self.YDL_OPTIONS) as ydl:
 			try:
 				results = ydl.extract_info(f'ytsearch{count}:{str}', download= False)
