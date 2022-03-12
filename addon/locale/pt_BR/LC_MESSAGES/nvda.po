@@ -1,0 +1,608 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: YoutubeChannelManager, versão 1.0\n"
+"Report-Msgid-Bugs-To: nvda-translations@groups.io\n"
+"POT-Creation-Date: 2022-03-12 06:01-0300\n"
+"PO-Revision-Date: 2022-03-12 06:05-0300\n"
+"Last-Translator: Ângelo Abrantes <ampa4374@gmail.com>\n"
+"Language-Team: Equipa portuguesa do NVDA: Ângelo Abrantes e Rui Fontes "
+"(10-03-2022)\n"
+"Language: pt_PT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.0.1\n"
+"X-Poedit-Basepath: ../../../globalPlugins\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#. Translators: mensaje de error de conexión
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:50
+msgid "Error de conexión"
+msgstr "Erro de conexão"
+
+#. Translators: informa que no se ha seleccionado ningún canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:52
+msgid "Ningún canal seleccionado"
+msgstr "Nenhum canal seleccionado"
+
+#. Translators: aviso de ausencia de canales en la base de datos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:54
+msgid "No hay canales en la base de datos"
+msgstr "Sem canais na base de dados"
+
+#. título de algunas ventanas de aviso
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:56
+msgid "Atención"
+msgstr "Atenção"
+
+#. Translators: texto del botón para guardar los cambios
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:58
+msgid "&Guardar los cambios"
+msgstr "&Guardar mudanças"
+
+#. Translators: texto del botón para descartar los cambios
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:60
+msgid "&Descartar cambios y cerrar"
+msgstr "&Descartar alterações, mudar e fechar"
+
+#. Translators: duración del video
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:63
+msgid "Duración"
+msgstr "Duração"
+
+#. Translators: fecha de subida del video
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:65
+msgid "Fecha de subida"
+msgstr "Data de carregamento"
+
+#. Translators: cantidad de reproducciones
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:67
+msgid "Reproducciones"
+msgstr "Reproduções"
+
+#. Translators: cantidad de me gusta
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:69
+msgid "Me gusta"
+msgstr "Eu gosto"
+
+#. Translators: descripción del video
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:71
+msgid "Descripción"
+msgstr "Descrição"
+
+#. Translators: título de la ventana con los datos del video
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:73
+msgid "Datos del video"
+msgstr "Dados do vídeo"
+
+#. Translators: Título de la ventana de configuración de canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:180
+msgid "Configuración de canal"
+msgstr "Configuração de canal"
+
+#. Translators: título de la ventana de configuraciones
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:187
+msgid "Configuraciones"
+msgstr "Configurações"
+
+#. Translators: título de la ventana para añadir un nuevo canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:196
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:208
+msgid "Añadir canal"
+msgstr "Adicionar canal"
+
+#. Translators: título de la ventana de nueva búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:222
+msgid "Nueva búsqueda"
+msgstr "Nova pesquisa"
+
+#. Translators: título de la ventana de búsqueda global
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:238
+msgid "Búsqueda global"
+msgstr "Pesquisa global"
+
+#. Translators: texto de la ventana que pregunta por la eliminación de la base de datos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:247
+msgid "¿Seguro que quieres eliminar la base de datos?"
+msgstr "tem a certeza de que quer apagar a base de dados?"
+
+#. Translators: verbalización de la eliminación de la base de datos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:253
+msgid "Base de datos eliminada"
+msgstr "Base de dados apagada"
+
+#. Translators: verbalización de que la búsqueda ha sido eliminada
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:267
+msgid "Búsqueda eliminada"
+msgstr "Pesquisa eliminada"
+
+#. Translators: texto en la ventana de eliminación de canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:278
+msgid "¿Quieres eliminar el canal {}?"
+msgstr "quer apagar o canal {}?"
+
+#. Translators: texto de la ventana de eliminación
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:289
+msgid "{} Eliminado"
+msgstr "{} Eliminado"
+
+#. Translators: nombre de la categoría en el diálogo gestos de entrada
+#. Add-on summary, usually the user visible name of the addon.
+#. Translators: Summary for this add-on
+#. to be shown on installation and add-on information found in Add-ons Manager.
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:304 buildVars.py:23
+msgid "YoutubeChannelManager"
+msgstr "YoutubeChannelManager"
+
+#. Translators: Descripción del elemento en el diálogo gestos de entrada
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:306
+msgid "Activa y desactiva la interfaz invisible"
+msgstr "Activar e desactivar a interface invisível"
+
+#. Translators: aviso de activación de los atajos de teclado
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:313
+msgid "Atajos activados"
+msgstr "Atalhos activados"
+
+#. Translators: aviso de atajos desactivados
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:342
+msgid "Atajos desactivados"
+msgstr "Atalhos desactivados"
+
+#. Translators: texto de la ventana de ayuda rápida de comandos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:349
+msgid ""
+"\n"
+"Escape; desactiva la interfaz virtual.\n"
+"n; Activa el diálogo para añadir un nuevo canal.\n"
+"o; abre el link del video actual en el navegador por defecto.\n"
+"r; Carga el audio en un reproductor web personalizado.\n"
+"c; copia el link del video actual al portapapeles.\n"
+"d; abre una ventana con datos del video actual.\n"
+"b; Activa el cuadro de búsqueda de videos en la base de datos.\n"
+"control + b; Activa el cuadro de búsqueda de videos en la página de "
+"Youtube.\n"
+"s; Activa la ventana de configuración del canal actual.\n"
+"g; Activa la ventana de opciones globales.\n"
+"suprimir; Activa el diálogo para eliminar el canal actual, y en la ventana "
+"de resultados, elimina la columna y vuelve a la lista de canales.\n"
+"f5; Busca videos nuevos en el canal actual.\n"
+"control + shift + suprimir; elimina la base de datos.\n"
+"\t\t"
+msgstr ""
+"\n"
+"Escape; desactiva a interface virtual.\n"
+"n; activa o diálogo para adicionar um novo canal.\n"
+"o; abre o link para o vídeo actual no browser padrão.\n"
+"r; carrega o áudio para um leitor web personalizado.\n"
+"c; copia o link para o vídeo actual para a área de transferência.\n"
+"d; abre uma janela com dados do vídeo actual.\n"
+"b; Activa a caixa de pesquisa de vídeos na base de dados.\n"
+"controlo + b; Activa a caixa de pesquisa de vídeos na página do Youtube.\n"
+"s; Activa a janela de configuração do canal actual.\n"
+"g; Activa a janela de opções globais.\n"
+"delete; Activa o diálogo para apagar o canal actual, e na janela de "
+"resultados, apaga a coluna e volta à lista de canais.\n"
+"f5; Procura de novos vídeos no canal actual.\n"
+"controlo + turno + apagar; apaga a base de dados.\n"
+"\t\t"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:364
+msgid "Ayuda de comandos"
+msgstr "Ajuda de comandos"
+
+#. Translators: posición actual de cantidad total
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:372
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:377
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:387
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:392
+msgid "{}- {} de {}"
+msgstr "{}- {} de {}"
+
+#. Translators: aviso de apertura del link en el navegador
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:433
+msgid "Abriendo el link en el navegador..."
+msgstr "Abrir o link no navegador..."
+
+#. Translators: posición actual de cantidad total. número de reproducciones. Mensaje de ayuda de comandos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:453
+msgid "{} de {}, {} reproducciones. {}. Pulsa f1 para ver la ayuda de comandos"
+msgstr "{} de {}, {} reproduções. {}. Prima f1 para ver a ajuda do comando"
+
+#. Translators: aviso de problemas con el requerimiento de conexión
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:471
+msgid ""
+"Se han producido errores en el requerimiento web. Comprueba tu conexión y "
+"vuelve a intentarlo"
+msgstr ""
+"Houve erros no pedido na web. Por favor, verifique a sua ligação e tente "
+"novamente"
+
+#. Translators: aviso de ausencia de novedades en el canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:480
+msgid "No se han encontrado videos nuevos para este canal"
+msgstr "Não foram encontrados novos vídeos para este canal"
+
+#. Translators: aviso de videos nuevos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:483
+msgid "Se ha añadido un video nuevo en {}"
+msgstr "Um novo vídeo foi adicionado em {}"
+
+#. Translators: aviso de videos nuevos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:486
+msgid "Se han añadido {} videos nuevos en {}"
+msgstr "{} foram adicionados novos vídeos em {}"
+
+#. Translators: aviso de proceso iniciado
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:502
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:856
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1133
+msgid "Proceso iniciado"
+msgstr "Processo iniciado"
+
+#. Translators: aviso de copia
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:524
+msgid "copiado"
+msgstr "copiado"
+
+#. Translators: aviso de obtención de los datos del video
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:535
+msgid "Obteniendo los datos del video..."
+msgstr "A obter os dados do vídeo..."
+
+#. Translators: aviso de activación del reproductor web
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:561
+msgid "Activando el reproductor web..."
+msgstr "Activar o web player..."
+
+#. Translators: aviso de nueva versión de la librería youtube_dl
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:598
+msgid ""
+"Existe una nueva versión de la librería youtube_dl. ¿Quieres actualizarla?"
+msgstr "Existe uma nova versão da biblioteca youtube_dl, quer actualizá-la?"
+
+#. Translators: aviso de reinicio de NVDA
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:619
+msgid ""
+"Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres hacerlo ahora?"
+msgstr ""
+"O NVDA precisa de ser reiniciado para aplicar as alterações, quer fazê-lo "
+"agora?"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:619
+msgid "¡Atención!"
+msgstr "atenção!"
+
+#. Translators: texto de actualización de la librería
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:639
+msgid "Actualizando la librería..."
+msgstr "Actualizar a biblioteca..."
+
+#. Translators: texto del botón aceptar
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:653
+msgid "&Aceptar"
+msgstr "&Aceitar"
+
+#. Translators: texto del botón cerrar
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:658
+msgid "&Cerrar"
+msgstr "&Fechar"
+
+#. Si la descarga es solo el tamaño
+#. Translators: texto de la ventana que avisa que espere
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:751
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:756
+msgid "Espere por favor...\n"
+msgstr "Por favor aguarde...\n"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:751
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:756
+#, python-format
+msgid "Descargando: %s"
+msgstr "A Descarregar: %s"
+
+#. Translators: aviso sobre la finalización de la actualización
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:769
+msgid ""
+"Descarga finalizada. Cierre la ventana para terminar de instalar la librería "
+"y reiniciar NVDA."
+msgstr ""
+"Download concluído. Fechar a janela para terminar a instalação da biblioteca "
+"e reiniciar o NVDA."
+
+#. Translators: aviso de error y verificación de la conexión
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:773
+msgid "Algo salió mal.\n"
+msgstr "Alguma coisa correu mal.\n"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:773
+msgid "Compruebe si tiene conexión a internet y vuelva a intentarlo.\n"
+msgstr "Verifique se tem uma ligação à Internet e tente novamente.\n"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:773
+msgid "Ya puede cerrar esta ventana."
+msgstr "Pode fechar esta janela agora."
+
+#. Translators: texto que solicita el ingreso del nombre del canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:793
+msgid "Ingresa el nombre del canal"
+msgstr "Introduza o nome do canal"
+
+#. Translators: texto que solicita el ingreso del link del canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:797
+msgid "Ingresa la URL del canal"
+msgstr "Introduza o URL do canal"
+
+#. Translators: texto del botón añadir canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:801
+msgid "&Añadir canal"
+msgstr "&Adicionar canal"
+
+#. Translators: texto del botón cancelar
+#. Translators: texto del botón para cancelar la búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:803
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:905
+msgid "&Cancelar"
+msgstr "&Cancelar"
+
+#. Translators: texto de aviso que solicita el nombre del canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:817
+msgid "Debes ingresar algún nombre para este canal"
+msgstr "Deve introduzir um nome para este canal"
+
+#. Translators: aviso de la invalidez del link ingresado
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:823
+msgid "La url ingresada no es válida"
+msgstr "A url introduzida é inválida"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:832
+msgid ""
+"El canal {} ya existe en la base de datos. ¿Quieres añadirlo de todas formas?"
+msgstr ""
+"O canal {} já existe no banco de dados. Deseja adicioná-lo mesmo assim? "
+
+#. Translators: aviso de proceso finalizado
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:867
+msgid "Proceso Finalizado"
+msgstr "Processo Concluído"
+
+#. Translators: texto del cuadro para ingresar los términos de búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:900
+msgid "Ingresa el término de búsqueda y pulsa intro"
+msgstr "Introduza o seu termo de pesquisa e prima enter"
+
+#. Translators: texto del botón para iniciar la búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:903
+msgid "&Iniciar la búsqueda"
+msgstr "&Iniciar a pesquisa"
+
+#. Translators: nombre de la columna resultados de búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:924
+msgid "Resultados de búsqueda"
+msgstr "Resultados da pesquisa"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:931
+msgid "Se han encontrado {len(results)} resultados"
+msgstr "Encontrámos resultados {len(results)}"
+
+#. Translators: aviso de resultados no encontrados
+#. Translators: aviso de que no se han encontrado resultados
+#. Translators: aviso de resultados no encontrados
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:935
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1140
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1145
+msgid "No se han encontrado resultados"
+msgstr "Não foram encontrados resultados"
+
+#. Translators: texto del cuadro nombre del canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:956
+msgid "Nombre del canal"
+msgstr "Nome do canal"
+
+#. Translators: texto de la casilla de verificación de canal favorito
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:960
+msgid "Canal favorito"
+msgstr "Canal preferido"
+
+#. Translators: aviso de configuración guardada
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:992
+msgid "Configuración guardada"
+msgstr "Configuração guardada"
+
+#. Translators: texto de la casilla de verificación para activar los sonidos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1008
+msgid "Activar los sonidos del complemento"
+msgstr "Activar sons do extra"
+
+#. Translators: texto de las opciones del radiobox con las horas
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid ""
+"Selecciona el intervalo de tiempo para la verificación de nuevas subidas en "
+"los canales favoritos"
+msgstr ""
+"Selecciona o intervalo de tempo para verificar novos carregamentos nos "
+"canais favoritos"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "Desactivado"
+msgstr "Desactivado"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "24 horas"
+msgstr "24 horas"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "12 horas"
+msgstr "12 horas"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "8 horas"
+msgstr "8 horas"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "4 horas"
+msgstr "4 horas"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "2 horas"
+msgstr "2 horas"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "1 hora"
+msgstr "1 hora"
+
+#. Translators: texto de las opciones del listbox con el órden de los elementos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1014
+msgid "Seleccione el órden de aparición de los videos del canal"
+msgstr "Seleccionar a ordem de aparecimento dos vídeos no canal"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1014
+msgid "Del último al primero"
+msgstr "Do último para o primeiro"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1014
+msgid "Del primero al último"
+msgstr "Do primeiro para o último"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1014
+msgid "Del más visto al menos visto"
+msgstr "Do mais visto para o menos visto"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1014
+msgid "Del menos visto al mas visto"
+msgstr "Do menos visto para o mais visto"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1044
+msgid ""
+"Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres reiniciar "
+"ahora?"
+msgstr ""
+"Precisa de reiniciar o NVDA para aplicar as alterações, quer reiniciar agora?"
+
+#. Translators: aviso de configuraciones aplicadas
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1052
+msgid "Configuraciones aplicadas"
+msgstr "Configurações aplicadas"
+
+#. Translators: texto del cuadro para ingresar los términos de búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1094
+msgid "Ingresa los términos de búsqueda"
+msgstr "Introduza os termos da sua pesquisa"
+
+#. Translators: texto de las opciones del radiobox con la cantidad de resultados a mostrar
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1097
+msgid "Selecciona el número de resultados  a mostrarse"
+msgstr "Seleccionar o número de resultados a apresentar"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1097
+msgid "10 resultados"
+msgstr "10 resultados"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1097
+msgid "20 resultados"
+msgstr "20 resultados"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1097
+msgid "30 resultados"
+msgstr "30 resultados"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1097
+msgid "40 resultados"
+msgstr "40 resultados"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1097
+msgid "50 resultados"
+msgstr "50 resultados"
+
+#. Translators: texto del botón para iniciar la búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1100
+msgid "Iniciar la búsqueda"
+msgstr "Iniciar pesquisa"
+
+#. Translators: texto del botón cancelar
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1102
+msgid "Cancelar"
+msgstr "&Cancelar"
+
+#. Translators: aviso de que debe ingresarse alguna búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1126
+msgid "Debes ingresar algún texto de búsqueda"
+msgstr "Deve introduzir algum texto de pesquisa"
+
+#. Translators: nombre de la columna de resultados globales
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1151
+msgid "Resultados globales"
+msgstr "Resultados globais"
+
+#. Translators: aviso de búsqueda finalizada
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1160
+msgid "Búsqueda finalizada"
+msgstr "Pesquisa concluída"
+
+#. Translators: Cadenas del documento html. Título, botones y mensajes
+#: addon\globalPlugins\YoutubeChannelManager\player.py:20
+#: addon\globalPlugins\YoutubeChannelManager\player.py:30
+msgid "Reproducir"
+msgstr "Reproduzir"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:21
+msgid "Retroceder"
+msgstr "Seleccionar o tempo para rebobinar a reprodução"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:22
+msgid "Avanzar"
+msgstr "Avançar"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:23
+msgid "Velocidad de reproducción"
+msgstr "Velocidade de reprodução"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:24
+msgid "Bajar volúmen"
+msgstr "Baixar volume"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:25
+msgid "Silenciar"
+msgstr "Silenciar"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:26
+msgid "Subir volúmen"
+msgstr "Aumentar volume"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:27
+msgid "Volver a reproducir"
+msgstr "Voltar a reproduzir"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:28
+msgid "Finalizado"
+msgstr "Concluído"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:29
+msgid "Pausar"
+msgstr "Pausa"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:31
+msgid "Volúmen mínimo"
+msgstr "Volume mínimo"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:32
+msgid "Silenciado"
+msgstr "silenciado"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:33
+msgid "No silenciado"
+msgstr "Não silenciado"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:34
+msgid "volúmen máximo"
+msgstr "volume máximo"
+
+#. Add-on description
+#. Translators: Long description to be shown for this add-on on add-on information from add-ons manager
+#: buildVars.py:26
+msgid ""
+"Permite gestionar los canales favoritos de Youtube a través de una interfaz "
+"invisible y sencilla"
+msgstr ""

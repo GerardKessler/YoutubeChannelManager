@@ -5,37 +5,37 @@ Este complemento permite gestionar los canales favoritos de la plataforma Youtub
 
 ## Atajos del complemento
 
-* NVDA + i griega; Activa y desactiva la interfaz invisible
+* NVDA + i griega; Activa y desactiva la interfaz invisible.
 
 ## Atajos disponibles en la interfaz invisible
 
-* escape; cierra la interfaz virtual y devuelve los atajos de teclado a su función por defecto.
-* Flecha derecha; se mueve al canal siguiente.
-* Flecha izquierda; se mueve al canal anterior.
-* Flecha abajo; se mueve al siguiente video del canal con el foco.
-* Flecha arriba; se mueve al anterior video del canal con el foco.
+* escape; Cierra la interfaz virtual y devuelve los atajos de teclado a su función por defecto.
+* Flecha derecha; Se mueve al canal siguiente.
+* Flecha izquierda; Se mueve al canal anterior.
+* Flecha abajo; Se mueve al siguiente video del canal con el foco.
+* Flecha arriba; Se mueve al anterior video del canal con el foco.
 * inicio; Se mueve al primer video del canal con el foco.
-* fin; verbaliza la posición, el nombre del canal, y el número de visualizaciones del video.
-* n; abre el diálogo para añadir un nuevo canal.
-* o; abre el link del video en el navegador por defecto.
+* fin; Verbaliza la posición, el nombre del canal, y el número de visualizaciones del video.
+* n; Abre el diálogo para añadir un nuevo canal.
+* o; Abre el link del video en el navegador por defecto.
 * r; Abre el link de audio en un reproductor web personalizado.
-* c; copia el link del video al portapapeles.
-* d; obtiene los datos del video y los muestra en una ventana de NVDA
+* c; Copia el link del video al portapapeles.
+* d; Obtiene los datos del video y los muestra en una ventana de NVDA.
 * b; Activa el diálogo de búsqueda en la base de datos.
 * Control + b; Activa el diálogo de búsqueda general.
 * f5; Busca si existen videos nuevos en el canal con el foco.
 * s; Activa la ventana de configuración del canal con el foco.
 * g; Activa la ventana de opciones globales.
-* Suprimir; elimina el canal con el foco, y en la ventana de resultados elimina la columna y vuelve a la vista de canales.
+* Suprimir; Elimina el canal con el foco, y en la ventana de resultados elimina la columna y vuelve a la lista de canales.
 * control + shift + suprimir; Elimina la base de datos.
-* f1; activa la ayuda de comandos.
+* f1; Activa la ayuda de comandos.
 
 ### Añadir canales
 
 Para añadir un nuevo canal a la base de datos, tan solo hay que abrir la interfaz virtual con el atajo para dicha acción, por defecto; NVDA + i griega. Y pulsar la letra n.    
 La ventana solicita 2 campos. Un nombre de canal, y la dirección  URL del mismo. En este último caso, el complemento permite el ingreso de los siguientes formatos URL:
 
-* link de un video, que suele tener el siguiente formato:
+* Link de un video, que suele tener el siguiente formato:
 
     https://www.youtube.com/watch?v=IdDelVideo
 
@@ -61,7 +61,7 @@ La verificación de novedades en los canales favoritos está desactivada por def
 
 * Activar la interfaz virtual con el gesto asignado, por defecto, NVDA + i griega.
 * Activar la ventana de configuración global con la letra g.
-* tabular hasta  la lista de opciones, y seleccionar con flechas arriba y abajo el rango deseado.
+* Tabular hasta  la lista de opciones, y seleccionar con flechas arriba y abajo el rango deseado.
 * Pulsar sobre el botón para guardar las configuraciones.
 
 Al encontrar novedades, el complemento emitirá un sonido durante la actualización y un mensaje al finalizar la misma.
@@ -73,7 +73,7 @@ El complemento permite buscar por palabras clave entre los videos de los canales
 * Activar la interfaz virtual con el gesto asignado, por defecto, NVDA + i griega.
 * Activar la ventana de búsqueda con la letra b.
 * Escribir una palabra o frase de referencia.
-* pulsar intro o el botón iniciar la búsqueda.
+* Pulsar Intro o el botón Iniciar la búsqueda.
 
 Si no se encuentran resultados, se avisa a través de un mensaje y no se  modifica la interfaz virtual.  
 En el caso de encontrar videos que se correspondan con los datos ingresados, se avisa a través de un mensaje y se activa la interfaz de resultados.  
@@ -87,11 +87,15 @@ Para realizar una búsqueda global fuera de la base de datos hay que hacer lo si
 * Activar la interfaz virtual con el gesto asignado, por defecto, NVDA + i griega.
 * Activar la ventana de búsqueda con el atajo control + b.
 * Escribir una palabra o frase de referencia y seleccionar la cantidad de resultados a mostrar.
-* pulsar el botón iniciar la búsqueda.
+* Pulsar el botón Iniciar la búsqueda.
 
 Si no se encuentran resultados, se avisa a través de un mensaje.  
-cuando se encuentran resultados, estos se agregan a la lista principal, la cual podemos recorrer con flechas arriba y abajo.  
-Aquí también tenemos los mismos atajos que en la búsqueda por base de datos. O para abrir en el navegador, r para el reproductor web, c para copiar el link, etcétera.
-Si alguno de los videos está en un canal que quiera agregarse a la base de datos, al pulsar la letra n sobre esta lista va a activarse el diálogo de nuevo canal con los campos de nombre y url ya completos. Estos campos pueden editarse si así lo prefieren.  
+Cuando se encuentran resultados, estos se agregan a la lista principal, la cual podemos recorrer con flechas arriba y abajo.  
+Aquí también tenemos los mismos atajos que en la búsqueda por base de datos. O para abrir en el navegador, r para el reproductor web, c para copiar el link, etcétera.  
+Si alguno de los videos está en un canal que quiera agregarse a la base de datos, al pulsar la letra n sobre esta lista va a activarse el diálogo de nuevo canal con los campos de nombre y URL ya completos. Estos campos pueden editarse si así lo prefieren.  
 Al igual que en las búsquedas en la base de datos, para volver a la lista de canales tan solo hay que pulsar suprimir para eliminar los resultados y volver a la interfaz de canales.
 
+## Traductores:
+
+	Rémy Ruiz (Francés)
+	Ângelo Miguel Abrantes (portugués)
