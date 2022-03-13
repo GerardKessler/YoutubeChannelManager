@@ -99,3 +99,6 @@ Comme dans les recherches dans la base de données, pour revenir à la liste des
 
 	Rémy Ruiz (Français)
 	Ângelo Miguel Abrantes, pour le portugais.  
+	Umut KORKMAZ (Turc)
+	wafiqtaher (arabe)
+

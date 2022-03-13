@@ -1,0 +1,639 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
+"POT-Creation-Date: 2022-03-13 08:50+0200\n"
+"PO-Revision-Date: \n"
+"Last-Translator: wafiqtaher <wafiqtaher@gmail.com>\n"
+"Language-Team: \n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.12\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#. Translators: mensaje de error de conexión
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:50
+msgid "Error de conexión"
+msgstr "خطأ في الإتصال"
+
+#. Translators: informa que no se ha seleccionado ningún canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:52
+msgid "Ningún canal seleccionado"
+msgstr "لم يتم اختيار قناة"
+
+#. Translators: aviso de ausencia de canales en la base de datos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:54
+msgid "No hay canales en la base de datos"
+msgstr "لا توجد قنوات في قاعدة البيانات"
+
+#. título de algunas ventanas de aviso
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:56
+msgid "Atención"
+msgstr "تنبيه"
+
+#. Translators: texto del botón para guardar los cambios
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:58
+msgid "&Guardar los cambios"
+msgstr "&حفظ التغييرات"
+
+#. Translators: texto del botón para descartar los cambios
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:60
+msgid "&Descartar cambios y cerrar"
+msgstr "&تجاهل التغييرات والإغلاق"
+
+#. Translators: duración del video
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:63
+msgid "Duración"
+msgstr "المدة الزمنية:"
+
+#. Translators: fecha de subida del video
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:65
+msgid "Fecha de subida"
+msgstr "تاريخ الرفع"
+
+#. Translators: cantidad de reproducciones
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:67
+msgid "Reproducciones"
+msgstr "مشاهدة"
+
+#. Translators: cantidad de me gusta
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:69
+msgid "Me gusta"
+msgstr "أعجبني"
+
+#. Translators: descripción del video
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:71
+msgid "Descripción"
+msgstr "وصف"
+
+#. Translators: título de la ventana con los datos del video
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:73
+msgid "Datos del video"
+msgstr "بيانات الفيديو"
+
+#. Translators: Título de la ventana de configuración de canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:180
+msgid "Configuración de canal"
+msgstr "تكوين القناة"
+
+#. Translators: título de la ventana de configuraciones
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:187
+msgid "Configuraciones"
+msgstr "إعدادات"
+
+#. Translators: título de la ventana para añadir un nuevo canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:196
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:208
+msgid "Añadir canal"
+msgstr "إضافة قناة"
+
+#. Translators: título de la ventana de nueva búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:222
+msgid "Nueva búsqueda"
+msgstr "بحث جديد"
+
+#. Translators: título de la ventana de búsqueda global
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:238
+msgid "Búsqueda global"
+msgstr "البحث العام"
+
+#. Translators: texto de la ventana que pregunta por la eliminación de la base de datos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:247
+msgid "¿Seguro que quieres eliminar la base de datos?"
+msgstr "هل أنت متأكد أنك تريد حذف قاعدة البيانات؟"
+
+#. Translators: verbalización de la eliminación de la base de datos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:253
+msgid "Base de datos eliminada"
+msgstr "تم حذف قاعدة البيانات"
+
+#. Translators: verbalización de que la búsqueda ha sido eliminada
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:267
+msgid "Búsqueda eliminada"
+msgstr "إزالة البحث"
+
+#. Translators: texto en la ventana de eliminación de canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:278
+msgid "¿Quieres eliminar el canal {}?"
+msgstr "هل تريد إزالة القناة {}؟"
+
+#. Translators: texto de la ventana de eliminación
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:289
+msgid "{} Eliminado"
+msgstr "{} إزالة"
+
+#. Translators: nombre de la categoría en el diálogo gestos de entrada
+#. Add-on summary, usually the user visible name of the addon.
+#. Translators: Summary for this add-on
+#. to be shown on installation and add-on information found in Add-ons Manager.
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:304 buildVars.py:23
+msgid "YoutubeChannelManager"
+msgstr "مدير قنوات اليتيوب"
+
+#. Translators: Descripción del elemento en el diálogo gestos de entrada
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:306
+msgid "Activa y desactiva la interfaz invisible"
+msgstr "قم بتشغيل وإيقاف الواجهة غير المرئية"
+
+#. Translators: aviso de activación de los atajos de teclado
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:313
+msgid "Atajos activados"
+msgstr "تم تفعيل الاختصارات"
+
+#. Translators: aviso de atajos desactivados
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:342
+msgid "Atajos desactivados"
+msgstr "تم تعطيل الاختصارات"
+
+#. Translators: texto de la ventana de ayuda rápida de comandos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:349
+msgid ""
+"\n"
+"Escape; desactiva la interfaz virtual.\n"
+"n; Activa el diálogo para añadir un nuevo canal.\n"
+"o; abre el link del video actual en el navegador por defecto.\n"
+"r; Carga el audio en un reproductor web personalizado.\n"
+"c; copia el link del video actual al portapapeles.\n"
+"d; abre una ventana con datos del video actual.\n"
+"b; Activa el cuadro de búsqueda de videos en la base de datos.\n"
+"control + b; Activa el cuadro de búsqueda de videos en la página de Youtube.\n"
+"s; Activa la ventana de configuración del canal actual.\n"
+"g; Activa la ventana de opciones globales.\n"
+"suprimir; Activa el diálogo para eliminar el canal actual, y en la ventana de resultados, elimina la columna y vuelve a la lista de canales.\n"
+"f5; Busca videos nuevos en el canal actual.\n"
+"control + shift + suprimir; elimina la base de datos.\n"
+"\t\t"
+msgstr ""
+"\n"
+"هروب؛ قم بتعطيل الواجهة الظاهرية.\n"
+"n؛ قم بتنشيط مربع الحوار لإضافة قناة جديدة.\n"
+"o؛ افتح ارتباط الفيديو الحالي في المستعرض الافتراضي.\n"
+"r ؛ تحميل الصوت في مشغل ويب مخصص.\n"
+"c ؛ انسخ ارتباط الفيديو الحالي إلى الحافظة.\n"
+"d؛ يفتح نافذة ببيانات الفيديو الحالية.\n"
+"b؛ قم بتنشيط مربع البحث عن ملفات الفيديو في قاعدة البيانات.\n"
+"control+b ؛ قم بتنشيط مربع البحث عن الفيديو في صفحة Youtube.\n"
+"s؛ ينشط إطار التكوين للقناة الحالية.\n"
+"g ؛ تنشيط نافذة الخيارات العمومية.\n"
+"del؛ قم بتنشيط مربع الحوار لحذف القناة الحالية ، وفي إطار النتائج ، احذف العمود وارجع إلى قائمة القنوات.\n"
+"f5؛ تحقق من وجود مقاطع فيديو جديدة على القناة الحالية.\n"
+"control + shift + suprimir؛ احذف قاعدة البيانات.\n"
+"\t \t"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:364
+msgid "Ayuda de comandos"
+msgstr "أوامر المساعدة"
+
+#. Translators: posición actual de cantidad total
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:372
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:377
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:387
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:392
+msgid "{}- {} de {}"
+msgstr "{}- {} من{}"
+
+#. Translators: aviso de apertura del link en el navegador
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:433
+msgid "Abriendo el link en el navegador..."
+msgstr "فتح الرابط في المتصفح ..."
+
+#. Translators: posición actual de cantidad total. número de reproducciones. Mensaje de ayuda de comandos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:453
+msgid "{} de {}, {} reproducciones. {}. Pulsa f1 para ver la ayuda de comandos"
+msgstr "{} من {} ، {} تشغيل. {}. اضغط f1 لرؤية تعليمات الأمر"
+
+#. Translators: aviso de problemas con el requerimiento de conexión
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:471
+msgid "Se han producido errores en el requerimiento web. Comprueba tu conexión y vuelve a intentarlo"
+msgstr "حدثت أخطاء في طلب الويب. يرجى التحقق من اتصالك وحاول مرة أخرى"
+
+#. Translators: aviso de ausencia de novedades en el canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:480
+msgid "No se han encontrado videos nuevos para este canal"
+msgstr "لم يتم العثور على مقاطع فيديو جديدة لهذه القناة"
+
+#. Translators: aviso de videos nuevos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:483
+msgid "Se ha añadido un video nuevo en {}"
+msgstr "تمت إضافة فيديو جديد إلى {}"
+
+#. Translators: aviso de videos nuevos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:486
+msgid "Se han añadido {} videos nuevos en {}"
+msgstr "تمت إضافة {} من مقاطع الفيديو الجديدة في {}"
+
+#. Translators: aviso de proceso iniciado
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:502
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:856
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1133
+msgid "Proceso iniciado"
+msgstr "بدأت العملية"
+
+#. Translators: aviso de copia
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:524
+msgid "copiado"
+msgstr "نسخ"
+
+#. Translators: aviso de obtención de los datos del video
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:535
+msgid "Obteniendo los datos del video..."
+msgstr "إحضار بيانات الفيديو ..."
+
+#. Translators: aviso de activación del reproductor web
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:561
+msgid "Activando el reproductor web..."
+msgstr "جارٍ تنشيط مشغل الويب ..."
+
+#. Translators: aviso de nueva versión de la librería youtube_dl
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:598
+msgid "Existe una nueva versión de la librería youtube_dl. ¿Quieres actualizarla?"
+msgstr "يوجد إصدار جديد من مكتبة youtube_dl. هل تريد تحديثه؟"
+
+#. Translators: aviso de reinicio de NVDA
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:619
+msgid "Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres hacerlo ahora?"
+msgstr "تحتاج إلى إعادة تشغيل NVDA لتطبيق التغييرات. هل تريد أن تفعل ذلك الآن؟"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:619
+msgid "¡Atención!"
+msgstr "إنتبه!"
+
+#. Translators: texto de actualización de la librería
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:639
+msgid "Actualizando la librería..."
+msgstr "تحديث المكتبة ..."
+
+#. Translators: texto del botón aceptar
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:653
+msgid "&Aceptar"
+msgstr "&قبول"
+
+#. Translators: texto del botón cerrar
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:658
+msgid "&Cerrar"
+msgstr "إ&غلاق"
+
+#. Si la descarga es solo el tamaño
+#. Translators: texto de la ventana que avisa que espere
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:751
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:756
+msgid "Espere por favor...\n"
+msgstr "الرجاء الإنتظار؟\n"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:751
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:756
+#, python-format
+msgid "Descargando: %s"
+msgstr "تحميل:%s"
+
+#. Translators: aviso sobre la finalización de la actualización
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:769
+msgid "Descarga finalizada. Cierre la ventana para terminar de instalar la librería y reiniciar NVDA."
+msgstr "انتهى التنزيل. أغلق النافذة لإنهاء تثبيت المكتبة وإعادة تشغيل NVDA."
+
+#. Translators: aviso de error y verificación de la conexión
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:773
+msgid "Algo salió mal.\n"
+msgstr "حدث خطأ ما.\n"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:773
+msgid "Compruebe si tiene conexión a internet y vuelva a intentarlo.\n"
+msgstr "الرجاء التحقق مما إذا كان لديك اتصال بالإنترنت وحاول مرة أخرى.\n"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:773
+msgid "Ya puede cerrar esta ventana."
+msgstr "يمكنك الآن إغلاق هذه النافذة."
+
+#. Translators: texto que solicita el ingreso del nombre del canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:793
+msgid "Ingresa el nombre del canal"
+msgstr "أدخل اسم القناة"
+
+#. Translators: texto que solicita el ingreso del link del canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:797
+msgid "Ingresa la URL del canal"
+msgstr "أدخل عنوان URL للقناة"
+
+#. Translators: texto del botón añadir canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:801
+msgid "&Añadir canal"
+msgstr "إضافة قناة"
+
+#. Translators: texto del botón cancelar
+#. Translators: texto del botón para cancelar la búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:803
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:905
+msgid "&Cancelar"
+msgstr "إل&غاء"
+
+#. Translators: texto de aviso que solicita el nombre del canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:817
+msgid "Debes ingresar algún nombre para este canal"
+msgstr "يجب إدخال اسم لهذه القناة"
+
+#. Translators: aviso de la invalidez del link ingresado
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:823
+msgid "La url ingresada no es válida"
+msgstr "عنوان url الذي تم إدخاله غير صالح"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:832
+msgid "El canal {} ya existe en la base de datos. ¿Quieres añadirlo de todas formas?"
+msgstr "القناة {} موجودة بالفعل في قاعدة البيانات. هل تريد إضافته على أي حال؟"
+
+#. Translators: aviso de proceso finalizado
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:867
+msgid "Proceso Finalizado"
+msgstr "عملية منتهية"
+
+#. Translators: texto del cuadro para ingresar los términos de búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:900
+msgid "Ingresa el término de búsqueda y pulsa intro"
+msgstr "أدخل مصطلح البحث واضغط على Enter"
+
+#. Translators: texto del botón para iniciar la búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:903
+msgid "&Iniciar la búsqueda"
+msgstr "إ&بدأ البحث"
+
+#. Translators: nombre de la columna resultados de búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:924
+msgid "Resultados de búsqueda"
+msgstr "نتائج البحث"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:931
+msgid "Se han encontrado {len(results)} resultados"
+msgstr "تم العثور على {Len (results)} من النتائج"
+
+#. Translators: aviso de resultados no encontrados
+#. Translators: aviso de que no se han encontrado resultados
+#. Translators: aviso de resultados no encontrados
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:935
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1140
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1145
+msgid "No se han encontrado resultados"
+msgstr "لم يتم العثور على نتائج"
+
+#. Translators: texto del cuadro nombre del canal
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:956
+msgid "Nombre del canal"
+msgstr "اسم القناة"
+
+#. Translators: texto de la casilla de verificación de canal favorito
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:960
+msgid "Canal favorito"
+msgstr "القناة المفضلة"
+
+#. Translators: aviso de configuración guardada
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:992
+msgid "Configuración guardada"
+msgstr "التكوين المحفوظ"
+
+#. Translators: texto de la casilla de verificación para activar los sonidos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1008
+msgid "Activar los sonidos del complemento"
+msgstr "قم بتنشيط أصوات المكونات الإضافية"
+
+#. Translators: texto de las opciones del radiobox con las horas
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "Selecciona el intervalo de tiempo para la verificación de nuevas subidas en los canales favoritos"
+msgstr "حدد الفاصل الزمني للتحقق من التحميلات الجديدة على القنوات المفضلة"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "Desactivado"
+msgstr "معطل"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "24 horas"
+msgstr "24 ساعة"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "12 horas"
+msgstr "12 ساعة"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "8 horas"
+msgstr "8 ساعات"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "4 horas"
+msgstr "4 ساعات"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "2 horas"
+msgstr "ساعتين"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1011
+msgid "1 hora"
+msgstr "1 ساعة"
+
+#. Translators: texto de las opciones del listbox con el órden de los elementos
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1014
+msgid "Seleccione el órden de aparición de los videos del canal"
+msgstr "حدد ترتيب ظهور مقاطع فيديو القناة"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1014
+msgid "Del último al primero"
+msgstr "من الأخير إلى الأول"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1014
+msgid "Del primero al último"
+msgstr "من الاول الى الاخير"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1014
+msgid "Del más visto al menos visto"
+msgstr "من الأكثر مشاهدة إلى الأقل مشاهدة "
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1014
+msgid "Del menos visto al mas visto"
+msgstr "من الأقل مشاهدة إلى الأكثر مشاهدة"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1044
+msgid "Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres reiniciar ahora?"
+msgstr "تحتاج إلى إعادة تشغيل NVDA لتطبيق التغييرات. هل تريد أن تفعل ذلك الآن؟"
+
+#. Translators: aviso de configuraciones aplicadas
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1052
+msgid "Configuraciones aplicadas"
+msgstr "تطبيق الإعدادات"
+
+#. Translators: texto del cuadro para ingresar los términos de búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1094
+msgid "Ingresa los términos de búsqueda"
+msgstr "أدخل مصطلحات البحث"
+
+#. Translators: texto de las opciones del radiobox con la cantidad de resultados a mostrar
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1097
+msgid "Selecciona el número de resultados  a mostrarse"
+msgstr "حدد عدد النتائج المراد عرضها"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1097
+msgid "10 resultados"
+msgstr "10 نتائج"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1097
+msgid "20 resultados"
+msgstr "20 نتيجه"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1097
+msgid "30 resultados"
+msgstr "30 نتيجه"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1097
+msgid "40 resultados"
+msgstr "40 نتيجه"
+
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1097
+msgid "50 resultados"
+msgstr "50 نتيجه"
+
+#. Translators: texto del botón para iniciar la búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1100
+msgid "Iniciar la búsqueda"
+msgstr "إبدأ البحث"
+
+#. Translators: texto del botón cancelar
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1102
+msgid "Cancelar"
+msgstr "يلغي"
+
+#. Translators: aviso de que debe ingresarse alguna búsqueda
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1126
+msgid "Debes ingresar algún texto de búsqueda"
+msgstr "يجب عليك إدخال بعض كلمات البحث"
+
+#. Translators: nombre de la columna de resultados globales
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1151
+msgid "Resultados globales"
+msgstr "النتائج النهائية"
+
+#. Translators: aviso de búsqueda finalizada
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1160
+msgid "Búsqueda finalizada"
+msgstr "انتهى البحث"
+
+#. Translators: Cadenas del documento html. Título, botones y mensajes
+#: addon\globalPlugins\YoutubeChannelManager\player.py:20
+#: addon\globalPlugins\YoutubeChannelManager\player.py:30
+msgid "Reproducir"
+msgstr "تشغيل"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:21
+msgid "Retroceder"
+msgstr "للخلف"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:22
+msgid "Avanzar"
+msgstr "للأمام"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:23
+msgid "Velocidad de reproducción"
+msgstr "سرعة التشغيل"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:24
+msgid "Bajar volúmen"
+msgstr "خفض الصوت"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:25
+msgid "Silenciar"
+msgstr "كتم"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:26
+msgid "Subir volúmen"
+msgstr "رفع الصوت"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:27
+msgid "Volver a reproducir"
+msgstr "إعادة"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:28
+msgid "Finalizado"
+msgstr "إنتهى الفيديو"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:29
+msgid "Pausar"
+msgstr "توقف"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:31
+msgid "Volúmen mínimo"
+msgstr "الحد الأدنى"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:32
+msgid "Silenciado"
+msgstr "كتم"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:33
+msgid "No silenciado"
+msgstr "تشغيل الصوت"
+
+#: addon\globalPlugins\YoutubeChannelManager\player.py:34
+msgid "volúmen máximo"
+msgstr "الحد الأقصى"
+
+#. Add-on description
+#. Translators: Long description to be shown for this add-on on add-on information from add-ons manager
+#: buildVars.py:26
+msgid "Permite gestionar los canales favoritos de Youtube a través de una interfaz invisible y sencilla"
+msgstr "يتيح لك إدارة قنوات YouTube المفضلة لديك من خلال واجهة غير مرئية وبسيطة"
+
+msgid "Se han encontrado %s resultados"
+msgstr "تم العثور على %s نتيجة"
+
+#~ msgid "Error de conexiÃ³n"
+#~ msgstr "خطأ في الإتصال"
+
+#~ msgid "NingÃún canal seleccionado"
+#~ msgstr "لم يتم اختيار قناة"
+
+#~ msgid "Message"
+#~ msgstr "رسالة"
+
+#~ msgid "Quieres eliminar el canal {}?"
+#~ msgstr "هل تريد حذف القناة {}?"
+
+#~ msgid "Configuracin de canal"
+#~ msgstr "اعدادات القناة"
+
+#~ msgid "AÃ±adir canal"
+#~ msgstr "إدارة القناة"
+
+#~ msgid "Se han producido errores en el requerimiento web. Comprueba tu conexiÃ³n y vuelve a intentarlo"
+#~ msgstr "حدثت أخطاء في طلب الويب. يرجى التحقق من اتصالك وحاول مرة أخرى"
+
+#~ msgid "Se ha aÃ±adido un video nuevo en {}"
+#~ msgstr "تمت إضافة فيديو جديد بتنسيق {}'"
+
+#~ msgid "Existe una nueva versiÃ³n de la librerÃ­a youtube_dl. Â¿Quieres actualizarla?"
+#~ msgstr "يوجد إصدار جديد من مكتبة youtube_dl. هل تريد تحديثه؟"
+
+#~ msgid "Â¡AtenciÃ³n!"
+#~ msgstr "تنبيه!"
+
+#~ msgid "Actualizando la librerÃ­a..."
+#~ msgstr "تحديث المكتبة ..."
+
+#~ msgid "Descarga finalizada. Cierre la ventana para terminar de instalar la librerÃ­a y reiniciar NVDA."
+#~ msgstr "انتهى التنزيل. أغلق النافذة لإنهاء تثبيت المكتبة وإعادة تشغيل NVDA."
+
+#~ msgid "Algo saliÃ³ mal.\n"
+#~ msgstr "حدث خطأ ما.\n"
+
+#~ msgid "Compruebe si tiene conexiÃ³n a internet y vuelva a intentarlo.\n"
+#~ msgstr "الرجاء التحقق مما إذا كان لديك اتصال بالإنترنت وحاول مرة أخرى.\n"
+
+#~ msgid "&AÃ±adir canal"
+#~ msgstr "إ&دارة القناة"
+
+#~ msgid "In&iciar la búsqueda"
+#~ msgstr "ا&بدأ البحث"
+
+#~ msgid "ConfiguraciÃ³n guardada"
+#~ msgstr "تم حفظ التكوين"
+
+#~ msgid "Selecciona el intervalo de tiempo para la verificaciÃ³n de nuevas subidas en los canales favoritos"
+#~ msgstr "حدد الفاصل الزمني للتحقق من التحميلات الجديدة على القنوات المفضلة"
+
+#~ msgid "Seleccione el Ã³rden de apariciÃ³n de los videos del canal"
+#~ msgstr "حدد ترتيب ظهور مقاطع فيديو القناة"

@@ -105,4 +105,5 @@ Veritabanındaki aramalarda olduğu gibi, kanal listesine dönmek için, sil tu�
 
 	Remy Ruiz (Fransızca)
 	Angelo Miguel Abrantes (Portekizce)
+	wafiqtaher (Arap)
 	Umut KORKMAZ (Türkçe)

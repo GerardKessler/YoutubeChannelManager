@@ -983,7 +983,7 @@ class ChannelSettings(wx.Dialog):
 		favorite = self.checkbox.GetValue()
 		if text != self.frame.channels[self.frame.y][0] or int(favorite) != self.frame.channels[self.frame.y][3]:
 			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
-			self.cursor.execute('update channels set name = ?, favorite = ? where name = "{}"'.format(self.frame.channels[self.frame.y][0]), [text, int(favorite)])
+			self.cursor.execute('update channels set name = ?, favorite = ? where url = "{}"'.format(self.frame.channels[self.frame.y][1]), [text, int(favorite)])
 			self.connect.commit()
 			self.connect.close()
 			self.Close()

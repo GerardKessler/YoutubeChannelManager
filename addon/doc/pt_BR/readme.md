@@ -98,5 +98,8 @@ Como nas pesquisas na base de dados, para voltar à lista de canais, só precisa
 ### Tradutores
 
 Rémy Ruiz, para francês.
+wafiqtaher (árabe)
+Umut KORKMAZ (turco)
+
 Equipa portuguesa do NVDA: Ângelo Abrantes e Rui Fontes
 (10-03-2022)

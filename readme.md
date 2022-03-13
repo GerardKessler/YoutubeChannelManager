@@ -99,3 +99,6 @@ Al igual que en las búsquedas en la base de datos, para volver a la lista de ca
 
 	Rémy Ruiz (Francés)
 	Ângelo Miguel Abrantes (portugués)
+	Umut KORKMAZ (Turco)
+	wafiqtaher (árabe)
+
