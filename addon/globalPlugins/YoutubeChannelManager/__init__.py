@@ -814,13 +814,13 @@ class NewChannel(wx.Dialog):
 		channel_name = self.channelName.GetValue()
 		if channel_name == "":
 			# Translators: texto de aviso que solicita el nombre del canal
-			ui.message(_('Debes ingresar algún nombre para este canal'))
+			wx.CallAfter(ui.message, _('Debes ingresar algún nombre para este canal'))
 			self.channelName.SetFocus()
 			return
 		channel_url = self.getChannelUrl(self.channelLink.GetValue())
 		if not channel_url:
 			# Translators: aviso de la invalidez del link ingresado
-			ui.message(_('La url ingresada no es válida'))
+			wx.CallAfter(ui.message, _('La url ingresada no es válida'))
 			self.channelLink.SetValue("")
 			self.channelLink.SetFocus()
 			return
@@ -853,7 +853,7 @@ class NewChannel(wx.Dialog):
 	def getVideos(self, channelName, channelUrl, channelID):
 		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "tictac.wav"))
 		# Translators: aviso de proceso iniciado
-		self.frame.speak(_('Proceso iniciado'), 1)
+		wx.CallAfter(self.frame.speak, _('Proceso iniciado'), 1)
 		data_dict = self.frame.getData(channelUrl)
 		data = data_dict['entries']
 		for i in reversed(range(len(data))):
@@ -864,7 +864,7 @@ class NewChannel(wx.Dialog):
 		self.frame.startDB()
 		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
 		# Translators: aviso de proceso finalizado
-		ui.message(_('Proceso Finalizado'))
+		wx.CallAfter(ui.message, _('Proceso Finalizado'))
 
 	def insert_channel(self, entities):
 		try:
@@ -928,11 +928,11 @@ class NewSearch(wx.Dialog):
 			self.frame.z = 0
 			self.frame.activar(False)
 			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "yResults.wav"))
-			self.frame.speak(_(f'Se han encontrado {len(results)} resultados'), 0.3)
+			wx.CallAfter(self.frame.speak, _(f'Se han encontrado {len(results)} resultados'), 0.3)
 		else:
 			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "nResults.wav"))
 			# Translators: aviso de resultados no encontrados
-			self.frame.speak(_('No se han encontrado resultados'), 0.3)
+			wx.CallAfter(self.frame.speak, _('No se han encontrado resultados'), 0.3)
 			self.frame.activar(False)
 		self.Close()
 
@@ -989,7 +989,7 @@ class ChannelSettings(wx.Dialog):
 			self.Close()
 			self.frame.startDB()
 			# Translators: aviso de configuración guardada
-			self.frame.speak(_('Configuración guardada'), 1)
+			wx.CallAfter(self.frame.speak, _('Configuración guardada'), 1)
 		self.frame.activar(False)
 		try:
 			if self.frame.startTimer.is_running:
@@ -1049,7 +1049,7 @@ class GlobalSettings(wx.Dialog):
 			else:
 				self.frame.startDB()
 				# Translators: aviso de configuraciones aplicadas
-				self.frame.speak(_('Configuraciones aplicadas'), 1)
+				wx.CallAfter(self.frame.speak, _('Configuraciones aplicadas'), 1)
 		self.Close()
 
 class StartTimer(object):
@@ -1123,14 +1123,14 @@ class GlobalSearch(wx.Dialog):
 			Thread(target=self.startSearch, args=(str,), daemon= True).start()
 		else:
 			# Translators: aviso de que debe ingresarse alguna búsqueda
-			ui.message(_('Debes ingresar algún texto de búsqueda'))
+			wx.CallAfter(ui.message, _('Debes ingresar algún texto de búsqueda'))
 			self.textSearch.SetFocus()
 
 	def startSearch(self, str):
 		count = (self.radiobox.GetSelection() + 1) * 10
 		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "tictac.wav"))
 		# Translators: aviso de proceso iniciado
-		self.frame.speak(_('Proceso iniciado'), 1)
+		wx.CallAfter(self.frame.speak, _('Proceso iniciado'), 1)
 		with youtube_dl.YoutubeDL(self.YDL_OPTIONS) as ydl:
 			try:
 				results = ydl.extract_info(f'ytsearch{count}:{str}', download= False)
@@ -1157,4 +1157,4 @@ class GlobalSearch(wx.Dialog):
 		self.frame.videos = [videos]
 		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
 		# Translators: aviso de búsqueda finalizada
-		self.frame.activar(_('Búsqueda finalizada'))
+		wx.CallAfter(self.frame.activar, _('Búsqueda finalizada'))
