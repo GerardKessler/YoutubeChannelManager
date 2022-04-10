@@ -928,7 +928,7 @@ class NewSearch(wx.Dialog):
 			self.frame.z = 0
 			self.frame.activar(False)
 			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "yResults.wav"))
-			wx.CallAfter(self.frame.speak, _(f'Se han encontrado {len(results)} resultados'), 0.3)
+			wx.CallAfter(self.frame.speak, _('Se han encontrado {} resultados').format(len(results)), 0.3)
 		else:
 			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "nResults.wav"))
 			# Translators: aviso de resultados no encontrados
