@@ -46,6 +46,8 @@ addonHandler.initTranslation()
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
+	# Translators: Mensaje de activación del reproductor web
+	activate_message = _('Activando el reproductor web...')
 	# Translators: mensaje de error de conexión
 	connectionError = _('Error de conexión')
 	# Translators: informa que no se ha seleccionado ningún canal
@@ -298,6 +300,27 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		speech.setSpeechMode(speech.SpeechMode.off)
 		time.sleep(pause)
 		speech.setSpeechMode(speech.SpeechMode.talk)
+
+	@script(
+		# Translators: nombre de la categoría en el diálogo gestos de entrada
+		category= _('YoutubeChannelManager'),
+		# Translators: Descripción del elemento en el diálogo gestos de entrada
+		description= _('Activa el link del portapapeles en el reproductor web personalizado'),
+	)
+	def script_getClipboardLink(self, gesture):
+		clipboard = api.getClipData()
+		if re.search(r'https?://(www\.)?youtube.com/watch\?v=\w+', clipboard):
+			ui.message(self.activate_message)
+			Thread(target=self.startClipboardLink, args=(clipboard,), daemon= True).start()
+		else:
+			# Translators: Mensaje de contenido inválido
+			ui.message(_('El portapapeles no contiene un link válido'))
+
+	def startClipboardLink(self, video_url):
+		data = self.getData(video_url)
+		audio_url = self.getAudioUrl(video_url)
+		self.openPlayer = player.PlayerCode(data['title'], audio_url)
+		self.openPlayer.createFile()
 
 	@script(
 		# Translators: nombre de la categoría en el diálogo gestos de entrada
@@ -558,7 +581,7 @@ control + shift + suprimir; elimina la base de datos.
 		self.desactivar(False)
 		Thread(target=self.startOpenAudio, daemon= True).start()
 		# Translators: aviso de activación del reproductor web
-		ui.message(_('Activando el reproductor web...'))
+		ui.message(self.activate_message)
 
 	def startOpenAudio(self, time= False):
 		audio_url = self.getAudioUrl(self.videos[self.y][self.z][1])
@@ -838,15 +861,19 @@ class NewChannel(wx.Dialog):
 		self.Close()
 
 	def getChannelUrl(self, url):
-		if not re.search(r'https?...(www.)?youtube.com.', url): return None
-		if re.search(r'https?...(www.)?youtube.com.channel.', url): return url
+		if not re.search(r'https?://(www.)?youtube.com/', url): return None
+		if re.search(r'https?://(www.)?youtube.com/channel/', url): return url
 		try:
 			content = urllib.request.urlopen(url).read().decode()
 		except:
 			log.error(self.frame.connectionError)
-		channelUrl = re.search(r'(?<=")\/channel\/[\w\-\?\.]+(?=")', content)
+		channelUrl = re.search(r'https?://(www.)?youtube.com/channel/[\w_-]+', content)
 		if channelUrl:
-			return f'https://www.youtube.com{channelUrl[0]}'
+			return channelUrl[0]
+		else:
+			channelUrl = re.search(r'"channelId":"([\w_-]+)"', content)
+		if channelUrl:
+			return f'https://www.youtube.com/channel/{channelUrl[1]}'
 		else:
 			return None
 
@@ -899,22 +926,34 @@ class NewSearch(wx.Dialog):
 		# Translators: texto del cuadro para ingresar los términos de búsqueda
 		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa el término de búsqueda y pulsa intro'))
 		self.searchText = wx.TextCtrl(self.Panel,wx.ID_ANY, style=wx.TE_PROCESS_ENTER)
-		# Translators: texto del botón para iniciar la búsqueda
-		self.searchBTN = wx.Button(self.Panel, wx.ID_ANY, _('&Iniciar la búsqueda'))
+		# Translators: texto del botón para iniciar la búsqueda en todos los canales
+		self.searchAllBTN = wx.Button(self.Panel, wx.ID_ANY, _('&Iniciar la búsqueda en todos los canales'))
+		# Translators: texto del botón para iniciar la búsqueda en el canal actual
+		self.searchBTN = wx.Button(self.Panel, wx.ID_ANY, _('&Iniciar la búsqueda en el canal actual'))
 		# Translators: texto del botón para cancelar la búsqueda
 		self.cerrarBTN = wx.Button(self.Panel, wx.ID_CANCEL, _('&Cancelar'))
 		self.searchText.Bind(wx.EVT_CONTEXT_MENU, self.onPass)
-		self.searchText.Bind(wx.EVT_TEXT_ENTER, self.startSearch)
-		self.searchBTN.Bind(wx.EVT_BUTTON, self.startSearch)
+		self.searchText.Bind(wx.EVT_TEXT_ENTER, self.search)
+		self.searchAllBTN.Bind(wx.EVT_BUTTON, self.allSearch)
+		self.searchBTN.Bind(wx.EVT_BUTTON, self.search)
 		self.Bind(wx.EVT_ACTIVATE, self.onSalir)
 		self.Bind(wx.EVT_BUTTON, self.onSalir, id=wx.ID_CANCEL)
 
 	def onPass(self, event):
 		pass
 
-	def startSearch(self, evt):
+	def search(self, event):
+		self.startSearch(False)
+
+	def allSearch(self, event):
+		self.startSearch(True)
+
+	def startSearch(self, all):
 		text = self.searchText.GetValue()
-		self.cursor.execute(f'select * from videos where title like "%{text}%" order by {self.frame.order[self.frame.order_by]}')
+		if all:
+			self.cursor.execute(f'select * from videos where title like "%{text}%" order by {self.frame.order[self.frame.order_by]}')
+		else:
+			self.cursor.execute(f'select * from videos where channel_id = "{self.frame.videos[self.frame.y][self.frame.z][3]}" and title like "%{text}%" order by {self.frame.order[self.frame.order_by]}')
 		results = self.cursor.fetchall()
 		if results:
 			self.frame.channels_temp = self.frame.channels

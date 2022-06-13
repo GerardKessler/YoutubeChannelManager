@@ -6,6 +6,7 @@ Este complemento permite gestionar los canales favoritos de la plataforma Youtub
 ## Atajos del complemento
 
 * NVDA + i griega; Activa y desactiva la interfaz invisible.
+* Sin asignar; Activa el reproductor web personalizado con el link de un video desde el portapapeles.
 
 ## Atajos disponibles en la interfaz invisible
 
