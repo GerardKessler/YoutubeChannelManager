@@ -31,13 +31,15 @@ from . import player
 dirAddon=os.path.dirname(__file__)
 sys.path.append(dirAddon)
 sys.path.append(os.path.join(dirAddon, "lib"))
-import xml
-xml.__path__.append(os.path.join(dirAddon, "lib", "xml"))
 import html
 html.__path__.append(os.path.join(dirAddon, "lib", "html"))
+import http
+http.__path__.append(os.path.join(dirAddon, "lib", "http"))
 import sqlite3 as sql
 sql.__path__.append(os.path.join(dirAddon, "lib", "sqlite3"))
-import youtube_dl
+import xml
+xml.__path__.append(os.path.join(dirAddon, "lib", "xml"))
+import yt_dlp as youtube_dl
 del sys.path[-2:]
 import addonHandler
 
