@@ -1194,7 +1194,7 @@ class GlobalSearch(wx.Dialog):
 		self.frame.videos = []
 		videos = []
 		for video in results['entries']:
-			videos.append((video['title'], f"https://www.youtube.com/watch?v={video['url']}", video['id'], None, video['view_count'], video['uploader']))
+			videos.append((video['title'], video['url'], video['id'], None, video['view_count'], video['uploader']))
 		self.frame.videos = [videos]
 		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
 		# Translators: aviso de búsqueda finalizada
