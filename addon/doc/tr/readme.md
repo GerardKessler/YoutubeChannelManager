@@ -6,6 +6,7 @@ Bu Eklenti, YouTube platformundaki favori kanallarınızı klavye kısayolları 
 ## Eklenti Kısayolları:
 
 * NVDA + Y; Görünmez arayüzü açar ve tekrar basıldığında kapatır.  
+* Atanmamış; Panoda bulunan bir video bağlantısını kullanarak özel Web oynatıcısını etkinleştirir.
 
 ## Görünmez arayüzde bulunan kısayollar:
 
@@ -105,5 +106,6 @@ Veritabanındaki aramalarda olduğu gibi, kanal listesine dönmek için, sil tu�
 
 	Remy Ruiz (Fransızca)
 	Angelo Miguel Abrantes (Portekizce)
-	wafiqtaher (Arap)
 	Umut KORKMAZ (Türkçe)
+	wafiqtaher (Arapça)
+
