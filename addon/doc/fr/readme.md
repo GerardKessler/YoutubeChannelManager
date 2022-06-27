@@ -6,6 +6,7 @@ Cette extension vous permet de gérer les chaînes favorites de la plate-forme Y
 ## Raccourcis de l'extension
 
 * NVDA + i grec; Active et désactive l'interface invisible.
+* Non assigné; Active le lecteur Web personnalisé avec le lien d'une vidéo à partir du presse-papiers.
 
 ## Raccourcis disponibles dans l'interface invisible
 
@@ -98,6 +99,7 @@ Comme dans les recherches dans la base de données, pour revenir à la liste des
 ## Traducteurs:
 
 	Rémy Ruiz (Français)
-	Ângelo Miguel Abrantes, pour le portugais.  
+	Ângelo Miguel Abrantes (Portugais)
 	Umut KORKMAZ (Turc)
-	wafiqtaher (arabe)
+	wafiqtaher (Arabe)
+

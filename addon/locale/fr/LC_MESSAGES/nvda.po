@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 'YoutubeChannelManager' '1.0'\n"
+"Project-Id-Version: YoutubeChannelManager\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
 "POT-Creation-Date: 2022-06-10 09:53-0300\n"
-"PO-Revision-Date: 2022-06-10 09:54-0300\n"
+"PO-Revision-Date: 2022-06-26 09:08+0200\n"
 "Last-Translator: Rémy Ruiz <remyruiz@gmail.com>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 1.8.8\n"
 
 #. Translators: Mensaje de activación del reproductor web
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:50
@@ -146,12 +146,12 @@ msgstr "YoutubeChannelManager"
 #. Translators: Descripción del elemento en el diálogo gestos de entrada
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:308
 msgid "Activa el link del portapapeles en el reproductor web personalizado"
-msgstr ""
+msgstr "Active le lien du presse-papiers dans le lecteur Web personnalisé"
 
 #. Translators: Mensaje de contenido inválido
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:317
 msgid "El portapapeles no contiene un link válido"
-msgstr ""
+msgstr "Le presse-papiers ne contient pas un lien valide"
 
 #. Translators: Descripción del elemento en el diálogo gestos de entrada
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:329
@@ -391,17 +391,13 @@ msgstr "Saisir le terme de recherche et appuyer sur Entrée"
 
 #. Translators: texto del botón para iniciar la búsqueda en todos los canales
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:926
-#, fuzzy
-#| msgid "&Iniciar la búsqueda"
 msgid "&Iniciar la búsqueda en todos los canales"
-msgstr "&Démarrer la recherche"
+msgstr "&Démarrer la recherche dans toutes les chaînes"
 
 #. Translators: texto del botón para iniciar la búsqueda en el canal actual
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:928
-#, fuzzy
-#| msgid "&Iniciar la búsqueda"
 msgid "&Iniciar la búsqueda en el canal actual"
-msgstr "&Démarrer la recherche"
+msgstr "&Démarrer la recherche dans la chaîne actuelle"
 
 #. Translators: nombre de la columna resultados de búsqueda
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:959
@@ -409,10 +405,8 @@ msgid "Resultados de búsqueda"
 msgstr "Résultats de recherche"
 
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:966
-#, fuzzy
-#| msgid "No se han encontrado resultados"
 msgid "Se han encontrado {} resultados"
-msgstr "Aucun résultat trouvé"
+msgstr "{} résultats ont été trouvés"
 
 #. Translators: aviso de resultados no encontrados
 #. Translators: aviso de que no se han encontrado resultados
