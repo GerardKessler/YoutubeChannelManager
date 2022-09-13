@@ -324,6 +324,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.openPlayer = player.PlayerCode(data['title'], audio_url)
 		self.openPlayer.createFile()
 
+	###
+	@script(gesture="kb:NVDA+shift+control+z")
+	def script_version(self, gesture):
+		ui.message(youtube_dl.version.__version__)
+
 	@script(
 		# Translators: nombre de la categoría en el diálogo gestos de entrada
 		category= _('YoutubeChannelManager'),
@@ -609,7 +614,7 @@ class AddonThread(Thread):
 
 	def run(self):
 		def chkActualizacion():
-			url = "https://api.github.com/repos/ytdl-org/youtube-dl/releases"
+			url = "https://api.github.com/repos/yt-dlp/yt-dlp/releases"
 			try:
 				req = urllib.request.Request(url)
 				r = urllib.request.urlopen(req).read()
@@ -619,8 +624,8 @@ class AddonThread(Thread):
 			gitJson = json.loads(r.decode('utf-8'))
 			if gitJson[0]["tag_name"] > youtube_dl.version.__version__:
 				urlDescarga = gitJson[0]['zipball_url']
-				# Translators: aviso de nueva versión de la librería youtube_dl
-				xguiMsg = _('Existe una nueva versión de la librería youtube_dl. ¿Quieres actualizarla?')
+				# Translators: aviso de nueva versión de la librería yt-dlp
+				xguiMsg = _('Existe una nueva versión de la librería yt_dlp. ¿Quieres actualizarla?')
 				msg = wx.MessageDialog(None, xguiMsg, self.frame.attention, wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION)
 				ret = msg.ShowModal()
 				if ret == wx.ID_YES:
@@ -631,14 +636,14 @@ class AddonThread(Thread):
 						dlg.Destroy()
 						archive = zipfile.ZipFile(os.path.join(dirAddon, "temp.zip"))
 						root = archive.namelist()[0]
-						filtro = [item for item in archive.namelist() if "youtube_dl".lower() in item.lower()]
+						filtro = [item for item in archive.namelist() if "yt_dlp".lower() in item.lower()]
 						for file in archive.namelist():
 							if file.startswith(filtro[0]):
 								archive.extract(file, dirAddon)
 						archive.close()
 						os.remove(os.path.join(dirAddon, "temp.zip"))
-						shutil.rmtree(os.path.join(dirAddon, "lib", "youtube_dl"))
-						shutil.move(os.path.join(dirAddon, root, "youtube_dl"), os.path.join(dirAddon, "lib", "youtube_dl"))
+						shutil.rmtree(os.path.join(dirAddon, "lib", "yt_dlp"))
+						shutil.move(os.path.join(dirAddon, root, "yt_dlp"), os.path.join(dirAddon, "lib", "yt_dlp"))
 						shutil.rmtree(os.path.join(dirAddon, root))
 						# Translators: aviso de reinicio de NVDA
 						modal = wx.MessageDialog(None, _('Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres hacerlo ahora?'), _('¡Atención!'), wx.YES_NO | wx.YES_DEFAULT | wx.ICON_QUESTION)
