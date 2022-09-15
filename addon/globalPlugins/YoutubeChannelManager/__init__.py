@@ -1179,9 +1179,12 @@ class GlobalSearch(wx.Dialog):
 					item = menu.Append(i, "{}".format(self.searches_list[i][0]))
 					menu.Bind(wx.EVT_MENU, self.ontextUrlBusquedaMenuAcciones, item)
 			self.textSearch.PopupMenu(menu)
-		except sqlite3.OperationalError:
+		except sql.OperationalError:
 			self.cursor.execute('create table searches(content text, id integer primary key autoincrement)')
 			self.connect.commit()
+		except UnboundLocalError:
+			# Translators: Mensaje que avisa que no hay datos en el historial
+			ui.message(_('No hay datos en el historial'))
 
 	def ontextUrlBusquedaMenuAcciones(self, event):
 		id = event.GetId()

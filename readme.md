@@ -21,6 +21,7 @@ Este complemento permite gestionar los canales favoritos de la plataforma Youtub
 * o; Abre el link del video en el navegador por defecto.
 * r; Abre el link de audio en un reproductor web personalizado.
 * c; Copia el link del video al portapapeles.
+* t; Copia el título del video al portapapeles.
 * d; Obtiene los datos del video y los muestra en una ventana de NVDA.
 * b; Activa el diálogo de búsqueda en la base de datos.
 * Control + b; Activa el diálogo de búsqueda general.
