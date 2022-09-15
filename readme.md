@@ -96,6 +96,11 @@ Aquí también tenemos los mismos atajos que en la búsqueda por base de datos. 
 Si alguno de los videos está en un canal que quiera agregarse a la base de datos, al pulsar la letra n sobre esta lista va a activarse el diálogo de nuevo canal con los campos de nombre y URL ya completos. Estos campos pueden editarse si así lo prefieren.  
 Al igual que en las búsquedas en la base de datos, para volver a la lista de canales tan solo hay que pulsar suprimir para eliminar los resultados y volver a la interfaz de canales.
 
+### Historial de búsquedas
+
+El complemento guarda en la base de datos el texto de las últimas 20 búsquedas globales. 
+Para acceder al historial, tan solo hay que pulsar la tecla aplicaciones sobre el cuadro de edición de búsqueda global. Al pulsarla se activa un menú contextual con las últimas búsquedas, y al pulsar intro sobre alguna de ellas el cuadro se completa con el texto correspondiente.
+
 ## Traductores:
 
 	Rémy Ruiz (Francés)

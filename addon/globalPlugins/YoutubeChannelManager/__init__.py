@@ -125,6 +125,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.connect.commit()
 			self.cursor.execute('create table videos(title text, url text, video_id text, channel_id text, view_count integer, channel_name text, id integer primary key autoincrement)')
 			self.connect.commit()
+			self.cursor.execute('create table searches(content text, id integer primary key autoincrement)')
+			self.connect.commit()
 			self.cursor.execute('create table settings(sounds bit, update_time integer, order_by integer, id integer primary key autoincrement)')
 			self.connect.commit()
 			self.cursor.execute('insert into settings(sounds, update_time, order_by) values(1, 0, 0)')
@@ -239,7 +241,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.y = 0
 		self.z = 0
 		# Translators: título de la ventana de búsqueda global
-		gSearch = GlobalSearch(gui.mainFrame, _('Búsqueda global'), self)
+		gSearch = GlobalSearch(gui.mainFrame, _('Búsqueda global'), self, self.connect, self.cursor)
 		gui.mainFrame.prePopup()
 		gSearch.Show()
 
@@ -358,6 +360,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:b":"newSearch",
 				"kb:control+b":"globalSearch",
 				"kb:c":"copyLink",
+				"kb:t":"copyTitle",
 				"kb:d":"viewData",
 				"kb:delete":"removeChannel",
 				"kb:control+shift+delete":"removeDatabase",
@@ -381,6 +384,7 @@ Escape; desactiva la interfaz virtual.
 n; Activa el diálogo para añadir un nuevo canal.
 o; abre el link del video actual en el navegador por defecto.
 r; Carga el audio en un reproductor web personalizado.
+t; copia el título del video actual al portapapeles.
 c; copia el link del video actual al portapapeles.
 d; abre una ventana con datos del video actual.
 b; Activa el cuadro de búsqueda de videos en la base de datos.
@@ -549,6 +553,16 @@ control + shift + suprimir; elimina la base de datos.
 			return
 		self.desactivar(False)
 		api.copyToClip(self.videos[self.y][self.z][1])
+		if self.sounds: playWaveFile(os.path.join(os.environ['systemroot'], 'Media', 'Windows Recycle.wav'))
+		# Translators: aviso de copia
+		ui.message(_('copiado'))
+
+	def script_copyTitle(self, gesture):
+		if len(self.channels) == 0:
+			ui.message(self.unselected)
+			return
+		self.desactivar(False)
+		api.copyToClip(self.videos[self.y][self.z][0])
 		if self.sounds: playWaveFile(os.path.join(os.environ['systemroot'], 'Media', 'Windows Recycle.wav'))
 		# Translators: aviso de copia
 		ui.message(_('copiado'))
@@ -1125,7 +1139,7 @@ class StartTimer(object):
 		self.is_running = False
 
 class GlobalSearch(wx.Dialog):
-	def __init__(self, parent, title, frame):
+	def __init__(self, parent, title, frame, connect, cursor):
 		super(GlobalSearch, self).__init__(parent, -1, title= title)
 		self.YDL_OPTIONS = {
 			'format': 'bestaudio',
@@ -1135,6 +1149,9 @@ class GlobalSearch(wx.Dialog):
 			'logger': MyLogger()
 		}
 		self.frame = frame
+		self.connect = connect
+		self.cursor = cursor
+		self.searches_list = None
 		self.Panel = wx.Panel(self)
 		# Translators: texto del cuadro para ingresar los términos de búsqueda
 		wx.StaticText(self.Panel, wx.ID_ANY, _('Ingresa los términos de búsqueda'))
@@ -1149,9 +1166,27 @@ class GlobalSearch(wx.Dialog):
 		self.searchBTN.Bind(wx.EVT_BUTTON, self.search)
 		self.Bind(wx.EVT_ACTIVATE, self.onSalir)
 		self.Bind(wx.EVT_BUTTON, self.onSalir, id=wx.ID_CANCEL)
+		# Creamos un menú contextual
+		self.textSearch.Bind(wx.EVT_CONTEXT_MENU, self.ontextUrlBusquedaMenu)
 
-	def onPass(self, event):
-		pass
+	def ontextUrlBusquedaMenu(self, event):
+		try:
+			self.cursor.execute('SELECT content FROM searches')
+			self.searches_list = self.cursor.fetchall()
+			if len(self.searches_list	) >= 1:
+				menu = wx.Menu()
+				for i in reversed(range(len(self.searches_list))):
+					item = menu.Append(i, "{}".format(self.searches_list[i][0]))
+					menu.Bind(wx.EVT_MENU, self.ontextUrlBusquedaMenuAcciones, item)
+			self.textSearch.PopupMenu(menu)
+		except sqlite3.OperationalError:
+			self.cursor.execute('create table searches(content text, id integer primary key autoincrement)')
+			self.connect.commit()
+
+	def ontextUrlBusquedaMenuAcciones(self, event):
+		id = event.GetId()
+		self.textSearch.Clear()
+		self.textSearch.SetValue(self.searches_list[id][0])
 
 	def onSalir(self, event):
 		if event.GetEventType() == 10012:
@@ -1166,6 +1201,17 @@ class GlobalSearch(wx.Dialog):
 		str = self.textSearch.GetValue()
 		if len(str) > 0:
 			self.Close()
+			try:
+				self.cursor.execute('INSERT INTO searches(content) values(?)', [str])
+				self.connect.commit()
+				self.cursor.execute('SELECT content FROM searches')
+				rows = self.cursor.fetchall()
+				if len(rows) > 20:
+					self.cursor.execute('DELETE FROM searches WHERE content=?', [rows[0][0]])
+					self.connect.commit()
+			except sqlite3.OperationalError:
+				self.cursor.execute('create table searches(content text, id integer primary key autoincrement)')
+				self.connect.commit()
 			Thread(target=self.startSearch, args=(str,), daemon= True).start()
 		else:
 			# Translators: aviso de que debe ingresarse alguna búsqueda
