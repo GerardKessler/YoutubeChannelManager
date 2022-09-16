@@ -21,6 +21,7 @@ Bu Eklenti, YouTube platformundaki favori kanallarınızı klavye kısayolları 
 * o; video bağlantısını varsayılan tarayıcıda açar.
 * r; Ses bağlantısını özel bir web oynatıcısında açar.
 * c; Video bağlantısını panoya kopyalar.
+* t; Video başlığını panoya kopyalar.
 * d; video bilgilerini alıp bir pencerede görüntüler.
 * b; Veritabanındaki arama iletişim kutusunu etkinleştirir.
 * Control + b; Genel arama iletişim kutusunu etkinleştirir.
@@ -101,6 +102,12 @@ sonuçlar bulunduğunda yukarı ve aşağı oklarla gezinebileceğimiz ana liste
 Burada da veritabanı aramasındakiyle aynı kısayollara sahibiz. Tarayıcıda açmak için O, web oynatıcı için r, bağlantıyı kopyalamak için c, vb.  
 Veritabanına eklemek istediğiniz herhangi bir kanalda video varsa, bu listedeki n harfine basmak, ad ve url alanları zaten doldurulmuş olan yeni kanal diyaloğunu etkinleştirecektir. İstenirse bu alanlar düzenlenebilir.  
 Veritabanındaki aramalarda olduğu gibi, kanal listesine dönmek için, sil tuşuna basmak yeterli olacaktır.  
+
+### arama geçmişi:
+
+Eklenti, son 20 genel aramayı veritabanına kaydeder.  
+Geçmişe erişmek için: Genel arama yazma alanındayken, Uygulama veya Shift+F10 tuşlarına basmak yeterli olacaktır.  
+Uygulama tuşuna basıldığında açılacak içerik menüsünde, geçmiş arama terimlerimizi alt alta listelenmiş şekilde görebiliyor ve dilediğimiz terimi seçerek yazma alanına eklenmesini sağlayabiliyoruz.
 
 ## Çevirmenler:
 
