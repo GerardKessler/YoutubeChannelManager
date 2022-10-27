@@ -94,10 +94,15 @@ Quando i risultati vengono trovati, vengono aggiunti all'elenco principale, che 
 Anche qui abbiamo le stesse scorciatoie della ricerca nel database. O per aprire nel browser, r per il web player, c per copiare il collegamento, ecc.
 Se uno qualsiasi dei video si trova in un canale che vuoi aggiungere al database, premendo la lettera n in questo elenco si attiverà la finestra di dialogo del nuovo canale con i campi nome e URL già riempiti. Se preferisci, questi campi possono essere modificati. Come nelle ricerche nel database, per tornare all'elenco dei canali è sufficiente premere Canc per eliminare i risultati e tornare all'interfaccia dei canali.
 
+### Cronologia delle ricerche
+
+Il plugin salva il testo delle ultime 20 ricerche globali nel database.
+Per accedere alla cronologia, è sufficiente premere il tasto Applicazioni nella casella di modifica della ricerca globale. Premendolo si attiva un menu contestuale con le ultime ricerche e, premendo invio su una di esse, il riquadro si completa con il testo corrispondente.
+
 ## Traduttori:
 
 * Remy Ruiz (francese)
-* Equipa portuguesa do NVDA: Ângelo Abrantes e Rui Fontes (portoghese)
+* Ângelo Miguel Abrantes (portoghese)
 * Umut KORKMAZ (turco)
 * wafiqtaher (arabo)
 * Franco La Rosa (italiano)
