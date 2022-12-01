@@ -548,7 +548,7 @@ class YoutubeDL:
         # NB: Keep in sync with the docstring of extractor/common.py
         'url', 'manifest_url', 'manifest_stream_number', 'ext', 'format', 'format_id', 'format_note',
         'width', 'height', 'resolution', 'dynamic_range', 'tbr', 'abr', 'acodec', 'asr', 'audio_channels',
-        'vbr', 'fps', 'vcodec', 'container', 'filesize', 'filesize_approx',
+        'vbr', 'fps', 'vcodec', 'container', 'filesize', 'filesize_approx', 'rows', 'columns',
         'player_url', 'protocol', 'fragment_base_url', 'fragments', 'is_from_start',
         'preference', 'language', 'language_preference', 'quality', 'source_preference',
         'http_headers', 'stretched_ratio', 'no_resume', 'has_drm', 'downloader_options',
@@ -616,46 +616,6 @@ class YoutubeDL:
                 '         If you experience any issues while using this option, '
                 f'{self._format_err("DO NOT", self.Styles.ERROR)} open a bug report')
 
-        def check_deprecated(param, option, suggestion):
-            if self.params.get(param) is not None:
-                self.report_warning(f'{option} is deprecated. Use {suggestion} instead')
-                return True
-            return False
-
-        if check_deprecated('cn_verification_proxy', '--cn-verification-proxy', '--geo-verification-proxy'):
-            if self.params.get('geo_verification_proxy') is None:
-                self.params['geo_verification_proxy'] = self.params['cn_verification_proxy']
-
-        check_deprecated('autonumber', '--auto-number', '-o "%(autonumber)s-%(title)s.%(ext)s"')
-        check_deprecated('usetitle', '--title', '-o "%(title)s-%(id)s.%(ext)s"')
-        check_deprecated('useid', '--id', '-o "%(id)s.%(ext)s"')
-
-        for msg in self.params.get('_warnings', []):
-            self.report_warning(msg)
-        for msg in self.params.get('_deprecation_warnings', []):
-            self.deprecated_feature(msg)
-
-        self.params['compat_opts'] = set(self.params.get('compat_opts', ()))
-        if 'list-formats' in self.params['compat_opts']:
-            self.params['listformats_table'] = False
-
-        if 'overwrites' not in self.params and self.params.get('nooverwrites') is not None:
-            # nooverwrites was unnecessarily changed to overwrites
-            # in 0c3d0f51778b153f65c21906031c2e091fcfb641
-            # This ensures compatibility with both keys
-            self.params['overwrites'] = not self.params['nooverwrites']
-        elif self.params.get('overwrites') is None:
-            self.params.pop('overwrites', None)
-        else:
-            self.params['nooverwrites'] = not self.params['overwrites']
-
-        self.params.setdefault('forceprint', {})
-        self.params.setdefault('print_to_file', {})
-
-        # Compatibility with older syntax
-        if not isinstance(params['forceprint'], dict):
-            self.params['forceprint'] = {'video': params['forceprint']}
-
         if self.params.get('bidi_workaround', False):
             try:
                 import pty
@@ -676,9 +636,57 @@ class YoutubeDL:
                 else:
                     raise
 
+        self.params['compat_opts'] = set(self.params.get('compat_opts', ()))
+        if auto_init and auto_init != 'no_verbose_header':
+            self.print_debug_header()
+
+        def check_deprecated(param, option, suggestion):
+            if self.params.get(param) is not None:
+                self.report_warning(f'{option} is deprecated. Use {suggestion} instead')
+                return True
+            return False
+
+        if check_deprecated('cn_verification_proxy', '--cn-verification-proxy', '--geo-verification-proxy'):
+            if self.params.get('geo_verification_proxy') is None:
+                self.params['geo_verification_proxy'] = self.params['cn_verification_proxy']
+
+        check_deprecated('autonumber', '--auto-number', '-o "%(autonumber)s-%(title)s.%(ext)s"')
+        check_deprecated('usetitle', '--title', '-o "%(title)s-%(id)s.%(ext)s"')
+        check_deprecated('useid', '--id', '-o "%(id)s.%(ext)s"')
+
+        for msg in self.params.get('_warnings', []):
+            self.report_warning(msg)
+        for msg in self.params.get('_deprecation_warnings', []):
+            self.deprecated_feature(msg)
+
+        if 'list-formats' in self.params['compat_opts']:
+            self.params['listformats_table'] = False
+
+        if 'overwrites' not in self.params and self.params.get('nooverwrites') is not None:
+            # nooverwrites was unnecessarily changed to overwrites
+            # in 0c3d0f51778b153f65c21906031c2e091fcfb641
+            # This ensures compatibility with both keys
+            self.params['overwrites'] = not self.params['nooverwrites']
+        elif self.params.get('overwrites') is None:
+            self.params.pop('overwrites', None)
+        else:
+            self.params['nooverwrites'] = not self.params['overwrites']
+
+        if self.params.get('simulate') is None and any((
+            self.params.get('list_thumbnails'),
+            self.params.get('listformats'),
+            self.params.get('listsubtitles'),
+        )):
+            self.params['simulate'] = 'list_only'
+
+        self.params.setdefault('forceprint', {})
+        self.params.setdefault('print_to_file', {})
+
+        # Compatibility with older syntax
+        if not isinstance(params['forceprint'], dict):
+            self.params['forceprint'] = {'video': params['forceprint']}
+
         if auto_init:
-            if auto_init != 'no_verbose_header':
-                self.print_debug_header()
             self.add_default_info_extractors()
 
         if (sys.platform != 'win32'
@@ -1249,7 +1257,7 @@ class YoutubeDL:
             elif fmt[-1] == 'j':  # json
                 value, fmt = json.dumps(
                     value, default=_dumpjson_default,
-                    indent=4 if '#' in flags else None, ensure_ascii=False), str_fmt
+                    indent=4 if '#' in flags else None, ensure_ascii='+' not in flags), str_fmt
             elif fmt[-1] == 'h':  # html
                 value, fmt = escapeHTML(str(value)), str_fmt
             elif fmt[-1] == 'q':  # quoted
@@ -1621,6 +1629,7 @@ class YoutubeDL:
                 self.add_default_extra_info(info_copy, ie, ie_result['url'])
                 self.add_extra_info(info_copy, extra_info)
                 info_copy, _ = self.pre_process(info_copy)
+                self._fill_common_fields(info_copy, False)
                 self.__forced_printings(info_copy, self.prepare_filename(info_copy), incomplete=True)
                 self._raise_pending_errors(info_copy)
                 if self.params.get('force_write_download_archive', False):
@@ -2379,10 +2388,9 @@ class YoutubeDL:
         else:
             info_dict['thumbnails'] = thumbnails
 
-    def _fill_common_fields(self, info_dict, is_video=True):
+    def _fill_common_fields(self, info_dict, final=True):
         # TODO: move sanitization here
-        if is_video:
-            # playlists are allowed to lack "title"
+        if final:
             title = info_dict.get('title', NO_DEFAULT)
             if title is NO_DEFAULT:
                 raise ExtractorError('Missing "title" field in extractor result',
@@ -2432,7 +2440,7 @@ class YoutubeDL:
         # Auto generate title fields corresponding to the *_number fields when missing
         # in order to always have clean titles. This is very common for TV series.
         for field in ('chapter', 'season', 'episode'):
-            if info_dict.get('%s_number' % field) is not None and not info_dict.get(field):
+            if final and info_dict.get('%s_number' % field) is not None and not info_dict.get(field):
                 info_dict[field] = '%s %d' % (field.capitalize(), info_dict['%s_number' % field])
 
     def _raise_pending_errors(self, info):
@@ -2525,11 +2533,7 @@ class YoutubeDL:
         info_dict['requested_subtitles'] = self.process_subtitles(
             info_dict['id'], subtitles, automatic_captions)
 
-        if info_dict.get('formats') is None:
-            # There's only one format available
-            formats = [info_dict]
-        else:
-            formats = info_dict['formats']
+        formats = self._get_formats(info_dict)
 
         # or None ensures --clean-infojson removes it
         info_dict['_has_drm'] = any(f.get('has_drm') for f in formats) or None
@@ -2644,10 +2648,9 @@ class YoutubeDL:
         info_dict, _ = self.pre_process(info_dict, 'after_filter')
 
         # The pre-processors may have modified the formats
-        formats = info_dict.get('formats', [info_dict])
+        formats = self._get_formats(info_dict)
 
-        list_only = self.params.get('simulate') is None and (
-            self.params.get('list_thumbnails') or self.params.get('listformats') or self.params.get('listsubtitles'))
+        list_only = self.params.get('simulate') == 'list_only'
         interactive_format_selection = not list_only and self.format_selector == '-'
         if self.params.get('list_thumbnails'):
             self.list_thumbnails(info_dict)
@@ -2724,7 +2727,8 @@ class YoutubeDL:
                 if chapter or offset:
                     new_info.update({
                         'section_start': offset + chapter.get('start_time', 0),
-                        'section_end': end_time if end_time < offset + duration else None,
+                        # duration may not be accurate. So allow deviations <1sec
+                        'section_end': end_time if end_time <= offset + duration + 1 else None,
                         'section_title': chapter.get('title'),
                         'section_number': chapter.get('index'),
                     })
@@ -3571,11 +3575,17 @@ class YoutubeDL:
             res += '~' + format_bytes(fdict['filesize_approx'])
         return res
 
-    def render_formats_table(self, info_dict):
-        if not info_dict.get('formats') and not info_dict.get('url'):
-            return None
+    def _get_formats(self, info_dict):
+        if info_dict.get('formats') is None:
+            if info_dict.get('url') and info_dict.get('_type', 'video') == 'video':
+                return [info_dict]
+            return []
+        return info_dict['formats']
 
-        formats = info_dict.get('formats', [info_dict])
+    def render_formats_table(self, info_dict):
+        formats = self._get_formats(info_dict)
+        if not formats:
+            return
         if not self.params.get('listformats_table', True) is not False:
             table = [
                 [
@@ -3583,7 +3593,7 @@ class YoutubeDL:
                     format_field(f, 'ext'),
                     self.format_resolution(f),
                     self._format_note(f)
-                ] for f in formats if f.get('preference') is None or f['preference'] >= -1000]
+                ] for f in formats if (f.get('preference') or 0) >= -1000]
             return render_table(['format code', 'extension', 'resolution', 'note'], table, extra_gap=1)
 
         def simplified_codec(f, field):
@@ -3725,6 +3735,10 @@ class YoutubeDL:
             '' if source == 'unknown' else f'({source})',
             '' if _IN_CLI else 'API',
             delim=' '))
+
+        if not _IN_CLI:
+            write_debug(f'params: {self.params}')
+
         if not _LAZY_LOADER:
             if os.environ.get('YTDLP_NO_LAZY_EXTRACTORS'):
                 write_debug('Lazy loading extractors is forcibly disabled')

@@ -66,6 +66,7 @@ from ..utils import (
     sanitize_filename,
     sanitize_url,
     sanitized_Request,
+    smuggle_url,
     str_or_none,
     str_to_int,
     strip_or_none,
@@ -284,6 +285,7 @@ class InfoExtractor:
                     captions instead of normal subtitles
     duration:       Length of the video in seconds, as an integer or float.
     view_count:     How many users have watched the video on the platform.
+    concurrent_view_count: How many users are currently watching the video on the platform.
     like_count:     Number of positive ratings of the video
     dislike_count:  Number of negative ratings of the video
     repost_count:   Number of reposts of the video
@@ -1106,7 +1108,9 @@ class InfoExtractor:
             return self._downloader.params.get(name, default, *args, **kwargs)
         return default
 
-    def report_drm(self, video_id, partial=False):
+    def report_drm(self, video_id, partial=NO_DEFAULT):
+        if partial is not NO_DEFAULT:
+            self._downloader.deprecation_warning('InfoExtractor.report_drm no longer accepts the argument partial')
         self.raise_no_formats('This video is DRM protected', expected=True, video_id=video_id)
 
     def report_extraction(self, id_or_name):
@@ -1466,10 +1470,6 @@ class InfoExtractor:
         if not json_ld:
             return {}
         info = {}
-        if not isinstance(json_ld, (list, tuple, dict)):
-            return info
-        if isinstance(json_ld, dict):
-            json_ld = [json_ld]
 
         INTERACTION_TYPE_MAP = {
             'CommentAction': 'comment',
@@ -1569,12 +1569,14 @@ class InfoExtractor:
             extract_chapter_information(e)
 
         def traverse_json_ld(json_ld, at_top_level=True):
-            for e in json_ld:
+            for e in variadic(json_ld):
+                if not isinstance(e, dict):
+                    continue
                 if at_top_level and '@context' not in e:
                     continue
                 if at_top_level and set(e.keys()) == {'@context', '@graph'}:
-                    traverse_json_ld(variadic(e['@graph'], allowed_types=(dict,)), at_top_level=False)
-                    break
+                    traverse_json_ld(e['@graph'], at_top_level=False)
+                    continue
                 if expected_type is not None and not is_type(e, expected_type):
                     continue
                 rating = traverse_obj(e, ('aggregateRating', 'ratingValue'), expected_type=float_or_none)
@@ -1628,8 +1630,8 @@ class InfoExtractor:
                     continue
                 else:
                     break
-        traverse_json_ld(json_ld)
 
+        traverse_json_ld(json_ld)
         return filter_dict(info)
 
     def _search_nextjs_data(self, webpage, video_id, *, transform_source=None, fatal=True, **kw):
@@ -1645,7 +1647,10 @@ class InfoExtractor:
         FUNCTION_RE = r'\(function\((?P<arg_keys>.*?)\){return\s+(?P<js>{.*?})\s*;?\s*}\((?P<arg_vals>.*?)\)'
         js, arg_keys, arg_vals = self._search_regex(
             (rf'<script>\s*window\.{rectx}={FUNCTION_RE}\s*\)\s*;?\s*</script>', rf'{rectx}\(.*?{FUNCTION_RE}'),
-            webpage, context_name, group=('js', 'arg_keys', 'arg_vals'), fatal=fatal)
+            webpage, context_name, group=('js', 'arg_keys', 'arg_vals'),
+            default=NO_DEFAULT if fatal else (None, None, None))
+        if js is None:
+            return {}
 
         args = dict(zip(arg_keys.split(','), arg_vals.split(',')))
 
@@ -3723,7 +3728,8 @@ class InfoExtractor:
         if not cls.working():
             desc += ' (**Currently broken**)' if markdown else ' (Currently broken)'
 
-        name = f' - **{cls.IE_NAME}**' if markdown else cls.IE_NAME
+        # Escape emojis. Ref: https://github.com/github/markup/issues/1153
+        name = (' - **%s**' % re.sub(r':(\w+:)', ':\u200B\\g<1>', cls.IE_NAME)) if markdown else cls.IE_NAME
         return f'{name}:{desc}' if desc else name
 
     def extract_subtitles(self, *args, **kwargs):
@@ -3734,6 +3740,9 @@ class InfoExtractor:
 
     def _get_subtitles(self, *args, **kwargs):
         raise NotImplementedError('This method must be implemented by subclasses')
+
+    class CommentsDisabled(Exception):
+        """Raise in _get_comments if comments are disabled for the video"""
 
     def extract_comments(self, *args, **kwargs):
         if not self.get_param('getcomments'):
@@ -3750,6 +3759,8 @@ class InfoExtractor:
                 interrupted = False
             except KeyboardInterrupt:
                 self.to_screen('Interrupted by user')
+            except self.CommentsDisabled:
+                return {'comments': None, 'comment_count': None}
             except Exception as e:
                 if self.get_param('ignoreerrors') is not True:
                     raise
@@ -3818,9 +3829,11 @@ class InfoExtractor:
     def _generic_id(url):
         return urllib.parse.unquote(os.path.splitext(url.rstrip('/').split('/')[-1])[0])
 
-    @staticmethod
-    def _generic_title(url):
-        return urllib.parse.unquote(os.path.splitext(url_basename(url))[0])
+    def _generic_title(self, url='', webpage='', *, default=None):
+        return (self._og_search_title(webpage, default=None)
+                or self._html_extract_title(webpage, default=None)
+                or urllib.parse.unquote(os.path.splitext(url_basename(url))[0])
+                or default)
 
     @staticmethod
     def _availability(is_private=None, needs_premium=None, needs_subscription=None, needs_auth=None, is_unlisted=None):
@@ -3843,8 +3856,8 @@ class InfoExtractor:
         @param default      The default value to return when the key is not present (default: [])
         @param casesense    When false, the values are converted to lower case
         '''
-        val = traverse_obj(
-            self._downloader.params, ('extractor_args', (ie_key or self.ie_key()).lower(), key))
+        ie_key = ie_key if isinstance(ie_key, str) else (ie_key or self).ie_key()
+        val = traverse_obj(self._downloader.params, ('extractor_args', ie_key.lower(), key))
         if val is None:
             return [] if default is NO_DEFAULT else default
         return list(val) if casesense else [x.lower() for x in val]
@@ -3873,6 +3886,12 @@ class InfoExtractor:
 
     def RetryManager(self, **kwargs):
         return RetryManager(self.get_param('extractor_retries', 3), self._error_or_warning, **kwargs)
+
+    def _extract_generic_embeds(self, url, *args, info_dict={}, note='Extracting generic embeds', **kwargs):
+        display_id = traverse_obj(info_dict, 'display_id', 'id')
+        self.to_screen(f'{format_field(display_id, None, "%s: ")}{note}')
+        return self._downloader.get_info_extractor('Generic')._extract_embeds(
+            smuggle_url(url, {'block_ies': [self.ie_key()]}), *args, **kwargs)
 
     @classmethod
     def extract_from_webpage(cls, ydl, url, webpage):
