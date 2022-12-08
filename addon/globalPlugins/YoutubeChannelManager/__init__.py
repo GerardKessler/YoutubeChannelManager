@@ -361,6 +361,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:control+b":"globalSearch",
 				"kb:c":"copyLink",
 				"kb:t":"copyTitle",
+				"kb:control+d":"download",
 				"kb:d":"viewData",
 				"kb:delete":"removeChannel",
 				"kb:control+shift+delete":"removeDatabase",
@@ -566,6 +567,21 @@ control + shift + suprimir; elimina la base de datos.
 		if self.sounds: playWaveFile(os.path.join(os.environ['systemroot'], 'Media', 'Windows Recycle.wav'))
 		# Translators: aviso de copia
 		ui.message(_('copiado'))
+
+	def script_download(self, gesture):
+		if len(self.channels) == 0:
+			ui.message(self.unselected)
+			return
+		self.desactivar(False)
+		if not os.path.isdir(os.path.join(os.path.expandvars("%userprofile%"), 'YoutubeChannelManagerDownloads')):
+			try:
+				os.mkdir('YoutubeChannelManagerDownloads')
+			except FileExistsError:
+				pass
+		Downloads(self.videos[self.y][self.z][1], os.path.join(os.path.expandvars("%userprofile%"), 'YoutubeChannelManagerDownloads'), self.videos[self.y][self.z][0])
+		if self.sounds: playWaveFile(os.path.join(os.environ['systemroot'], 'Media', 'Windows Recycle.wav'))
+		# Translators: aviso de inicio de descarga
+		ui.message(_('Iniciando la descarga...'))
 
 	def terminate(self):
 		core.postNvdaStartup.unregister(self.firstRun)
@@ -817,6 +833,10 @@ class HiloDescarga(Thread):
 			wx.CallAfter(self.frame.error, _('Algo salió mal.\n') + _('Compruebe si tiene conexión a internet y vuelva a intentarlo.\n') + _('Ya puede cerrar esta ventana.'))
 
 class MyLogger(object):
+
+	def __init__(self):
+		self.msg_error = []
+
 	def debug(self, msg):
 		pass
 
@@ -824,7 +844,10 @@ class MyLogger(object):
 		pass
 
 	def error(self, msg):
-		pass
+		self.msg_error.append(msg)
+
+	def get_error(self):
+		return None if len(self.msg_error) == 0 else self.msg_error.pop()
 
 class NewChannel(wx.Dialog):
 	def __init__(self, parent, titulo, frame, connect, cursor, channel_name, channel_link):
@@ -1253,3 +1276,70 @@ class GlobalSearch(wx.Dialog):
 		if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "finish.wav"))
 		# Translators: aviso de búsqueda finalizada
 		wx.CallAfter(self.frame.activar, _('Búsqueda finalizada'))
+
+class Downloads(Thread):
+
+	def __init__(self, url, destination, title):
+		super(Downloads, self).__init__()
+		self.url= url
+		self.destination= destination
+		self.title= title
+		self.current_progress= 0
+		self.mylogger= MyLogger()
+		self.daemon= True
+		self.start()
+
+	def humanbytes(self, B):
+		B= float(B)
+		KB= float(1024)
+		MB= float(KB ** 2) # 1,048,576
+		GB= float(KB ** 3) # 1,073,741,824
+		TB= float(KB ** 4) # 1,099,511,627,776
+		if B < KB:
+			return '{0} {1}'.format(B,'Bytes' if 0 == B > 1 else 'Byte')
+		elif KB <= B < MB:
+			return '{0:.2f} KB'.format(B/KB)
+		elif MB <= B < GB:
+			return '{0:.2f} MB'.format(B/MB)
+		elif GB <= B < TB:
+			return '{0:.2f} GB'.format(B/GB)
+		elif TB <= B:
+			return '{0:.2f} TB'.format(B/TB)
+
+	def ValoresYoutube(self, value):
+		if value['status'] == 'finished':
+			pass
+		if value['status'] == 'downloading':
+			time_left= value['_eta_str']
+			discharged= self.humanbytes(value['downloaded_bytes'])
+			speed_dl= value['_speed_str']
+			p= value['_percent_str'].split(".")
+			self.progress= p[0].replace(' ', '').replace('%', '')
+			progress_list= [10,20,30,40,50,60,70,80,90,100]
+			if int(self.progress) in progress_list and int(self.progress) != self.current_progress:
+				self.current_progress= int(self.progress)
+				ui.message('{} porciento'.format(self.progress))
+
+	def run(self):
+		import locale
+		saved = locale._setlocale(locale.LC_TIME)
+		locale.setlocale(locale.LC_TIME, 'C')
+		try:
+			socket.setdefaulttimeout(15)
+			opt= {
+				"outtmpl": os.path.join(self.destination, "%(title)s.%(ext)s"),
+				"ignoreerrors": True,
+				"logger": self.mylogger,
+				"progress_hooks": [self.ValoresYoutube],
+				}
+			with youtube_dl.YoutubeDL(opt) as ydl:
+				r = ydl.download([self.url])
+		except Exception as e:
+			self.mylogger.msg_error.append(e)
+		self.error= self.mylogger.get_error()
+		if self.error:
+			ui.browseableMessage(str(self.error))
+		else:
+			ui.message('{} descargado correctamente'.format(os.path.splitext(self.title)[0]))
+		locale.setlocale(locale.LC_TIME, saved)
+
