@@ -388,6 +388,7 @@ r; Carga el audio en un reproductor web personalizado.
 t; copia el título del video actual al portapapeles.
 c; copia el link del video actual al portapapeles.
 d; abre una ventana con datos del video actual.
+control + d; descarga el video en su formato original en la carpeta youtubeDL en la raíz del usuario actual.
 b; Activa el cuadro de búsqueda de videos en la base de datos.
 control + b; Activa el cuadro de búsqueda de videos en la página de Youtube.
 s; Activa la ventana de configuración del canal actual.
@@ -573,12 +574,12 @@ control + shift + suprimir; elimina la base de datos.
 			ui.message(self.unselected)
 			return
 		self.desactivar(False)
-		if not os.path.isdir(os.path.join(os.path.expandvars("%userprofile%"), 'YoutubeChannelManagerDownloads')):
+		if not os.path.isdir(os.path.join(os.path.expandvars("%userprofile%"), 'youtubeDL')):
 			try:
-				os.mkdir('YoutubeChannelManagerDownloads')
+				os.mkdir('youtubeDL')
 			except FileExistsError:
 				pass
-		Downloads(self.videos[self.y][self.z][1], os.path.join(os.path.expandvars("%userprofile%"), 'YoutubeChannelManagerDownloads'), self.videos[self.y][self.z][0])
+		Downloads(self.videos[self.y][self.z][1], os.path.join(os.path.expandvars("%userprofile%"), 'youtubeDL'), self.videos[self.y][self.z][0])
 		if self.sounds: playWaveFile(os.path.join(os.environ['systemroot'], 'Media', 'Windows Recycle.wav'))
 		# Translators: aviso de inicio de descarga
 		ui.message(_('Iniciando la descarga...'))
