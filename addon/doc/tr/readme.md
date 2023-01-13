@@ -23,6 +23,7 @@ Bu Eklenti, YouTube platformundaki favori kanallarınızı klavye kısayolları 
 * c; Video bağlantısını panoya kopyalar.
 * t; Video başlığını panoya kopyalar.
 * d; video bilgilerini alıp bir pencerede görüntüler.
+* control + d; videoyu orijinal biçimde mevcut kullanıcının YoutubeDL klasörüne indirir.
 * b; Veritabanındaki arama iletişim kutusunu etkinleştirir.
 * Control + b; Genel arama iletişim kutusunu etkinleştirir.
 * f5; Kanala eklenmiş yeni videolar olup olmadığını kontrol eder.

@@ -109,7 +109,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			globalVars.youtubeChannelManager = None
 
 	def firstRun(self):
-		Thread(target=self.updatedYoutube_dl, daemon= True).start()
+		# Thread(target=self.updatedYoutube_dl, daemon= True).start()
 		self.startDB()
 
 	def updatedYoutube_dl(self):

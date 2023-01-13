@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Youtube Kanal Yöneticisi 1.3\n"
+"Project-Id-Version: Youtube Kanal Yöneticisi 1.6\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2022-09-16 20:38+0300\n"
-"PO-Revision-Date: 2022-09-16 20:46+0300\n"
+"POT-Creation-Date: 2023-01-03 23:27+0300\n"
+"PO-Revision-Date: 2023-01-03 23:29+0300\n"
 "Last-Translator: Umut KORKMAZ <umutkork@gmail.com>\n"
 "Language-Team: Umut KORKMAZ <umutkork@gmail.com>\n"
 "Language: tr_TR\n"
@@ -11,10 +11,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.2.2\n"
 "X-Poedit-Basepath: ../../../globalPlugins\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
 
 #: YoutubeChannelManager/__init__.py:52
 msgid "Activando el reproductor web..."
@@ -129,30 +130,11 @@ msgstr "Sanal arayüzü Açar veya kapatır"
 msgid "Atajos activados"
 msgstr "Youtube Kanal yöneticisi Etkin"
 
-#: YoutubeChannelManager/__init__.py:375
+#: YoutubeChannelManager/__init__.py:376
 msgid "Atajos desactivados"
 msgstr "Youtube Kanal yöneticisi Devre dışı"
 
-#: YoutubeChannelManager/__init__.py:382
-#| msgid ""
-#| "\n"
-#| "Escape; desactiva la interfaz virtual.\n"
-#| "n; Activa el diálogo para añadir un nuevo canal.\n"
-#| "o; abre el link del video actual en el navegador por defecto.\n"
-#| "r; Carga el audio en un reproductor web personalizado.\n"
-#| "c; copia el link del video actual al portapapeles.\n"
-#| "d; abre una ventana con datos del video actual.\n"
-#| "b; Activa el cuadro de búsqueda de videos en la base de datos.\n"
-#| "control + b; Activa el cuadro de búsqueda de videos en la página de "
-#| "Youtube.\n"
-#| "s; Activa la ventana de configuración del canal actual.\n"
-#| "g; Activa la ventana de opciones globales.\n"
-#| "suprimir; Activa el diálogo para eliminar el canal actual, y en la "
-#| "ventana de resultados, elimina la columna y vuelve a la lista de "
-#| "canales.\n"
-#| "f5; Busca videos nuevos en el canal actual.\n"
-#| "control + shift + suprimir; elimina la base de datos.\n"
-#| "\t\t"
+#: YoutubeChannelManager/__init__.py:383
 msgid ""
 "\n"
 "Escape; desactiva la interfaz virtual.\n"
@@ -162,6 +144,8 @@ msgid ""
 "t; copia el título del video actual al portapapeles.\n"
 "c; copia el link del video actual al portapapeles.\n"
 "d; abre una ventana con datos del video actual.\n"
+"control + d; descarga el video en su formato original en la carpeta "
+"youtubeDL en la raíz del usuario actual.\n"
 "b; Activa el cuadro de búsqueda de videos en la base de datos.\n"
 "control + b; Activa el cuadro de búsqueda de videos en la página de "
 "Youtube.\n"
@@ -174,43 +158,45 @@ msgid ""
 "\t\t"
 msgstr ""
 "\n"
-"Escape; sanal arayüzü devre dışı bırakır.\n"
+"Escape; sanal arabirimi devre dışı bırakır.\n"
 "n; Yeni bir kanal eklemek için iletişim kutusunu etkinleştirir.\n"
-"o; mevcut video bağlantısını varsayılan tarayıcıda açar.\n"
-"r; Sesi özel bir web oynatıcısına yükler.\n"
-"t; mevcut videonun başlığını panoya kopyalar.\n"
-"c; mevcut videonun bağlantısını panoya kopyalar.\n"
-"d; mevcut video bilgilerini içeren bir pencere açar.\n"
+"o; mevcut videonun bağlantısını varsayılan tarayıcıda açar.\n"
+"r; Sadece Video sesini özel bir web oynatıcıda oynatır.\n"
+"t; geçerli videonun başlığını panoya kopyalar.\n"
+"c; Geçerli video bağlantısını panoya kopyalar.\n"
+"d; geçerli video verilerini içeren bir pencere açar.\n"
+"control + d; videoyu orijinal biçiminde mevcut kullanıcının kök dizinindeki "
+"youtubeDL klasörüne indirir.\n"
 "b; Veritabanındaki videolar için arama kutusunu etkinleştirir.\n"
 "control + b; Youtube sayfasındaki video arama kutusunu etkinleştirir.\n"
 "s; Geçerli kanalın yapılandırma penceresini etkinleştirir.\n"
 "g; Genel seçenekler penceresini etkinleştirir.\n"
-"Delete; Geçerli kanalı silmek için iletişim kutusunu etkinleştirir, sonuçlar "
-"penceresinde sütunu siler ve kanal listesine geri döner.\n"
-"f5; Seçili kanalda yeni videolar arar.\n"
-"control + shift + Del; veritabanını siler.\n"
+"Sil; Geçerli kanalı kaldırmak için iletişim kutusunu etkinleştirir, sonuç "
+"penceresinde sütunu kaldırır ve kanal listesine döner.\n"
+"f5; Mevcut kanalı yenileyerek güncel videoları alır.\n"
+"control + shift + sil; veritabanını siler.\n"
 "\t\t"
 
-#: YoutubeChannelManager/__init__.py:398
+#: YoutubeChannelManager/__init__.py:400
 msgid "Ayuda de comandos"
 msgstr "Komut yardımı"
 
-#: YoutubeChannelManager/__init__.py:406 YoutubeChannelManager/__init__.py:411
-#: YoutubeChannelManager/__init__.py:421 YoutubeChannelManager/__init__.py:426
+#: YoutubeChannelManager/__init__.py:408 YoutubeChannelManager/__init__.py:413
+#: YoutubeChannelManager/__init__.py:423 YoutubeChannelManager/__init__.py:428
 msgid "{}- {} de {}"
 msgstr "{}- {} tire {}"
 
-#: YoutubeChannelManager/__init__.py:467
+#: YoutubeChannelManager/__init__.py:469
 msgid "Abriendo el link en el navegador..."
 msgstr "Bağlantı varsayılan tarayıcıda açılıyor..."
 
-#: YoutubeChannelManager/__init__.py:487
+#: YoutubeChannelManager/__init__.py:489
 msgid "{} de {}, {} reproducciones. {}. Pulsa f1 para ver la ayuda de comandos"
 msgstr ""
 "{} Tire {}, {} defa Görüntülendi. {}. Komut yardımını görmek için f1 tuşuna "
 "basın"
 
-#: YoutubeChannelManager/__init__.py:505
+#: YoutubeChannelManager/__init__.py:507
 msgid ""
 "Se han producido errores en el requerimiento web. Comprueba tu conexión y "
 "vuelve a intentarlo"
@@ -218,70 +204,72 @@ msgstr ""
 "Web sayfasında sorun oluştu. Lütfen bağlantınızı kontrol edin ve tekrar "
 "deneyin"
 
-#: YoutubeChannelManager/__init__.py:514
+#: YoutubeChannelManager/__init__.py:516
 msgid "No se han encontrado videos nuevos para este canal"
 msgstr "Bu kanal için yeni video bulunamadı"
 
-#: YoutubeChannelManager/__init__.py:517
+#: YoutubeChannelManager/__init__.py:519
 msgid "Se ha añadido un video nuevo en {}"
 msgstr "{} kanalına yeni bir video eklendi"
 
-#: YoutubeChannelManager/__init__.py:520
+#: YoutubeChannelManager/__init__.py:522
 msgid "Se han añadido {} videos nuevos en {}"
 msgstr "{} Kanalına {} yeni video eklendi"
 
-#: YoutubeChannelManager/__init__.py:536 YoutubeChannelManager/__init__.py:904
-#: YoutubeChannelManager/__init__.py:1228
+#: YoutubeChannelManager/__init__.py:538 YoutubeChannelManager/__init__.py:928
+#: YoutubeChannelManager/__init__.py:1252
 msgid "Proceso iniciado"
 msgstr "Yükleme işlemi başladı"
 
-#: YoutubeChannelManager/__init__.py:558 YoutubeChannelManager/__init__.py:568
+#: YoutubeChannelManager/__init__.py:560 YoutubeChannelManager/__init__.py:570
 msgid "copiado"
 msgstr "kopyalandı"
 
-#: YoutubeChannelManager/__init__.py:579
+#: YoutubeChannelManager/__init__.py:585
+msgid "Iniciando la descarga..."
+msgstr "İndirme başlatılıyor..."
+
+#: YoutubeChannelManager/__init__.py:596
 msgid "Obteniendo los datos del video..."
 msgstr "Video bilgileri alınıyor..."
 
-#: YoutubeChannelManager/__init__.py:642
-#| msgid ""
-#| "Existe una nueva versión de la librería youtube_dl. ¿Quieres actualizarla?"
+#: YoutubeChannelManager/__init__.py:659
 msgid "Existe una nueva versión de la librería yt_dlp. ¿Quieres actualizarla?"
-msgstr "yt_dlp Kitaplığının yeni bir sürümü var. Güncellemek istiyor musunuz?"
+msgstr "yt_dlp kitaplığının yeni bir sürümü var. Güncellemek istiyor musunuz?"
 
-#: YoutubeChannelManager/__init__.py:663
+#: YoutubeChannelManager/__init__.py:680
 msgid ""
 "Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres hacerlo ahora?"
 msgstr ""
 "Değişikliklerin uygulanabilmesi için NVDA'yı yeniden başlatmanız gerekir. "
 "Şimdi yeniden başlatmak istiyor musunuz?"
 
-#: YoutubeChannelManager/__init__.py:663
+#: YoutubeChannelManager/__init__.py:680
 msgid "¡Atención!"
 msgstr "Uyarı!"
 
-#: YoutubeChannelManager/__init__.py:683
+#: YoutubeChannelManager/__init__.py:700
 msgid "Actualizando la librería..."
 msgstr "Kitaplık güncelleniyor..."
 
-#: YoutubeChannelManager/__init__.py:697
+#: YoutubeChannelManager/__init__.py:714
 msgid "&Aceptar"
 msgstr "Ka&bul et"
 
-#: YoutubeChannelManager/__init__.py:702
+#: YoutubeChannelManager/__init__.py:719
 msgid "&Cerrar"
 msgstr "&Kapat"
 
-#: YoutubeChannelManager/__init__.py:795 YoutubeChannelManager/__init__.py:800
+#: YoutubeChannelManager/__init__.py:812 YoutubeChannelManager/__init__.py:817
 msgid "Espere por favor...\n"
 msgstr "Lütfen bekleyin...\n"
 
-#: YoutubeChannelManager/__init__.py:795 YoutubeChannelManager/__init__.py:800
+#: YoutubeChannelManager/__init__.py:812 YoutubeChannelManager/__init__.py:817
 #, python-format
 msgid "Descargando: %s"
 msgstr "İndiriliyor: %s"
 
-#: YoutubeChannelManager/__init__.py:813
+#: YoutubeChannelManager/__init__.py:830
 msgid ""
 "Descarga finalizada. Cierre la ventana para terminar de instalar la librería "
 "y reiniciar NVDA."
@@ -289,150 +277,149 @@ msgstr ""
 "İndirme tamamlandı. Kitaplığı yüklemeyi tamamlamak için pencereyi kapatın ve "
 "NVDA'yı yeniden başlatın."
 
-#: YoutubeChannelManager/__init__.py:817
+#: YoutubeChannelManager/__init__.py:834
 msgid "Algo salió mal.\n"
 msgstr "Bir Sorun oluştu.\n"
 
-#: YoutubeChannelManager/__init__.py:817
+#: YoutubeChannelManager/__init__.py:834
 msgid "Compruebe si tiene conexión a internet y vuelva a intentarlo.\n"
 msgstr "İnternet bağlantınız olup olmadığını kontrol edin ve tekrar deneyin.\n"
 
-#: YoutubeChannelManager/__init__.py:817
+#: YoutubeChannelManager/__init__.py:834
 msgid "Ya puede cerrar esta ventana."
 msgstr "Artık bu pencereyi kapatabilirsiniz."
 
-#: YoutubeChannelManager/__init__.py:837
+#: YoutubeChannelManager/__init__.py:861
 msgid "Ingresa el nombre del canal"
 msgstr "Kanal adını Yazın"
 
-#: YoutubeChannelManager/__init__.py:841
+#: YoutubeChannelManager/__init__.py:865
 msgid "Ingresa la URL del canal"
 msgstr "Kanal URL'sini girin"
 
-#: YoutubeChannelManager/__init__.py:845
+#: YoutubeChannelManager/__init__.py:869
 msgid "&Añadir canal"
 msgstr "k&anal ekle"
 
-#: YoutubeChannelManager/__init__.py:847 YoutubeChannelManager/__init__.py:955
+#: YoutubeChannelManager/__init__.py:871 YoutubeChannelManager/__init__.py:979
 msgid "&Cancelar"
 msgstr "&İptal"
 
-#: YoutubeChannelManager/__init__.py:861
+#: YoutubeChannelManager/__init__.py:885
 msgid "Debes ingresar algún nombre para este canal"
 msgstr "Bu kanal için bir ad girmelisiniz"
 
-#: YoutubeChannelManager/__init__.py:867
+#: YoutubeChannelManager/__init__.py:891
 msgid "La url ingresada no es válida"
 msgstr "Girilen url geçerli değil"
 
-#: YoutubeChannelManager/__init__.py:876
+#: YoutubeChannelManager/__init__.py:900
 msgid ""
 "El canal {} ya existe en la base de datos. ¿Quieres añadirlo de todas formas?"
 msgstr "{} kanalı veritabanında zaten var. Yine de eklemek istiyor musunuz?"
 
-#: YoutubeChannelManager/__init__.py:915
+#: YoutubeChannelManager/__init__.py:939
 msgid "Proceso Finalizado"
 msgstr "Kanal başarıyla eklendi"
 
-#: YoutubeChannelManager/__init__.py:948
+#: YoutubeChannelManager/__init__.py:972
 msgid "Ingresa el término de búsqueda y pulsa intro"
 msgstr "Arama terimini girin ve enter tuşuna basın"
 
-#: YoutubeChannelManager/__init__.py:951
-#| msgid "&Iniciar la búsqueda"
+#: YoutubeChannelManager/__init__.py:975
 msgid "&Iniciar la búsqueda en todos los canales"
 msgstr "&Tüm kanallarda aramayı başlat"
 
-#: YoutubeChannelManager/__init__.py:953
-#| msgid "&Iniciar la búsqueda"
+#: YoutubeChannelManager/__init__.py:977
 msgid "&Iniciar la búsqueda en el canal actual"
 msgstr "&Mevcut kanalda aramayı başlat"
 
-#: YoutubeChannelManager/__init__.py:984
+#: YoutubeChannelManager/__init__.py:1008
 msgid "Resultados de búsqueda"
 msgstr "Arama Sonuçları"
 
-#: YoutubeChannelManager/__init__.py:991
+#: YoutubeChannelManager/__init__.py:1015
 msgid "Se han encontrado {} resultados"
 msgstr "{} sonuç bulundu"
 
-#: YoutubeChannelManager/__init__.py:995 YoutubeChannelManager/__init__.py:1235
-#: YoutubeChannelManager/__init__.py:1240
+#: YoutubeChannelManager/__init__.py:1019
+#: YoutubeChannelManager/__init__.py:1259
+#: YoutubeChannelManager/__init__.py:1264
 msgid "No se han encontrado resultados"
 msgstr "Sonuç bulunamadı"
 
-#: YoutubeChannelManager/__init__.py:1016
+#: YoutubeChannelManager/__init__.py:1040
 msgid "Nombre del canal"
 msgstr "Kanal Adı"
 
-#: YoutubeChannelManager/__init__.py:1020
+#: YoutubeChannelManager/__init__.py:1044
 msgid "Canal favorito"
 msgstr "Favori kanal"
 
-#: YoutubeChannelManager/__init__.py:1052
+#: YoutubeChannelManager/__init__.py:1076
 msgid "Configuración guardada"
 msgstr "Ayarları Kaydet"
 
-#: YoutubeChannelManager/__init__.py:1068
+#: YoutubeChannelManager/__init__.py:1092
 msgid "Activar los sonidos del complemento"
 msgstr "Eklenti seslerini etkinleştir"
 
-#: YoutubeChannelManager/__init__.py:1071
+#: YoutubeChannelManager/__init__.py:1095
 msgid ""
 "Selecciona el intervalo de tiempo para la verificación de nuevas subidas en "
 "los canales favoritos"
 msgstr ""
 "Favori kanallarda yeni yüklemelerin taranması için zaman aralığını seçin"
 
-#: YoutubeChannelManager/__init__.py:1071
+#: YoutubeChannelManager/__init__.py:1095
 msgid "Desactivado"
 msgstr "Kapalı"
 
-#: YoutubeChannelManager/__init__.py:1071
+#: YoutubeChannelManager/__init__.py:1095
 msgid "24 horas"
 msgstr "24 saat"
 
-#: YoutubeChannelManager/__init__.py:1071
+#: YoutubeChannelManager/__init__.py:1095
 msgid "12 horas"
 msgstr "12 saat"
 
-#: YoutubeChannelManager/__init__.py:1071
+#: YoutubeChannelManager/__init__.py:1095
 msgid "8 horas"
 msgstr "8 saat"
 
-#: YoutubeChannelManager/__init__.py:1071
+#: YoutubeChannelManager/__init__.py:1095
 msgid "4 horas"
 msgstr "4 saat"
 
-#: YoutubeChannelManager/__init__.py:1071
+#: YoutubeChannelManager/__init__.py:1095
 msgid "2 horas"
 msgstr "2 saat"
 
-#: YoutubeChannelManager/__init__.py:1071
+#: YoutubeChannelManager/__init__.py:1095
 msgid "1 hora"
 msgstr "1 saat"
 
-#: YoutubeChannelManager/__init__.py:1074
+#: YoutubeChannelManager/__init__.py:1098
 msgid "Seleccione el órden de aparición de los videos del canal"
 msgstr "Video sıralama şeklini seçin"
 
-#: YoutubeChannelManager/__init__.py:1074
+#: YoutubeChannelManager/__init__.py:1098
 msgid "Del último al primero"
 msgstr "Yeniden Eskiye"
 
-#: YoutubeChannelManager/__init__.py:1074
+#: YoutubeChannelManager/__init__.py:1098
 msgid "Del primero al último"
 msgstr "Eskiden Yeniye"
 
-#: YoutubeChannelManager/__init__.py:1074
+#: YoutubeChannelManager/__init__.py:1098
 msgid "Del más visto al menos visto"
 msgstr "En çok görüntülenenden en az görüntülenene"
 
-#: YoutubeChannelManager/__init__.py:1074
+#: YoutubeChannelManager/__init__.py:1098
 msgid "Del menos visto al mas visto"
 msgstr "En az görüntülenenden en çok Görüntülenene"
 
-#: YoutubeChannelManager/__init__.py:1104
+#: YoutubeChannelManager/__init__.py:1128
 msgid ""
 "Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres reiniciar "
 "ahora?"
@@ -440,59 +427,59 @@ msgstr ""
 "Değişikliklerin uygulanabilmesi için NVDA'yı yeniden başlatmanız gerekir. "
 "Şimdi yeniden başlatmak istiyor musunuz?"
 
-#: YoutubeChannelManager/__init__.py:1112
+#: YoutubeChannelManager/__init__.py:1136
 msgid "Configuraciones aplicadas"
 msgstr "Ayarlar Kaydedildi"
 
-#: YoutubeChannelManager/__init__.py:1157
+#: YoutubeChannelManager/__init__.py:1181
 msgid "Ingresa los términos de búsqueda"
 msgstr "Arama terimini girin"
 
-#: YoutubeChannelManager/__init__.py:1160
+#: YoutubeChannelManager/__init__.py:1184
 msgid "Selecciona el número de resultados  a mostrarse"
 msgstr "Görüntülenecek sonuç sayısını seçin"
 
-#: YoutubeChannelManager/__init__.py:1160
+#: YoutubeChannelManager/__init__.py:1184
 msgid "10 resultados"
 msgstr "10 sonuç"
 
-#: YoutubeChannelManager/__init__.py:1160
+#: YoutubeChannelManager/__init__.py:1184
 msgid "20 resultados"
 msgstr "20 sonuç"
 
-#: YoutubeChannelManager/__init__.py:1160
+#: YoutubeChannelManager/__init__.py:1184
 msgid "30 resultados"
 msgstr "30 sonuç"
 
-#: YoutubeChannelManager/__init__.py:1160
+#: YoutubeChannelManager/__init__.py:1184
 msgid "40 resultados"
 msgstr "40 sonuç"
 
-#: YoutubeChannelManager/__init__.py:1160
+#: YoutubeChannelManager/__init__.py:1184
 msgid "50 resultados"
 msgstr "50 sonuç"
 
-#: YoutubeChannelManager/__init__.py:1163
+#: YoutubeChannelManager/__init__.py:1187
 msgid "Iniciar la búsqueda"
 msgstr "Aramayı başlat"
 
-#: YoutubeChannelManager/__init__.py:1165
+#: YoutubeChannelManager/__init__.py:1189
 msgid "Cancelar"
 msgstr "İptal"
 
-#: YoutubeChannelManager/__init__.py:1187
+#: YoutubeChannelManager/__init__.py:1211
 msgid "No hay datos en el historial"
 msgstr "Geçmişte veri yok"
 
-#: YoutubeChannelManager/__init__.py:1221
+#: YoutubeChannelManager/__init__.py:1245
 msgid "Debes ingresar algún texto de búsqueda"
 msgstr "Bir arama metni girmelisiniz"
 
-#: YoutubeChannelManager/__init__.py:1246
+#: YoutubeChannelManager/__init__.py:1270
 msgid "Resultados globales"
 msgstr "Genel sonuçlar"
 
-#: YoutubeChannelManager/__init__.py:1255
+#: YoutubeChannelManager/__init__.py:1279
 msgid "Búsqueda finalizada"
 msgstr "Arama tamamlandı"
 
@@ -558,6 +545,77 @@ msgstr "ses en yüksek seviyede"
 #~ msgstr ""
 #~ "Görünmez ve basit bir arayüz üzerinden favori YouTube kanallarınızı "
 #~ "yönetmenizi sağlar"
+
+#, fuzzy
+#~| msgid ""
+#~| "\n"
+#~| "Escape; desactiva la interfaz virtual.\n"
+#~| "n; Activa el diálogo para añadir un nuevo canal.\n"
+#~| "o; abre el link del video actual en el navegador por defecto.\n"
+#~| "r; Carga el audio en un reproductor web personalizado.\n"
+#~| "t; copia el título del video actual al portapapeles.\n"
+#~| "c; copia el link del video actual al portapapeles.\n"
+#~| "d; abre una ventana con datos del video actual.\n"
+#~| "control + d; descarga el video en su formato original en la carpeta "
+#~| "youtubeDL en la raíz del usuario actual.\n"
+#~| "b; Activa el cuadro de búsqueda de videos en la base de datos.\n"
+#~| "control + b; Activa el cuadro de búsqueda de videos en la página de "
+#~| "Youtube.\n"
+#~| "s; Activa la ventana de configuración del canal actual.\n"
+#~| "g; Activa la ventana de opciones globales.\n"
+#~| "suprimir; Activa el diálogo para eliminar el canal actual, y en la "
+#~| "ventana de resultados, elimina la columna y vuelve a la lista de "
+#~| "canales.\n"
+#~| "f5; Busca videos nuevos en el canal actual.\n"
+#~| "control + shift + suprimir; elimina la base de datos.\n"
+#~| "\t\t"
+#~ msgid ""
+#~ "\n"
+#~ "Escape; desactiva la interfaz virtual.\n"
+#~ "n; Activa el diálogo para añadir un nuevo canal.\n"
+#~ "o; abre el link del video actual en el navegador por defecto.\n"
+#~ "r; Carga el audio en un reproductor web personalizado.\n"
+#~ "c; copia el link del video actual al portapapeles.\n"
+#~ "d; abre una ventana con datos del video actual.\n"
+#~ "b; Activa el cuadro de búsqueda de videos en la base de datos.\n"
+#~ "control + b; Activa el cuadro de búsqueda de videos en la página de "
+#~ "Youtube.\n"
+#~ "s; Activa la ventana de configuración del canal actual.\n"
+#~ "g; Activa la ventana de opciones globales.\n"
+#~ "suprimir; Activa el diálogo para eliminar el canal actual, y en la "
+#~ "ventana de resultados, elimina la columna y vuelve a la lista de "
+#~ "canales.\n"
+#~ "f5; Busca videos nuevos en el canal actual.\n"
+#~ "control + shift + suprimir; elimina la base de datos.\n"
+#~ "\t\t"
+#~ msgstr ""
+#~ "\n"
+#~ "Escape; sanal arabirimi devre dışı bırakır.\n"
+#~ "n; Yeni bir kanal eklemek için iletişim kutusunu etkinleştirir.\n"
+#~ "o; mevcut videonun bağlantısını varsayılan tarayıcıda açar.\n"
+#~ "r; Sadece Video sesini özel bir web oynatıcıda oynatır.\n"
+#~ "t; geçerli videonun başlığını panoya kopyalar.\n"
+#~ "c; Geçerli video bağlantısını panoya kopyalar.\n"
+#~ "d; geçerli video verilerini içeren bir pencere açar.\n"
+#~ "control + d; videoyu orijinal biçiminde mevcut kullanıcının kök "
+#~ "dizinindeki youtubeDL klasörüne indirir.\n"
+#~ "b; Veritabanındaki videolar için arama kutusunu etkinleştirir.\n"
+#~ "control + b; Youtube sayfasındaki video arama kutusunu etkinleştirir.\n"
+#~ "s; Geçerli kanalın yapılandırma penceresini etkinleştirir.\n"
+#~ "g; Genel seçenekler penceresini etkinleştirir.\n"
+#~ "Sil; Geçerli kanalı kaldırmak için iletişim kutusunu etkinleştirir, sonuç "
+#~ "penceresinde sütunu kaldırır ve kanal listesine döner.\n"
+#~ "f5; Mevcut kanalı yenileyerek güncel videoları alır.\n"
+#~ "control + shift + sil; veritabanını siler.\n"
+#~ "\t\t"
+
+#, fuzzy
+#~| msgid ""
+#~| "Existe una nueva versión de la librería yt_dlp. ¿Quieres actualizarla?"
+#~ msgid ""
+#~ "Existe una nueva versión de la librería youtube_dl. ¿Quieres actualizarla?"
+#~ msgstr ""
+#~ "yt_dlp kitaplığının yeni bir sürümü var. Güncellemek istiyor musunuz?"
 
 #~ msgid "Se han encontrado {len(results)} resultados"
 #~ msgstr "Bulunan sonuç {len(results)}"
