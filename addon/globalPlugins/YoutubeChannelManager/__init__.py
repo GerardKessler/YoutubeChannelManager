@@ -109,7 +109,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			globalVars.youtubeChannelManager = None
 
 	def firstRun(self):
-		# Thread(target=self.updatedYoutube_dl, daemon= True).start()
+		Thread(target=self.updatedYoutube_dl, daemon= True).start()
 		self.startDB()
 
 	def updatedYoutube_dl(self):
@@ -667,14 +667,11 @@ class AddonThread(Thread):
 						dlg.Destroy()
 						archive = zipfile.ZipFile(os.path.join(dirAddon, "temp.zip"))
 						root = archive.namelist()[0]
-						filtro = [item for item in archive.namelist() if "yt_dlp".lower() in item.lower()]
-						for file in archive.namelist():
-							if file.startswith(filtro[0]):
-								archive.extract(file, dirAddon)
+						archive.extractall(dirAddon)
 						archive.close()
-						os.remove(os.path.join(dirAddon, "temp.zip"))
-						shutil.rmtree(os.path.join(dirAddon, "lib", "yt_dlp"))
-						shutil.move(os.path.join(dirAddon, root, "yt_dlp"), os.path.join(dirAddon, "lib", "yt_dlp"))
+						os.remove(os.path.join(dirAddon, 'temp.zip'))
+						shutil.rmtree(os.path.join(dirAddon, 'lib', 'yt_dlp'))
+						shutil.move(os.path.join(dirAddon, root, 'yt_dlp'), os.path.join(dirAddon, 'lib'))
 						shutil.rmtree(os.path.join(dirAddon, root))
 						# Translators: aviso de reinicio de NVDA
 						modal = wx.MessageDialog(None, _('Es necesario reiniciar NVDA para aplicar los cambios. ¿Quieres hacerlo ahora?'), _('¡Atención!'), wx.YES_NO | wx.YES_DEFAULT | wx.ICON_QUESTION)
@@ -1236,7 +1233,7 @@ class GlobalSearch(wx.Dialog):
 				if len(rows) > 20:
 					self.cursor.execute('DELETE FROM searches WHERE content=?', [rows[0][0]])
 					self.connect.commit()
-			except sqlite3.OperationalError:
+			except sql.OperationalError:
 				self.cursor.execute('create table searches(content text, id integer primary key autoincrement)')
 				self.connect.commit()
 			Thread(target=self.startSearch, args=(str,), daemon= True).start()
