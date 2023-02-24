@@ -305,13 +305,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		time.sleep(pause)
 		speech.setSpeechMode(speech.SpeechMode.talk)
 
-	@script(
-		# Translators: nombre de la categoría en el diálogo gestos de entrada
-		category= _('YoutubeChannelManager'),
-		# Translators: Descripción del elemento en el diálogo gestos de entrada
-		description= _('Activa el link del portapapeles en el reproductor web personalizado'),
-	)
 	def script_getClipboardLink(self, gesture):
+		self.desactivar(False)
 		clipboard = api.getClipData()
 		if re.search(r'https?://(www\.)?youtube.com/watch\?v=\w+', clipboard):
 			ui.message(self.activate_message)
@@ -326,17 +321,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.openPlayer = player.PlayerCode(data['title'], audio_url)
 		self.openPlayer.createFile()
 
-	###
-	@script(gesture="kb:NVDA+shift+control+z")
-	def script_version(self, gesture):
-		ui.message(youtube_dl.version.__version__)
-
 	@script(
 		# Translators: nombre de la categoría en el diálogo gestos de entrada
 		category= _('YoutubeChannelManager'),
 		# Translators: Descripción del elemento en el diálogo gestos de entrada
-		description= _('Activa y desactiva la interfaz invisible'),
-		gesture="kb:NVDA+y"
+		description= _('Activa y desactiva la interfaz invisible')
 	)
 	def script_toggle(self, gesture):
 		self.desactivar() if self.switch else self.activar()
@@ -354,6 +343,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:s":"channelSettings",
 				"kb:g":"globalSettings",
 				"kb:r":"openAudio",
+				"kb:control+c":"getClipboardLink",
 				"kb:home":"firstItem",
 				"kb:end":"positionAnnounce",
 				"kb:n":"newChannel",
@@ -362,6 +352,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"kb:c":"copyLink",
 				"kb:t":"copyTitle",
 				"kb:control+d":"download",
+				"kb:control+shift+d":"downloadClip",
 				"kb:d":"viewData",
 				"kb:delete":"removeChannel",
 				"kb:control+shift+delete":"removeDatabase",
@@ -375,7 +366,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		# Translators: aviso de atajos desactivados
 		if speak: ui.message(_('Atajos desactivados'))
 		self.clearGestureBindings()
-		self.bindGestures(self.__gestures)
 
 	def script_helpCommands(self, gesture):
 		self.desactivar(False)
@@ -389,6 +379,8 @@ t; copia el título del video actual al portapapeles.
 c; copia el link del video actual al portapapeles.
 d; abre una ventana con datos del video actual.
 control + d; descarga el video en su formato original en la carpeta youtubeDL en la raíz del usuario actual.
+Control + c; Abre el link del portapapeles en el reproductor web personalizado.
+control + shift + d; descarga el video desde el portapapeles en su formato original en la carpeta youtubeDL en la raíz del usuario actual.
 b; Activa el cuadro de búsqueda de videos en la base de datos.
 control + b; Activa el cuadro de búsqueda de videos en la página de Youtube.
 s; Activa la ventana de configuración del canal actual.
@@ -568,6 +560,18 @@ control + shift + suprimir; elimina la base de datos.
 		if self.sounds: playWaveFile(os.path.join(os.environ['systemroot'], 'Media', 'Windows Recycle.wav'))
 		# Translators: aviso de copia
 		ui.message(_('copiado'))
+
+	def script_downloadClip(self, gesture):
+		self.desactivar(False)
+		link= api.getClipData()
+		if not 'youtube.com/watch?v=' in link:
+			# Translators: Aviso de portapapeles incorrecto
+			ui.message(_('El portapapeles no contiene un link válido'))
+		else:
+			Downloads(link, os.path.join(os.path.expandvars("%userprofile%"), 'youtubeDL'), _('Video del portapapeles'))
+			if self.sounds: playWaveFile(os.path.join(os.environ['systemroot'], 'Media', 'Windows Recycle.wav'))
+			# Translators: aviso de inicio de descarga
+			ui.message(_('Iniciando la descarga...'))
 
 	def script_download(self, gesture):
 		if len(self.channels) == 0:

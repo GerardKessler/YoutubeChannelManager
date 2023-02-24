@@ -5,8 +5,7 @@ Este complemento permite gestionar los canales favoritos de la plataforma Youtub
 
 ## Atajos del complemento
 
-* NVDA + i griega; Activa y desactiva la interfaz invisible.
-* Sin asignar; Activa el reproductor web personalizado con el link de un video desde el portapapeles.
+* Activar la interfaz invisible; sin asignar
 
 ## Atajos disponibles en la interfaz invisible
 
@@ -20,10 +19,12 @@ Este complemento permite gestionar los canales favoritos de la plataforma Youtub
 * n; Abre el diálogo para añadir un nuevo canal.
 * o; Abre el link del video en el navegador por defecto.
 * r; Abre el link de audio en un reproductor web personalizado.
+* control + c; Abre el link del portapapeles en el reproductor web personalizado
 * c; Copia el link del video al portapapeles.
 * t; Copia el título del video al portapapeles.
 * d; Obtiene los datos del video y los muestra en una ventana de NVDA.
 * control + d; descarga el video en el formato original en la carpeta YoutubeDL del usuario actual
+* control + shift + d; Descarga desde el portapapeles en el formato original en la carpeta YoutubeDL del usuario actual
 * b; Activa el diálogo de búsqueda en la base de datos.
 * Control + b; Activa el diálogo de búsqueda general.
 * f5; Busca si existen videos nuevos en el canal con el foco.
