@@ -478,7 +478,7 @@ control + shift + suprimir; elimina la base de datos.
 			return
 		try:
 			# Translators: posición actual de cantidad total. número de reproducciones. Mensaje de ayuda de comandos
-			ui.message(_('{} de {}, {} reproducciones. {}. Pulsa f1 para ver la ayuda de comandos').format(self.z + 1, len(self.videos[self.y]), self.videos[self.y][self.z][4], self.videos[self.y][self.z][5]))
+			ui.message(_('{} de {}. {}. Pulsa f1 para ver la ayuda de comandos').format(self.z + 1, len(self.videos[self.y]), self.videos[self.y][self.z][5]))
 		except IndexError:
 			pass
 
