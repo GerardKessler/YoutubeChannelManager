@@ -27,7 +27,7 @@ addon_info = {
 	# version
 	"addon_version": "1.7",
 	# Author(s)
-	"addon_author": "Gerardo Késsler <ReaperYOtrasYerbas@gmail.com>",
+	"addon_author": "Gerardo Késsler <gera.ar@yahoo.com>",
 	# URL for the add-on documentation support
 	"addon_url": "https://github.com/GerardKessler/YoutubeChannelManager",
 	# Documentation file name
