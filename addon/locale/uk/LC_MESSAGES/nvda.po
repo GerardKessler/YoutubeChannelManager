@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: YoutubeChannelManager, versão 1.0\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2023-03-05 15:32+0200\n"
-"PO-Revision-Date: 2023-03-05 15:35+0200\n"
+"POT-Creation-Date: 2023-03-05 20:40+0200\n"
+"PO-Revision-Date: 2023-03-05 20:41+0200\n"
 "Last-Translator: Volodymyr Pyrih <vp88.mobile@gmail.com>\n"
 "Language-Team: Equipa portuguesa do NVDA: Ângelo Abrantes e Rui Fontes "
 "(10-03-2022)\n"
@@ -581,8 +581,13 @@ msgstr "Результати пошуку"
 msgid "Búsqueda finalizada"
 msgstr "Пошук завершено"
 
+#. Translators: Palabra porciento posterior al nivel de porcentaje.
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1324
+msgid "{} porciento"
+msgstr "{} відсотків"
+
 #. Translators: Mensaje de descarga exitosa
-#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1346
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1347
 msgid "{} descargado correctamente"
 msgstr "{} успішно завантажено"
 
