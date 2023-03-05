@@ -256,7 +256,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			os.remove(os.path.join(globalVars.appArgs.configPath, "channels"))
 			self.startDB(True)
 			# Translators: verbalización de la eliminación de la base de datos
-			gui.messageBox(_('Base de datos eliminada'))
+			gui.messageBox(_('Base de datos eliminada'), '✌')
 
 	def script_removeChannel(self, gesture):
 		try:
@@ -292,7 +292,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if self.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "recicled.wav"))
 			self.y = 0
 			# Translators: texto de la ventana de eliminación
-			gui.messageBox(_('{} Eliminado').format(channel_name))
+			gui.messageBox(_('{} Eliminado').format(channel_name), '✌')
 		else:
 			modal.Destroy()
 
@@ -1257,12 +1257,12 @@ class GlobalSearch(wx.Dialog):
 			except:
 				if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "yResults.wav"))
 				# Translators: aviso de que no se han encontrado resultados
-				gui.messageBox(_('No se han encontrado resultados'))
+				gui.messageBox(_('No se han encontrado resultados'), '😥')
 				return
 		if not len(results['entries']):
 			if self.frame.sounds: playWaveFile(os.path.join(dirAddon, "sounds", "yResults.wav"))
 			# Translators: aviso de resultados no encontrados
-			gui.messageBox(_('No se han encontrado resultados'))
+			gui.messageBox(_('No se han encontrado resultados'), '😥')
 			return
 		self.frame.channels_temp = self.frame.channels
 		self.frame.videos_temp = self.frame.videos
@@ -1342,6 +1342,7 @@ class Downloads(Thread):
 		if self.error:
 			ui.browseableMessage(str(self.error))
 		else:
-			ui.message('{} descargado correctamente'.format(os.path.splitext(self.title)[0]))
+			# Translators: Mensaje de descarga exitosa
+			gui.messageBox(_('{} descargado correctamente').format(os.path.splitext(self.title)[0]), '✌')
 		locale.setlocale(locale.LC_TIME, saved)
 
