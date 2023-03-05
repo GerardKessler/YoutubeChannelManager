@@ -810,7 +810,7 @@ class HiloDescarga(Thread):
 			percent = readsofar * 1e2 / total_size
 			wx.CallAfter(self.frame.next, percent)
 			time.sleep(1 / 995)
-			wx.CallAfter(self.frame.TextoRefresco, _("Espere por favor...\n") + _("Descargando: %s") % self.humanbytes(readsofar))
+			wx.CallAfter(self.frame.TextoRefresco, _('Espere por favor...\n') + _('Descargando: %s') % self.humanbytes(readsofar))
 			if readsofar >= total_size: # Si queremos hacer algo cuando la descarga termina.
 				pass
 		else: # Si la descarga es solo el tamaño
@@ -1320,7 +1320,8 @@ class Downloads(Thread):
 			progress_list= [10,20,30,40,50,60,70,80,90,100]
 			if int(self.progress) in progress_list and int(self.progress) != self.current_progress:
 				self.current_progress= int(self.progress)
-				ui.message('{} porciento'.format(self.progress))
+				# Translators: Palabra porciento posterior al nivel de porcentaje.
+				ui.message(_('{} porciento').format(self.progress))
 
 	def run(self):
 		import locale
