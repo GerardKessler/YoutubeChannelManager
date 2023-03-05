@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: YoutubeChannelManager, versão 1.0\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2023-03-05 11:34+0200\n"
-"PO-Revision-Date: 2023-03-05 12:53+0200\n"
+"POT-Creation-Date: 2023-03-05 15:32+0200\n"
+"PO-Revision-Date: 2023-03-05 15:35+0200\n"
 "Last-Translator: Volodymyr Pyrih <vp88.mobile@gmail.com>\n"
 "Language-Team: Equipa portuguesa do NVDA: Ângelo Abrantes e Rui Fontes "
 "(10-03-2022)\n"
@@ -580,6 +580,11 @@ msgstr "Результати пошуку"
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:1280
 msgid "Búsqueda finalizada"
 msgstr "Пошук завершено"
+
+#. Translators: Mensaje de descarga exitosa
+#: addon\globalPlugins\YoutubeChannelManager\__init__.py:1346
+msgid "{} descargado correctamente"
+msgstr "{} успішно завантажено"
 
 #. Translators: Cadenas del documento html. Título, botones y mensajes
 #: addon\globalPlugins\YoutubeChannelManager\player.py:20
