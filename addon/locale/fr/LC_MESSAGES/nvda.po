@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: YoutubeChannelManager\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
 "POT-Creation-Date: 2023-03-05 14:02-0300\n"
-"PO-Revision-Date: 2023-03-05 14:03-0300\n"
+"PO-Revision-Date: 2023-03-06 11:32+0100\n"
 "Last-Translator: Rémy Ruiz <remyruiz@gmail.com>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 1.8.8\n"
 
 #. Translators: Mensaje de activación del reproductor web
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:52
@@ -166,27 +166,6 @@ msgstr "Raccourcis désactivés"
 
 #. Translators: texto de la ventana de ayuda rápida de comandos
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:373
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "Escape; desactiva la interfaz virtual.\n"
-#| "n; Activa el diálogo para añadir un nuevo canal.\n"
-#| "o; abre el link del video actual en el navegador por defecto.\n"
-#| "r; Carga el audio en un reproductor web personalizado.\n"
-#| "t; copia el título del video actual al portapapeles.\n"
-#| "c; copia el link del video actual al portapapeles.\n"
-#| "d; abre una ventana con datos del video actual.\n"
-#| "b; Activa el cuadro de búsqueda de videos en la base de datos.\n"
-#| "control + b; Activa el cuadro de búsqueda de videos en la página de "
-#| "Youtube.\n"
-#| "s; Activa la ventana de configuración del canal actual.\n"
-#| "g; Activa la ventana de opciones globales.\n"
-#| "suprimir; Activa el diálogo para eliminar el canal actual, y en la "
-#| "ventana de resultados, elimina la columna y vuelve a la lista de "
-#| "canales.\n"
-#| "f5; Busca videos nuevos en el canal actual.\n"
-#| "control + shift + suprimir; elimina la base de datos.\n"
-#| "\t\t"
 msgid ""
 "\n"
 "Escape; desactiva la interfaz virtual.\n"
@@ -221,6 +200,13 @@ msgstr ""
 "t; Copie le titre de la vidéo actuel dans le presse-papiers.\n"
 "c; Copie le lien de la vidéo actuel dans le presse-papiers.\n"
 "d; Ouvre une fenêtre avec les données de la vidéo actuelle.\n"
+"control + d; Télécharge la vidéo dans son format d'origine dans le dossier "
+"youtubeDL à la racine de l'utilisateur actuel.\n"
+"control + c; Ouvre le lien du presse-papiers dans le lecteur Web "
+"personnalisé.\n"
+"control + maj + d; Télécharge la vidéo à partir du presse-papiers dans son "
+"format d'origine dans le dossier youtubeDL à la racine de l'utilisateur "
+"actuel.\n"
 "b; Active la zone de recherche de la vidéo dans la base de données.\n"
 "contrôle + b; Active la zone de recherche de la vidéo sur la page YouTube.\n"
 "s; Active la fenêtre de configuration de la chaîne actuelle.\n"
@@ -251,11 +237,8 @@ msgstr "Ouverture du lien dans le navigateur en cours..."
 
 #. Translators: posición actual de cantidad total. número de reproducciones. Mensaje de ayuda de comandos
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:481
-#, fuzzy
-#| msgid ""
-#| "{} de {}, {} reproducciones. {}. Pulsa f1 para ver la ayuda de comandos"
 msgid "{} de {}. {}. Pulsa f1 para ver la ayuda de comandos"
-msgstr "{} de {}, {} vues. {}. Appuyer sur f1 pour voir l'aide des commandes"
+msgstr "{} de {}. {}. Appuyer sur f1 pour voir l'aide des commandes"
 
 #. Translators: aviso de problemas con el requerimiento de conexión
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:499
@@ -296,15 +279,13 @@ msgstr "copiée"
 
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:571
 msgid "Video del portapapeles"
-msgstr ""
+msgstr "Vidéo du presse-papiers"
 
 #. Translators: aviso de inicio de descarga
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:574
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:589
-#, fuzzy
-#| msgid "Actualizando la librería..."
 msgid "Iniciando la descarga..."
-msgstr "Mise à jour de la librairie en cours..."
+msgstr "Démarrage du téléchargement en cours..."
 
 #. Translators: aviso de obtención de los datos del video
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:600
@@ -611,12 +592,12 @@ msgstr "Recherche terminée"
 #. Translators: Palabra porciento posterior al nivel de porcentaje.
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:1324
 msgid "{} porciento"
-msgstr ""
+msgstr "{} pourcent"
 
 #. Translators: Mensaje de descarga exitosa
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:1347
 msgid "{} descargado correctamente"
-msgstr ""
+msgstr "{} téléchargé avec succès"
 
 #. Translators: Cadenas del documento html. Título, botones y mensajes
 #: addon\globalPlugins\YoutubeChannelManager\player.py:20

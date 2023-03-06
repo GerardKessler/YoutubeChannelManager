@@ -7,6 +7,8 @@ Este complemento permite gestionar los canales favoritos de la plataforma Youtub
 
 * Activar la interfaz invisible; sin asignar
 
+Para activar o desactivar la interfaz invisible, por favor asigna previamente un gesto personalizado utilizando el diálogo Gestos de Entrada
+
 ## Atajos disponibles en la interfaz invisible
 
 * escape; Cierra la interfaz virtual y devuelve los atajos de teclado a su función por defecto.
@@ -15,7 +17,7 @@ Este complemento permite gestionar los canales favoritos de la plataforma Youtub
 * Flecha abajo; Se mueve al siguiente video del canal con el foco.
 * Flecha arriba; Se mueve al anterior video del canal con el foco.
 * inicio; Se mueve al primer video del canal con el foco.
-* fin; Verbaliza la posición, el nombre del canal, y el número de visualizaciones del video.
+* fin; Verbaliza la posición y el nombre del canal
 * n; Abre el diálogo para añadir un nuevo canal.
 * o; Abre el link del video en el navegador por defecto.
 * r; Abre el link de audio en un reproductor web personalizado.
@@ -36,7 +38,7 @@ Este complemento permite gestionar los canales favoritos de la plataforma Youtub
 
 ## Añadir canales
 
-Para añadir un nuevo canal a la base de datos, tan solo hay que abrir la interfaz virtual con el atajo para dicha acción, por defecto; NVDA + i griega. Y pulsar la letra n.    
+Para añadir un nuevo canal a la base de datos, tan solo hay que abrir la interfaz virtual con el atajo previamente asignado. Por defecto, la interfaz virtual no tiene gesto de entrada asignado para dicha acción. Una vez asignado y abierta la interfaz virtual pulsar la letra n.    
 La ventana solicita 2 campos. Un nombre de canal, y la dirección  URL del mismo. En este último caso, el complemento permite el ingreso de los siguientes formatos URL:
 
 * Link de un video, que suele tener el siguiente formato:
@@ -56,14 +58,14 @@ Esto va a activar el diálogo para ingresar los datos del canal, los cuales van 
 El complemento permite marcar canales como favoritos, y activar la verificación de novedades con un rango estipulado de tiempo.  
 Para marcar o desmarcar un canal como favorito:  
 
-* Activar la interfaz virtual con el gesto asignado, por defecto, NVDA + i griega.
+* Activar la interfaz virtual con el gesto previamente asignado.
 * Seleccionar el canal deseado con flechas izquierda o derecha.
 * Activar la ventana de configuración de canal con la letra s.
 * Marcar la casilla correspondiente y pulsar sobre el botón para guardar la configuración.
 
 La verificación de novedades en los canales favoritos está desactivada por defecto. Para modificarlo hay que seguir los siguientes pasos:
 
-* Activar la interfaz virtual con el gesto asignado, por defecto, NVDA + i griega.
+* Activar la interfaz virtual con el gesto previamente asignado.
 * Activar la ventana de configuración global con la letra g.
 * Tabular hasta  la lista de opciones, y seleccionar con flechas arriba y abajo el rango deseado.
 * Pulsar sobre el botón para guardar las configuraciones.
@@ -74,7 +76,7 @@ Al encontrar novedades, el complemento emitirá un sonido durante la actualizaci
 
 El complemento permite buscar por palabras clave entre los videos de los canales agregados a la base de datos.  
 
-* Activar la interfaz virtual con el gesto asignado, por defecto, NVDA + i griega.
+* Activar la interfaz virtual con el gesto previamente asignado.
 * Activar la ventana de búsqueda con la letra b.
 * Escribir una palabra o frase de referencia.
 * Pulsar Intro o el botón Iniciar la búsqueda.
@@ -88,7 +90,7 @@ Para volver a la interfaz de canales hay que pulsar la tecla suprimir en la inte
 
 Para realizar una búsqueda global fuera de la base de datos hay que hacer lo siguiente:
 
-* Activar la interfaz virtual con el gesto asignado, por defecto, NVDA + i griega.
+* Activar la interfaz virtual con el gesto previamente asignado.
 * Activar la ventana de búsqueda con el atajo control + b.
 * Escribir una palabra o frase de referencia y seleccionar la cantidad de resultados a mostrar.
 * Pulsar el botón Iniciar la búsqueda.
