@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: YoutubeChannelManager 1.5\n"
+"Project-Id-Version: YoutubeChannelManager 1.7\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
 "POT-Creation-Date: 2023-03-05 14:02-0300\n"
-"PO-Revision-Date: 2023-03-05 14:13-0300\n"
+"PO-Revision-Date: 2023-03-06 19:32+0100\n"
 "Last-Translator: Rémy Ruiz <remyruiz@gmail.com>\n"
 "Language-Team: \n"
 "Language: it_IT\n"
@@ -166,27 +166,6 @@ msgstr "Scorciatoie disattivate"
 
 #. Translators: texto de la ventana de ayuda rápida de comandos
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:373
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "Escape; desactiva la interfaz virtual.\n"
-#| "n; Activa el diálogo para añadir un nuevo canal.\n"
-#| "o; abre el link del video actual en el navegador por defecto.\n"
-#| "r; Carga el audio en un reproductor web personalizado.\n"
-#| "t; copia el título del video actual al portapapeles.\n"
-#| "c; copia el link del video actual al portapapeles.\n"
-#| "d; abre una ventana con datos del video actual.\n"
-#| "b; Activa el cuadro de búsqueda de videos en la base de datos.\n"
-#| "control + b; Activa el cuadro de búsqueda de videos en la página de "
-#| "Youtube.\n"
-#| "s; Activa la ventana de configuración del canal actual.\n"
-#| "g; Activa la ventana de opciones globales.\n"
-#| "suprimir; Activa el diálogo para eliminar el canal actual, y en la "
-#| "ventana de resultados, elimina la columna y vuelve a la lista de "
-#| "canales.\n"
-#| "f5; Busca videos nuevos en el canal actual.\n"
-#| "control + shift + suprimir; elimina la base de datos.\n"
-#| "\t\t"
 msgid ""
 "\n"
 "Escape; desactiva la interfaz virtual.\n"
@@ -214,21 +193,27 @@ msgid ""
 "\t\t"
 msgstr ""
 "\n"
-"Escape; disabilita l'interfaccia virtuale.\n"
+"Esc; disabilita l'interfaccia virtuale.\n"
 "N; Attiva la finestra di dialogo per aggiungere un nuovo canale.\n"
-"o; apre il link del video corrente nel browser predefinito.\n"
-"r; Carica l'audio in un web player personalizzato.\n"
-"c; copia il link del video corrente negli appunti.\n"
-"d; apre una finestra con i dati del video corrente.\n"
-"b; Attiva la casella di ricerca per i video nel database.\n"
-"CTRL + b; Attiva la casella di ricerca video nella pagina Youtube.\n"
-"s; Attiva la finestra di configurazione del canale corrente.\n"
-"g; Attiva la finestra della configurazione globale.\n"
-"CANC; Attiva la finestra di dialogo per eliminare il canale corrente o, "
-"nella finestra dei risultati, elimina la colonna e torna all'elenco dei "
+"O; apri il link del video corrente nel browser predefinito.\n"
+"R; Carica l'audio in un web player personalizzato.\n"
+"T; copia il titolo del video corrente negli appunti.\n"
+"C; copia il link del video corrente negli appunti.\n"
+"D; apre una finestra con i dati video correnti.\n"
+"Ctrl+D; scarica il video nel suo formato originale nella cartella youtubeDL "
+"nella root dell'utente corrente.\n"
+"Ctrl+c; Apre il collegamento dagli appunti nel web player personalizzato.\n"
+"Ctrl+maiusc+d; scarica il video dagli appunti nel suo formato originale "
+"nella cartella youtubeDL nella root dell'utente corrente.\n"
+"B; Attiva la casella di ricerca dei video nel database.\n"
+"Ctrl+b; Attiva la casella di ricerca video sulla pagina Youtube.\n"
+"S; Attiva la finestra di configurazione del canale corrente.\n"
+"G; Attiva la finestra delle opzioni globali.\n"
+"Canc; Attiva la finestra di dialogo per rimuovere il canale corrente e, "
+"nella finestra dei risultati, rimuove la colonna e torna all'elenco dei "
 "canali.\n"
-"f5; Cerca nuovi video nel canale corrente.\n"
-"CTRL + MAIUSC + CANC; elimina il database.\n"
+"F5; Cerca nuovi video nel canale corrente.\n"
+"Ctrl + maiusc + Canc; cancella il database.\n"
 "\t\t"
 
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:392
@@ -241,7 +226,7 @@ msgstr "Guida dei comandi"
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:415
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:420
 msgid "{}- {} de {}"
-msgstr "{}- {} di {}"
+msgstr "{}- {} Di {}"
 
 #. Translators: aviso de apertura del link en el navegador
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:461
@@ -250,12 +235,8 @@ msgstr "Apertura del link nel browser..."
 
 #. Translators: posición actual de cantidad total. número de reproducciones. Mensaje de ayuda de comandos
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:481
-#, fuzzy
-#| msgid ""
-#| "{} de {}, {} reproducciones. {}. Pulsa f1 para ver la ayuda de comandos"
 msgid "{} de {}. {}. Pulsa f1 para ver la ayuda de comandos"
-msgstr ""
-"{} di {}, {} riproduzione. {}. Premi f1 per vedere la guida dei comandi"
+msgstr "{} Di {}. {}. Premi f1 per vedere la guida dei comandi"
 
 #. Translators: aviso de problemas con el requerimiento de conexión
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:499
@@ -296,15 +277,13 @@ msgstr "copiato"
 
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:571
 msgid "Video del portapapeles"
-msgstr "video negli appunti"
+msgstr "Video negli appunti"
 
 #. Translators: aviso de inicio de descarga
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:574
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:589
-#, fuzzy
-#| msgid "Actualizando la librería..."
 msgid "Iniciando la descarga..."
-msgstr "Aggiornamento della libreria..."
+msgstr "Avvio del download..."
 
 #. Translators: aviso de obtención de los datos del video
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:600
@@ -606,12 +585,12 @@ msgstr "ricerca completata"
 #. Translators: Palabra porciento posterior al nivel de porcentaje.
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:1324
 msgid "{} porciento"
-msgstr ""
+msgstr "{} per cento"
 
 #. Translators: Mensaje de descarga exitosa
 #: addon\globalPlugins\YoutubeChannelManager\__init__.py:1347
 msgid "{} descargado correctamente"
-msgstr ""
+msgstr "{} scaricato correttamente"
 
 #. Translators: Cadenas del documento html. Título, botones y mensajes
 #: addon\globalPlugins\YoutubeChannelManager\player.py:20
@@ -682,7 +661,7 @@ msgstr ""
 "un'interfaccia invisibile e semplice"
 
 #~ msgid "Activa el link del portapapeles en el reproductor web personalizado"
-#~ msgstr "Abilita il link dagli appunti nel web player personalizzato"
+#~ msgstr "Active le lien du presse-papiers dans le lecteur Web personnalisé"
 
 #~ msgid ""
 #~ "\n"
