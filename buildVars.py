@@ -25,7 +25,7 @@ addon_info = {
 	# Translators: Long description to be shown for this add-on on add-on information from add-ons manager
 	"addon_description": _("""Permite gestionar los canales favoritos de Youtube a través de una interfaz invisible y sencilla"""),
 	# version
-	"addon_version": "1.7",
+	"addon_version": "1.8",
 	# Author(s)
 	"addon_author": "Gerardo Késsler <gera.ar@yahoo.com>",
 	# URL for the add-on documentation support
@@ -33,9 +33,9 @@ addon_info = {
 	# Documentation file name
 	"addon_docFileName": "readme.html",
 	# Minimum NVDA version supported (e.g. "2018.3.0", minor version is optional)
-	"addon_minimumNVDAVersion": "2022.4",
+	"addon_minimumNVDAVersion": "2022.4.1",
 	# Last NVDA version supported/tested (e.g. "2018.4.0", ideally more recent than minimum version)
-	"addon_lastTestedNVDAVersion": "2023.1",
+	"addon_lastTestedNVDAVersion": "2024.1.0",
 	# Add-on update channel (default is None, denoting stable releases,
 	# and for development releases, use "dev".)
 	# Do not change unless you know what you are doing!

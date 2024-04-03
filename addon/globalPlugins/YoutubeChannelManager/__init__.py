@@ -35,12 +35,18 @@ import html
 html.__path__.append(os.path.join(dirAddon, "lib", "html"))
 import http
 http.__path__.append(os.path.join(dirAddon, "lib", "http"))
-import sqlite3 as sql
-sql.__path__.append(os.path.join(dirAddon, "lib", "sqlite3"))
+if sys.version.startswith("3.11"):
+	sys.path.append(os.path.join(dirAddon, "lib", "_311"))
+	from .lib._311 import sqlite3 as sql
+	sql.__path__.append(os.path.join(dirAddon, "lib", "_311", "sqlite3"))
+else:
+	sys.path.append(os.path.join(dirAddon, "lib", "_37"))
+	from .lib._37 import sqlite3 as sql
+	sql.__path__.append(os.path.join(dirAddon, "lib", "_37", "sqlite3"))
 import xml
 xml.__path__.append(os.path.join(dirAddon, "lib", "xml"))
 import yt_dlp as youtube_dl
-del sys.path[-2:]
+del sys.path[-3:]
 import addonHandler
 
 # Lína de traducción
@@ -643,7 +649,7 @@ control + shift + suprimir; elimina la base de datos.
 
 class AddonThread(Thread):
 	def __init__(self, frame):
-		super(AddonThread, self).__init__(frame)
+		super(AddonThread, self).__init__()
 		self.frame = frame
 		self.daemon = True
 
@@ -746,7 +752,7 @@ class DescargaDialogo(wx.Dialog):
 		return
 
 	def next(self, event):
-		self.progressBar.SetValue(event)
+		self.progressBar.SetValue(int(event))
 
 	def TextoRefresco(self, event):
 		self.textorefresco.Clear()
