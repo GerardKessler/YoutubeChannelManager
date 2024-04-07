@@ -620,7 +620,7 @@ control + shift + suprimir; elimina la base de datos.
 {self.itemsData[2]}: {p["view_count"]}
 {self.itemsData[3]}: {p["like_count"]}
 {self.itemsData[4]}: {p["description"]}'''
-		ui.browseableMessage(data, self.itemsData[5])
+		wx.MessageDialog(None, data, p['title']).ShowModal()
 
 	def script_openAudio(self, gesture):
 		if len(self.channels) == 0:
