@@ -963,7 +963,7 @@ class NewChannel(wx.Dialog):
 		if event.GetEventType() == 10012:
 			self.Destroy()
 			gui.mainFrame.postPopup()
-		elif event.GetActive() == False:
+		elif not event.GetSkipped:
 			self.Destroy()
 			gui.mainFrame.postPopup()
 		event.Skip()
@@ -1031,7 +1031,7 @@ class NewSearch(wx.Dialog):
 		if event.GetEventType() == 10012:
 			self.Destroy()
 			gui.mainFrame.postPopup()
-		elif event.GetActive() == False:
+		elif not event.GetSkipped:
 			self.Destroy()
 			gui.mainFrame.postPopup()
 		event.Skip()
@@ -1064,7 +1064,7 @@ class ChannelSettings(wx.Dialog):
 		if event.GetEventType() == 10012:
 			self.Destroy()
 			gui.mainFrame.postPopup()
-		elif event.GetActive() == False:
+		elif not event.GetSkipped:
 			self.Destroy()
 			gui.mainFrame.postPopup()
 		event.Skip()
@@ -1117,7 +1117,7 @@ class GlobalSettings(wx.Dialog):
 		if event.GetEventType() == 10012:
 			self.Destroy()
 			gui.mainFrame.postPopup()
-		elif event.GetActive() == False:
+		elif not event.GetSkipped:
 			self.Destroy()
 			gui.mainFrame.postPopup()
 		event.Skip()
@@ -1226,7 +1226,7 @@ class GlobalSearch(wx.Dialog):
 		if event.GetEventType() == 10012:
 			self.Destroy()
 			gui.mainFrame.postPopup()
-		elif event.GetActive() == False:
+		elif not event.GetSkipped:
 			self.Destroy()
 			gui.mainFrame.postPopup()
 		event.Skip()
